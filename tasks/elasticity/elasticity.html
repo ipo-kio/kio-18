@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Kio Problem</title>
+    <script src="../kio_test_box/jquery-1.7.2.min.js"></script>
+    <script src="../kio_test_box/easeljs-0.8.2.min.js"></script>
+    <script src="../kio_test_box/preloadjs-0.6.2.min.js"></script>
+    <script src="../kio_test_box/dces2contest.js"></script>
+    <script src="../kio_test_box/kio_api.js"></script>
+    <link rel="stylesheet" type="text/css" href="../kio_test_box/kio_api.css">
+
+    <!--<link rel="stylesheet" type="text/css" href="rangeslider.css">-->
+    <script src="elasticity.js"></script>
+    <link rel="stylesheet" type="text/css" href="elasticity.css">
+    <script>
+        $(function() {
+            kio_api.initializeKioProblem(elasticity.Elasticity, document.getElementById('problem'), {count_windows: true, rounding: 10});
+        });
+    </script>
+</head>
+<body>
+<div id="stud-unique-id" style="display: none">kio-task-elasticity</div> <!--TODO get this somehow from task id -->
+<div id="problem">
+</div>
+</body>
+</html>

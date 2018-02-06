@@ -15,7 +15,7 @@ const sourceFolders = [
 module.exports = function (env) {
     let config = {
         entry: {
-            'batman': 'batman/batman.js'
+            'elasticity': 'elasticity/elasticity.js'
         },
         output: {
             path: path.join(__dirname, '/dist'),
@@ -33,7 +33,7 @@ module.exports = function (env) {
                     include: sourceFolders,
                     options: {
                         presets: [
-                            ['es2015', {"modules": false}], //this is es2015 preset with options
+                            ['env', {"modules": false}], //this is 'env' preset with options
                         ],
                         plugins: [
                             "transform-object-rest-spread",
@@ -59,8 +59,8 @@ module.exports = function (env) {
         plugins: [
             new ExtractTextPlugin("[name].css"),
             new CopyWebpackPlugin([
-                {from: './tasks/batman/batman.html'},
-                {from: './tasks/batman/img/*', to: './batman-resources', flatten: true}
+                {from: './tasks/elasticity/elasticity.html'},
+                {from: './tasks/elasticity/img/*', to: './elasticity-resources', flatten: true}
             ])
         ]
     };
