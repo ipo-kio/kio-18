@@ -102,6 +102,6 @@ export class TimeSeries {
     }
 
     get length() {
-        return this._points.length; // n + 1
+        return this._points_with_positions.length; // n + 1
     }
 }
