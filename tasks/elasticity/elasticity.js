@@ -3,6 +3,7 @@ import GridView from "./view/GridView";
 import ObjectsSet from "./model/ObjectsSet";
 import {Point, PointWithPosition} from "./model/Point";
 import springs_evaluator from "./model/springs_evaluator";
+import PointTypeSelector from "./view/TypeSelector";
 
 export class Elasticity {
 
@@ -73,6 +74,15 @@ export class Elasticity {
         this._grid_view.point_set.ed.add_listener('element change', point_moved_listener);
         this._grid_view.point_set.ed.add_listener('change', point_moved_listener);
         point_moved_listener();
+
+        let type_selector = new PointTypeSelector([{
+            type: new Point(1),
+            title: "Обычная"
+        }, {
+            type: new Point(0),
+            title: "Закрепленная"
+        }]);
+        domNode.appendChild(type_selector.html_object);
     }
 
     initCanvas(domNode) {
@@ -84,7 +94,8 @@ export class Elasticity {
         this._stage = new createjs.Stage(this._canvas);
 
         this._grid_view = new GridView(this._stage);
-        this._stage.addChild(this._grid_view.display_object);
+        this._stage.addChild(this._grid_view.html_object);
+        this._stage.enableMouseOver(10);
         this._stage.update();
     }
 }
