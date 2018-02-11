@@ -22,7 +22,7 @@ export class PointView {
     init_display_object() {
         let d = new createjs.Shape();
         let g = d.graphics;
-        g.beginFill('rgba(128, 0, 0, 0.5)').drawCircle(0, 0, CIRCLE_RADIUS);
+        g.beginStroke('black').setStrokeStyle(1).beginFill('rgb(255, 128, 128)').drawCircle(0, 0, CIRCLE_RADIUS);
 
         d.mouseEnabled = true;
         d.addEventListener("pressmove", e => {

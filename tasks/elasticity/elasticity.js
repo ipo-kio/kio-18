@@ -1,6 +1,6 @@
 import './elasticity.scss';
 import GridView from "./view/GridView";
-import PointSet from "./model/PointSet";
+import ObjectsSet from "./model/ObjectsSet";
 import {Point, PointWithPosition} from "./model/Point";
 import springs_evaluator from "./model/springs_evaluator";
 
@@ -60,14 +60,19 @@ export class Elasticity {
     initInterface(domNode, preferred_width) {
         this.initCanvas(domNode);
 
-        this._grid_view.point_set = new PointSet();
-        this._grid_view.point_set.add_point_with_position(new PointWithPosition(0, 0, new Point(1)));
-        this._grid_view.point_set.add_point_with_position(new PointWithPosition(3, 2, new Point(1)));
-        this._grid_view.point_set.add_point_with_position(new PointWithPosition(1, 0, new Point(1)));
-        this._grid_view.point_set.add_point_with_position(new PointWithPosition(1, 1, new Point(1)));
+        this._grid_view.point_set = new ObjectsSet();
+        this._grid_view.point_set.add_object(new PointWithPosition(0, 0, new Point(1)));
+        this._grid_view.point_set.add_object(new PointWithPosition(3, 2, new Point(1)));
+        this._grid_view.point_set.add_object(new PointWithPosition(1, 0, new Point(1)));
+        this._grid_view.point_set.add_object(new PointWithPosition(1, 1, new Point(1)));
 
-        let springs_set = springs_evaluator(this._grid_view.point_set);
-        this._grid_view.springs_set = springs_set;
+        let point_moved_listener = () => {
+            this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
+        };
+
+        this._grid_view.point_set.ed.add_listener('element change', point_moved_listener);
+        this._grid_view.point_set.ed.add_listener('change', point_moved_listener);
+        point_moved_listener();
     }
 
     initCanvas(domNode) {
