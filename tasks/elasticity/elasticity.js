@@ -93,8 +93,8 @@ export class Elasticity {
         this._canvas.height = 400;
         this._stage = new createjs.Stage(this._canvas);
 
-        this._grid_view = new GridView(this._stage);
-        this._stage.addChild(this._grid_view.html_object);
+        this._grid_view = new GridView();
+        this._stage.addChild(this._grid_view.display_object);
         this._stage.enableMouseOver(10);
         this._stage.update();
     }

@@ -132,14 +132,14 @@ class SetView {
 
     draw_set_elements() {
         for (let view of this._views)
-            this._layer.removeChild(view.html_object);
+            this._layer.removeChild(view.display_object);
 
         this._views = [];
         if (this._set !== null)
             for (let set_element of this._set) {
                 let view = this._set_element_2_view(set_element);
                 this._views.push(view);
-                this._layer.addChild(view.html_object);
+                this._layer.addChild(view.display_object);
             }
     }
 }
