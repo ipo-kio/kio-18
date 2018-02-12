@@ -5,6 +5,8 @@ import {Point, PointWithPosition} from "./model/Point";
 import springs_evaluator from "./model/springs_evaluator";
 import PointTypeSelector from "./view/TypeSelector";
 
+import {WIDTH as GRID_WIDTH, HEIGHT as GRID_HEIGHT} from "./view/GridView";
+
 export class Elasticity {
 
     constructor(settings) {
@@ -67,13 +69,21 @@ export class Elasticity {
         this._grid_view.point_set.add_object(new PointWithPosition(1, 0, new Point(1)));
         this._grid_view.point_set.add_object(new PointWithPosition(1, 1, new Point(1)));
 
-        let point_moved_listener = () => {
+        let point_set_changed_listener = () => {
             this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
         };
 
-        this._grid_view.point_set.ed.add_listener('element change', point_moved_listener);
-        this._grid_view.point_set.ed.add_listener('change', point_moved_listener);
-        point_moved_listener();
+        this._grid_view.point_set.ed.add_listener('element change', point_set_changed_listener);
+        this._grid_view.point_set.ed.add_listener('change', point_set_changed_listener);
+        point_set_changed_listener();
+
+        this._grid_view.ed.add_listener('grid click', e =>
+            this._grid_view.point_set.add_object(new PointWithPosition(
+                e.natural_position.x,
+                e.natural_position.y,
+                new Point(1)
+            ))
+        );
 
         let type_selector = new PointTypeSelector([{
             type: new Point(1),
@@ -89,8 +99,8 @@ export class Elasticity {
         this._canvas = document.createElement('canvas');
         domNode.appendChild(this._canvas);
         this._canvas.className = "kio-elasticity-canvas";
-        this._canvas.width = 400;
-        this._canvas.height = 400;
+        this._canvas.width = GRID_WIDTH;
+        this._canvas.height = GRID_HEIGHT;
         this._stage = new createjs.Stage(this._canvas);
 
         this._grid_view = new GridView();

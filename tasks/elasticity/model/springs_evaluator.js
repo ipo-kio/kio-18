@@ -1,7 +1,7 @@
 import {Spring} from "./Spring";
 import ObjectsSet from "./ObjectsSet";
 
-const MIN_POINTS = 1;
+const MIN_POINTS = 3;
 const MAX_DISTANCE = 5;
 
 export default function springs_evaluator(point_set) {

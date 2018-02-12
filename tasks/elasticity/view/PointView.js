@@ -1,9 +1,5 @@
 import {n2s, s2n} from "./GridView";
 
-const CIRCLE_RADIUS = 8;
-const NORMAL_COLOR = 'rgb(255, 128, 128)';
-const OVER_COLOR = 'rgb(255, 200, 200)';
-
 export class PointView {
 
     _display_object;

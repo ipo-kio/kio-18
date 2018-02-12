@@ -1,8 +1,9 @@
 import {PointView} from "./PointView";
 import {SpringView} from "./SpringView";
+import {EventDispatcher, Event} from "../EventDispatcher";
 
-const WIDTH = 300;
-const HEIGHT = 300;
+export const WIDTH = 700;
+export const HEIGHT = 400;
 const X0 = WIDTH / 2;
 const Y0 = HEIGHT / 2;
 
@@ -36,11 +37,21 @@ export default class GridView {
     _points_set_view;
     _edges_set_view;
 
+    _ed = new EventDispatcher(); //'grid click' click out of any visible elements
+
     constructor() {
         this.init_display_object();
 
         this._edges_set_view = new SetView(this._display_object, spring => new SpringView(spring));
         this._points_set_view = new SetView(this._display_object, pwp => new PointView(pwp));
+
+        this._grid.addEventListener('mousedown', e => {
+            if (e.target === this._grid)
+                {
+                    let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
+                    this._ed.fire(new GridClickEvent(this, s2n(display_object_local)));
+                }
+        });
     }
 
     get point_set() {
@@ -72,6 +83,9 @@ export default class GridView {
     init_grid() {
         this._grid = new createjs.Shape();
         let g = this._grid.graphics;
+
+        g.beginFill('white').drawRect(-X0, -Y0, WIDTH, HEIGHT).endFill();
+
         g.setStrokeStyle(0.1).beginStroke('#666');
 
         let i_min = -Math.floor(X0 / GRID_STEP);
@@ -92,9 +106,12 @@ export default class GridView {
         }
     }
 
-
     get display_object() {
         return this._display_object;
+    }
+
+    get ed() {
+        return this._ed;
     }
 }
 
@@ -141,5 +158,19 @@ class SetView {
                 this._views.push(view);
                 this._layer.addChild(view.display_object);
             }
+    }
+}
+
+export class GridClickEvent extends Event {
+
+    _natural_position; // {x, y}
+
+    constructor(source, natural_position) {
+        super('grid click', source);
+        this._natural_position = natural_position;
+    }
+
+    get natural_position() {
+        return this._natural_position;
     }
 }
