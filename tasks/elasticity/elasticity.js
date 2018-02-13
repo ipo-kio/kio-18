@@ -1,13 +1,13 @@
 import './elasticity.scss';
 import GridView from "./view/GridView";
 import ObjectsSet from "./model/ObjectsSet";
-import {Point, PointWithPosition} from "./model/Point";
 import springs_evaluator from "./model/springs_evaluator";
 import PointTypeSelector from "./view/TypeSelector";
 
 import {WIDTH as GRID_WIDTH, HEIGHT as GRID_HEIGHT} from "./view/GridView";
 import {POINT_TYPE_FIXED, POINT_TYPE_NORMAL} from "./model/point_types";
 import TowerHistory from "./model/TowerHistory";
+import {PointWithPosition} from "./model/PointWithPosition.js";
 
 const POINTS_CHANGEABLE = 0;
 const POINTS_FIXED = 1;
@@ -41,9 +41,7 @@ export class Elasticity {
     }
 
     static preloadManifest___________________1() {
-        return [
-
-        ];
+        return [];
     }
 
     parameters() {
@@ -90,12 +88,13 @@ export class Elasticity {
         //type selector
         let type_selector = new PointTypeSelector();
         domNode.appendChild(type_selector.html_object);
-        this._grid_view.ed.add_listener('grid click', e =>
-            this._grid_view.point_set.add_object(new PointWithPosition(
-                e.natural_position.x,
-                e.natural_position.y,
-                type_selector.current_point_type
-            ))
+        this._grid_view.ed.add_listener('grid click', e => {
+                this._grid_view.point_set.add_object(new PointWithPosition(
+                    e.natural_position.x,
+                    e.natural_position.y,
+                    type_selector.current_point_type
+                ));
+            }
         );
 
         //go button

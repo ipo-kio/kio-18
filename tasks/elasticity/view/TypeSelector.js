@@ -1,12 +1,10 @@
-import {PointView} from "./PointView";
-import {PointWithPosition} from "../model/Point";
-import {point_types} from "../model/point_types";
+import {POINT_TYPE_NORMAL, point_types} from "../model/point_types";
 
 export default class PointTypeSelector {
 
     _html_object;
 
-    _current_point_type;
+    _current_point_type = POINT_TYPE_NORMAL;
 
     constructor() { //array of {type: Point, title: String}
         this.init_html_object();
@@ -40,7 +38,7 @@ export default class PointTypeSelector {
 
             $element.change(e => {
                 let i = $element.val();
-                this._current_point_type = point_types[i].type;
+                this._current_point_type = i;
             });
         }
 
