@@ -5,15 +5,17 @@ export class PointView {
     _display_object;
     _point_with_position;
     _movable = true;
+    _allow_move;
 
-    constructor(point_with_position) {
+    constructor(point_with_position, allow_move=true) {
         this._point_with_position = point_with_position;
+        this._allow_move = allow_move;
 
         this.init_display_object();
 
         this.place_point();
 
-        this._point_with_position.ed.add_listener('change', e => {
+        this._point_with_position.ed.add_listener('change', () => {
             this.place_point();
         });
     }
@@ -23,6 +25,8 @@ export class PointView {
 
         d.mouseEnabled = true;
         d.addEventListener("pressmove", e => {
+            if (!this._allow_move)
+                return;
             if (!this._movable)
                 return;
 
@@ -30,12 +34,12 @@ export class PointView {
             this._point_with_position.set_location(np);
         });
 
-        d.addEventListener("rollover", e => this.over = true);
-        d.addEventListener("rollout", e => this.over = false);
+        d.addEventListener("rollover", () => this.over = true);
+        d.addEventListener("rollout", () => this.over = false);
 
         this._display_object = d;
 
-        this.draw_point(NORMAL_COLOR);
+        this.draw_point(false);
     }
 
     place_point() {
@@ -57,15 +61,12 @@ export class PointView {
     }
 
     set over(_over) {
-        this.draw_point(_over ? OVER_COLOR : NORMAL_COLOR);
+        this.draw_point(_over);
     }
 
-    draw_point(color) {
-        this._display_object.graphics
-            .clear()
-            .beginStroke('black')
-            .setStrokeStyle(1)
-            .beginFill(color)
-            .drawCircle(0, 0, CIRCLE_RADIUS);
+    draw_point(over) {
+        let g = this._display_object.graphics;
+        g.clear();
+        this._point_with_position.point_type.draw(g, over);
     }
 }

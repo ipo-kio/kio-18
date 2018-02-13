@@ -37,13 +37,13 @@ export default function springs_evaluator(point_set) {
 
         for (let best_point of best_points)
             if (best_point) {
-                let {point, distance, index} = best_point;
+                let {distance, index} = best_point;
                 if (distance > MAX_DISTANCE)
                     break;
 
                 let id = first_point_i < index ? first_point_i + '-' + index : index + '-' + first_point_i;
                 if (!(id in spring_sizes)) {
-                    let spring = new Spring(fp, point, distance);
+                    let spring = new Spring(point_set, first_point_i, index, distance);
                     springs_set.add_object(spring);
                     spring_sizes[id] = 1;
                 }

@@ -1,16 +1,14 @@
 import {PointView} from "./PointView";
 import {PointWithPosition} from "../model/Point";
+import {point_types} from "../model/point_types";
 
 export default class PointTypeSelector {
 
     _html_object;
-    _point_types;
 
     _current_point_type;
 
-    constructor(point_types) { //array of {type: Point, title: String}
-        this._point_types = point_types;
-
+    constructor() { //array of {type: Point, title: String}
         this.init_html_object();
     }
 
@@ -26,8 +24,8 @@ export default class PointTypeSelector {
 
         let $container = $('<div>');
 
-        for (let i = 0; i < this._point_types.length; i++) {
-            let {type, title} = this._point_types[i];
+        for (let i = 0; i < point_types.length; i++) {
+            let {type, title} = point_types[i];
             let id = 'point-type-selector-' + i;
 
             let $element = $('<input type="radio" name="point_type">');
@@ -42,7 +40,7 @@ export default class PointTypeSelector {
 
             $element.change(e => {
                 let i = $element.val();
-                this._current_point_type = this._point_types[i].type;
+                this._current_point_type = point_types[i].type;
             });
         }
 

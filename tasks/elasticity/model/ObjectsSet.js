@@ -27,6 +27,14 @@ export default class ObjectsSet {
         this._ed.fire(event);
     }
 
+    get length() {
+        return this._objects.length;
+    }
+
+    get(i) {
+        return this._objects[i];
+    }
+
     [Symbol.iterator]() {
         return this._objects.values();
     }

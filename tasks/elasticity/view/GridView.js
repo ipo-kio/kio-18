@@ -38,12 +38,13 @@ export default class GridView {
     _edges_set_view;
 
     _ed = new EventDispatcher(); //'grid click' click out of any visible elements
+    _allow_move = true;
 
     constructor() {
         this.init_display_object();
 
         this._edges_set_view = new SetView(this._display_object, spring => new SpringView(spring));
-        this._points_set_view = new SetView(this._display_object, pwp => new PointView(pwp));
+        this._points_set_view = new SetView(this._display_object, pwp => new PointView(pwp, this._allow_move));
 
         this._grid.addEventListener('mousedown', e => {
             if (e.target === this._grid)
@@ -112,6 +113,14 @@ export default class GridView {
 
     get ed() {
         return this._ed;
+    }
+
+    get allow_move() {
+        return this._allow_move;
+    }
+
+    set allow_move(value) {
+        this._allow_move = value;
     }
 }
 

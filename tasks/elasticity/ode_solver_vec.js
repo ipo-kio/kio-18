@@ -4,10 +4,10 @@ export class ODE {
     //---------------------------
     //y1' = f(x, y1, y2)
     //y2' = g(x, y1, y2)
-    constructor(...funs) {
+    constructor(funs, n) { //now it is one function that returns vector of length n
         this.funs = funs;
         this._nh = 1000;
-        this.n = funs.length;
+        this.n = n;
     }
 
     set nh(value) {
@@ -26,16 +26,15 @@ export class ODE {
             let x_s = ts.x(s);
 
             let y_tilde_s_plus_1 = new Point(this.n);
-            let f_xs_ys = new Point(this.n);
-            for (let i = 0; i < this.n; i++) {
-                f_xs_ys.vals[i] = this.funs[i](x_s, ...y_s.vals);
+            let f_xs_ys = Point.create(x_s, ...y_s.vals);
+            for (let i = 0; i < this.n; i++) //TODO implement point sum
                 y_tilde_s_plus_1.vals[i] = y_s.vals[i] + h * f_xs_ys.vals[i];
-            }
 
             let y_s_plus_1 = new Point(this.n);
             let x_s_plus_1 = ts.x(s + 1);
-            for (let i = 0; i < this.n; i++)
-                y_s_plus_1.vals[i] = y_s.vals[i] + h * (f_xs_ys.vals[i] + this.funs[i](x_s_plus_1, ...y_tilde_s_plus_1.vals)) / 2;
+            let f_of_s_plus_1 = this.funs(x_s_plus_1, ...y_tilde_s_plus_1.vals);
+            for (let i = 0; i < this.n; i++) //TODO implement point sum
+                y_s_plus_1.vals[i] = y_s.vals[i] + h * (f_xs_ys.vals[i] + f_of_s_plus_1[i]) / 2;
 
             ts.points[s + 1] = y_s_plus_1;
         }
@@ -98,5 +97,9 @@ export class TimeSeries {
 
     get points() {
         return this._points;
+    }
+
+    get length() {
+        return this._points.length; // n + 1
     }
 }

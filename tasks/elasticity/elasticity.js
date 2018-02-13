@@ -6,6 +6,11 @@ import springs_evaluator from "./model/springs_evaluator";
 import PointTypeSelector from "./view/TypeSelector";
 
 import {WIDTH as GRID_WIDTH, HEIGHT as GRID_HEIGHT} from "./view/GridView";
+import {POINT_TYPE_FIXED, POINT_TYPE_NORMAL} from "./model/point_types";
+import TowerHistory from "./model/TowerHistory";
+
+const POINTS_CHANGEABLE = 0;
+const POINTS_FIXED = 1;
 
 export class Elasticity {
 
@@ -22,6 +27,12 @@ export class Elasticity {
         this.domNode = domNode;
 
         this.initInterface(domNode, preferred_width);
+
+        this._point_set.add_object(new PointWithPosition(0, 0, POINT_TYPE_FIXED));
+        this._point_set.add_object(new PointWithPosition(3, 2, POINT_TYPE_FIXED));
+        this._point_set.add_object(new PointWithPosition(1, 0, POINT_TYPE_FIXED));
+        this._point_set.add_object(new PointWithPosition(1, 1, POINT_TYPE_FIXED));
+
         // this.kioapi.submitResult(this.current_path.result());
 
         createjs.Ticker.framerate = 20;
@@ -59,43 +70,47 @@ export class Elasticity {
     _canvas;
     _stage;
     _grid_view;
+    _point_set_manipulation_state = POINTS_CHANGEABLE;
+    _point_set = new ObjectsSet();
 
     initInterface(domNode, preferred_width) {
-        this.initCanvas(domNode);
+        this.init_canvas(domNode);
 
-        this._grid_view.point_set = new ObjectsSet();
-        this._grid_view.point_set.add_object(new PointWithPosition(0, 0, new Point(1)));
-        this._grid_view.point_set.add_object(new PointWithPosition(3, 2, new Point(1)));
-        this._grid_view.point_set.add_object(new PointWithPosition(1, 0, new Point(1)));
-        this._grid_view.point_set.add_object(new PointWithPosition(1, 1, new Point(1)));
+        //grid_view
+        this._grid_view.point_set = this._point_set;
 
         let point_set_changed_listener = () => {
             this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
         };
 
-        this._grid_view.point_set.ed.add_listener('element change', point_set_changed_listener);
-        this._grid_view.point_set.ed.add_listener('change', point_set_changed_listener);
+        this._point_set.ed.add_listener('element change', point_set_changed_listener);
+        this._point_set.ed.add_listener('change', point_set_changed_listener);
         point_set_changed_listener();
 
+        //type selector
+        let type_selector = new PointTypeSelector();
+        domNode.appendChild(type_selector.html_object);
         this._grid_view.ed.add_listener('grid click', e =>
             this._grid_view.point_set.add_object(new PointWithPosition(
                 e.natural_position.x,
                 e.natural_position.y,
-                new Point(1)
+                type_selector.current_point_type
             ))
         );
 
-        let type_selector = new PointTypeSelector([{
-            type: new Point(1),
-            title: "Обычная"
-        }, {
-            type: new Point(0),
-            title: "Закрепленная"
-        }]);
-        domNode.appendChild(type_selector.html_object);
+        //go button
+        let $go_button = $('<button type="button">');
+        $go_button.html("Нажми");
+        $(domNode).append($go_button);
+        $go_button.click(() => {
+            if (this.point_set_manipulation_state === POINTS_CHANGEABLE)
+                this.point_set_manipulation_state = POINTS_FIXED;
+            else
+                this.point_set_manipulation_state = POINTS_CHANGEABLE;
+        });
     }
 
-    initCanvas(domNode) {
+    init_canvas(domNode) {
         this._canvas = document.createElement('canvas');
         domNode.appendChild(this._canvas);
         this._canvas.className = "kio-elasticity-canvas";
@@ -107,5 +122,30 @@ export class Elasticity {
         this._stage.addChild(this._grid_view.display_object);
         this._stage.enableMouseOver(10);
         this._stage.update();
+    }
+
+    get point_set_manipulation_state() {
+        return this._point_set_manipulation_state;
+    }
+
+    set point_set_manipulation_state(value) {
+        this._point_set_manipulation_state = value;
+
+        if (value === POINTS_FIXED) {
+            this._grid_view.allow_move = false;
+            this._grid_view.point_set = Elasticity.copy_points_set(this._point_set);
+            this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
+        } else if (value === POINTS_CHANGEABLE) {
+            this._grid_view.allow_move = true;
+            this._grid_view.point_set = this._point_set;
+            this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
+        }
+    }
+
+    static copy_points_set(point_set) {
+        let result = new ObjectsSet();
+        for (let {x, y, point_type_ind} of point_set)
+            result.add_object(new PointWithPosition(x, y, point_type_ind));
+        return result;
     }
 }

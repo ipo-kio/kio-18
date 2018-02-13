@@ -1,5 +1,6 @@
 import {EventDispatcher} from "../EventDispatcher";
 import {NATURAL_X_MIN, NATURAL_X_MAX, NATURAL_Y_MAX, NATURAL_Y_MIN, GRID_STEP_SIZE} from "../view/GridView";
+import {point_types} from "./point_types";
 
 export class Point {
     _weight;
@@ -7,7 +8,6 @@ export class Point {
     constructor(weight) {
         this._weight = weight;
     }
-
 
     get weight() {
         return this._weight;
@@ -17,19 +17,18 @@ export class Point {
 export class PointWithPosition {
     _x;
     _y;
-    _point;
+    _point_type_ind;
     _ed = new EventDispatcher();
 
-    constructor(x, y, point) {
+    constructor(x, y, _point_type_ind) {
         this._x = x;
         this._y = y;
-        this._point = point;
+        this._point_type_ind = _point_type_ind;
     }
 
     get x() {
         return this._x;
     }
-
 
     get y() {
         return this._y;
@@ -64,8 +63,16 @@ export class PointWithPosition {
         this.fire();
     }
 
+    get point_type_ind() {
+        return this._point_type_ind;
+    }
+
+    get point_type() {
+        return point_types[this._point_type_ind];
+    }
+
     get point() {
-        return this._point;
+        return this.point_type.type;
     }
 
     get ed() {
