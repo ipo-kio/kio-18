@@ -14,8 +14,13 @@ const POINTS_FIXED = 1;
 
 export class Elasticity {
 
+    _$go_button;
+    _points_animation_tick;
+    _tower_history;
+
     constructor(settings) {
         this.settings = settings;
+        this._points_animation_tick = this.points_animation_tick.bind(this);
     }
 
     id() {
@@ -29,11 +34,7 @@ export class Elasticity {
         this.initInterface(domNode, preferred_width);
 
         this._point_set.add_object(new PointWithPosition(0, 0, POINT_TYPE_FIXED));
-        this._point_set.add_object(new PointWithPosition(3, 2, POINT_TYPE_FIXED));
-        this._point_set.add_object(new PointWithPosition(1, 0, POINT_TYPE_FIXED));
-        this._point_set.add_object(new PointWithPosition(1, 1, POINT_TYPE_FIXED));
-
-        // this.kioapi.submitResult(this.current_path.result());
+        this._point_set.add_object(new PointWithPosition(-1, -1, POINT_TYPE_NORMAL));
 
         createjs.Ticker.framerate = 20;
         createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
@@ -55,12 +56,22 @@ export class Elasticity {
     }
 
     solution() {
-        return '';
+        let p = []; //points
+
+        for ({x, y, point_type_ind} of this._grid_view.point_set)
+            p.push({x, y, t: point_type_ind});
+
+        return {p};
     }
+
 
     loadSolution(solution) {
         if (!solution)
             return;
+
+        this._point_set.clear();
+        for ({x, y, t} of solution.p) //TODO add many objects by once
+            this._point_set.add_object(new PointWithPosition(x, y, t));
     }
 
     // private methods
@@ -89,6 +100,7 @@ export class Elasticity {
         let type_selector = new PointTypeSelector();
         domNode.appendChild(type_selector.html_object);
         this._grid_view.ed.add_listener('grid click', e => {
+            if (this.point_set_manipulation_state === POINTS_CHANGEABLE)
                 this._grid_view.point_set.add_object(new PointWithPosition(
                     e.natural_position.x,
                     e.natural_position.y,
@@ -98,10 +110,12 @@ export class Elasticity {
         );
 
         //go button
-        let $go_button = $('<button type="button">');
-        $go_button.html("Нажми");
-        $(domNode).append($go_button);
-        $go_button.click(() => {
+        this._$go_button = $('<button type="button">');
+
+        this.point_set_manipulation_state = POINTS_CHANGEABLE;
+
+        $(domNode).append(this._$go_button);
+        this._$go_button.click(() => {
             if (this.point_set_manipulation_state === POINTS_CHANGEABLE)
                 this.point_set_manipulation_state = POINTS_FIXED;
             else
@@ -134,10 +148,22 @@ export class Elasticity {
             this._grid_view.allow_move = false;
             this._grid_view.point_set = Elasticity.copy_points_set(this._point_set);
             this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
+            this._$go_button.html("Расположить точки");
+
+            this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
+
+            this._animation_start_time = new Date().getTime();
+            this._stage.addEventListener('tick', this._points_animation_tick);
+
+            this._grid_view.grid_visible = false;
         } else if (value === POINTS_CHANGEABLE) {
             this._grid_view.allow_move = true;
             this._grid_view.point_set = this._point_set;
             this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
+            this._$go_button.html("Смотреть движение");
+            this._stage.removeEventListener('tick', this._points_animation_tick);
+
+            this._grid_view.grid_visible = true;
         }
     }
 
@@ -147,4 +173,16 @@ export class Elasticity {
             result.add_object(new PointWithPosition(x, y, point_type_ind));
         return result;
     }
+
+    points_animation_tick() {
+        let now = new Date().getTime();
+        let passed = (now - this._animation_start_time) / 1000; // in seconds
+
+        let history_point = this._tower_history.get_by_time(passed);
+
+        let ps = this._grid_view.point_set;
+        for (let i = 0; i < ps.length; i++)
+            ps.get(i).set_location_without_normalization({x: history_point.vals[4 * i], y: history_point.vals[4 * i + 1]});
+    }
+
 }

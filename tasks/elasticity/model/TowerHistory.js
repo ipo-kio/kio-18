@@ -1,4 +1,5 @@
 import {ODE} from "../ode_solver_vec";
+import {Constants} from "./constants";
 
 export default class TowerHistory {
 
@@ -22,21 +23,22 @@ export default class TowerHistory {
                 result[vy(i)] = 0;
             }
 
-            //Gravity
+            //TODO eval this just once: w === 0 ? 0 : fy / w;
+
+            //Gravity //TODO by the way, we don't really need mass here, because acceleration does not depend on it
             for (let i = 0; i < n; i++) {
                 let {point} = point_set.get(i);
-
                 let w = point.weight;
+
                 let [fx, fy] = gravity(w);
-                result[vy(i)] += w === 0 ? 0 : fy / w;
+                result[vx(i)] += fx;
+                result[vy(i)] += fy;
             }
 
             //Guk
             for (let {
                 first_point_with_position_index,
                 second_point_with_position_index,
-                first_point_with_position,
-                second_point_with_position,
                 length
             } of springs_set) {
                 let [fx, fy] = guk(
@@ -47,14 +49,32 @@ export default class TowerHistory {
                     length
                 );
 
-                let w1 = first_point_with_position.point.weight;
-                let w2 = second_point_with_position.point.weight;
+                result[vx(first_point_with_position_index)] += fx;
+                result[vy(first_point_with_position_index)] += fy;
 
-                result[vx(first_point_with_position_index)] += w1 === 0 ? 0 : fx / w1;
-                result[vy(first_point_with_position_index)] += w1 === 0 ? 0 : fy / w1;
+                result[vx(second_point_with_position_index)] -= fx;
+                result[vy(second_point_with_position_index)] -= fy;
+            }
 
-                result[vx(second_point_with_position_index)] -= w2 === 0 ? 0 : fx / w2;
-                result[vy(second_point_with_position_index)] -= w2 === 0 ? 0 : fy / w2;
+            //friction
+            for (let i = 0; i < n; i++) {
+                let [fx, fy] = friction(cords[vx(i)], cords[vy(i)]);
+                result[vx(i)] += fx;
+                result[vy(i)] += fy;
+            }
+
+            //now convert forces to accelerations
+            for (let i = 0; i < n; i++) {
+                let {point} = point_set.get(i);
+                let w = point.weight;
+
+                if (w === 0) {
+                    result[vx(i)] = 0;
+                    result[vy(i)] = 0;
+                } else {
+                    result[vx(i)] /= w;
+                    result[vy(i)] /= w;
+                }
             }
 
             return result;
@@ -62,7 +82,7 @@ export default class TowerHistory {
 
         let ode = new ODE(fun, variables_n);
 
-        ode.nh = 60 * 100; //1ms resolution
+        ode.nh = 60 * 1000; //1ms resolution
 
         //get initial values
         let y0 = new Array(variables_n);
@@ -80,14 +100,22 @@ export default class TowerHistory {
     get ts() {
         return this._ts;
     }
+
+    get_by_time(passed) {
+        if (passed < 0)
+            passed = 0;
+        if (passed > 60)
+            passed = 60;
+
+        let ind = this._ts.indexByX(passed);
+        return this._ts.points[ind];
+    }
 }
 
-const G = 9.81;
-const K = 0.1;
 const EPS = 1e-8;
 
 function gravity(mass) {
-    return [0, -G * mass];
+    return [0, -Constants.G * mass];
 }
 
 function guk(x, y, x0, y0, len) {
@@ -99,7 +127,17 @@ function guk(x, y, x0, y0, len) {
         return [0, 0];
 
     let d = Math.sqrt(d2);
-    let f = -(d - len) * K;
+    let f = -(d - len) * Constants.E / len;
 
     return [dx / d * f, dy / d * f];
+}
+
+function friction(vx, vy) {
+    let d2 = vx * vx + vy * vy;
+    if (d2 < EPS)
+        return [0, 0];
+    // let d = Math.sqrt(d2);
+    //
+    // return [-vx / d * FRICTION, -vy / d * FRICTION];
+    return [-vx * Constants.FRICTION, -vy * Constants.FRICTION];
 }

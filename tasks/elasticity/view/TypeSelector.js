@@ -29,6 +29,8 @@ export default class PointTypeSelector {
             let $element = $('<input type="radio" name="point_type">');
             $element.attr('id', id);
             $element.attr('value', '' + i);
+            if (i === 0)
+                $element.attr('checked', 'checked');
             $container.append($element);
 
             let $label = $('<label>');
@@ -37,8 +39,7 @@ export default class PointTypeSelector {
             $container.append($label);
 
             $element.change(e => {
-                let i = $element.val();
-                this._current_point_type = i;
+                this._current_point_type = +$element.val();
             });
         }
 

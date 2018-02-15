@@ -1,4 +1,5 @@
 import {n2s} from "./GridView";
+import {HOT_COLD_PALETTE} from "./springs_view_palette";
 
 export class SpringView {
 
@@ -19,7 +20,8 @@ export class SpringView {
 
     redraw_display_object() {
         let g = this._display_object.graphics;
-        g.clear().setStrokeStyle(2).beginStroke('rgba(0, 200, 0, 0.8)');
+
+        g.clear().setStrokeStyle(2).beginStroke(this.elongation_color());
 
         let p1 = n2s(this._spring.first_point_with_position);
         let p2 = n2s(this._spring.second_point_with_position);
@@ -29,5 +31,16 @@ export class SpringView {
 
     init_display_object() {
         this._display_object = new createjs.Shape();
+    }
+
+    elongation_color() {
+        let e = this._spring.relative_elongation;
+        // convert -1 -- 1 to 0 .. 89
+        let ind = Math.floor((e + 0.1) / 0.2 * 90);
+        if (ind > 89)
+            ind = 89;
+        if (ind < 0)
+            ind = 0;
+        return HOT_COLD_PALETTE[ind];
     }
 }

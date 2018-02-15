@@ -51,6 +51,12 @@ export class PointWithPosition {
         this.fire();
     }
 
+    set_location_without_normalization({x, y}) {
+        this._x = x;
+        this._y = y;
+        this.fire();
+    }
+
     get point_type_ind() {
         return this._point_type_ind;
     }
@@ -100,5 +106,9 @@ export class PointWithPosition {
         let dy = this._y - y;
 
         return dx * dx + dy * dy;
+    }
+
+    distance(p) {
+        return Math.sqrt(this.distance2(p));
     }
 }

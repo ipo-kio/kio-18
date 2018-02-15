@@ -1,6 +1,7 @@
 import {PointView} from "./PointView";
 import {SpringView} from "./SpringView";
 import {EventDispatcher, Event} from "../EventDispatcher";
+import springs_evaluator from "../model/springs_evaluator";
 
 export const WIDTH = 700;
 export const HEIGHT = 400;
@@ -44,14 +45,19 @@ export default class GridView {
         this.init_display_object();
 
         this._edges_set_view = new SetView(this._display_object, spring => new SpringView(spring));
-        this._points_set_view = new SetView(this._display_object, pwp => new PointView(pwp, this._allow_move));
+        this._points_set_view = new SetView(this._display_object, pwp => {
+            let pv = new PointView(pwp, this._allow_move);
+            pv.display_object.addEventListener("dblclick", () => {
+                this.point_set.remove_object(pwp);
+            });
+            return pv;
+        });
 
         this._grid.addEventListener('mousedown', e => {
-            if (e.target === this._grid)
-                {
-                    let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
-                    this._ed.fire(new GridClickEvent(this, s2n(display_object_local)));
-                }
+            if (e.target === this._grid) {
+                let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
+                this._ed.fire(new GridClickEvent(this, s2n(display_object_local)));
+            }
         });
     }
 
@@ -83,9 +89,13 @@ export default class GridView {
 
     init_grid() {
         this._grid = new createjs.Shape();
-        let g = this._grid.graphics;
 
-        g.beginFill('white').drawRect(-X0, -Y0, WIDTH, HEIGHT).endFill();
+        this.draw_grid();
+    }
+
+    draw_grid() {
+        let g = this._grid.graphics;
+        this.draw_empty_grid(g);
 
         g.setStrokeStyle(0.1).beginStroke('#666');
 
@@ -102,9 +112,16 @@ export default class GridView {
         for (let j = j_min; j <= j_max; j++) {
             let x1 = -X0;
             let x2 = WIDTH - X0;
-            let y  = j * GRID_STEP;
+            let y = j * GRID_STEP;
             g.moveTo(x1, y).lineTo(x2, y);
         }
+    }
+
+    draw_empty_grid() {
+        let g = this._grid.graphics;
+        g.clear();
+
+        g.beginFill('white').drawRect(-X0, -Y0, WIDTH, HEIGHT).endFill();
     }
 
     get display_object() {
@@ -121,6 +138,13 @@ export default class GridView {
 
     set allow_move(value) {
         this._allow_move = value;
+    }
+
+    set grid_visible(value) {
+        if (value)
+            this.draw_grid();
+        else
+            this.draw_empty_grid();
     }
 }
 

@@ -26,7 +26,7 @@ export class ODE {
             let x_s = ts.x(s);
 
             let y_tilde_s_plus_1 = new Point(this.n);
-            let f_xs_ys = Point.create(x_s, ...y_s.vals);
+            let f_xs_ys = Point.create(...this.funs(x_s, ...y_s.vals));
             for (let i = 0; i < this.n; i++) //TODO implement point sum
                 y_tilde_s_plus_1.vals[i] = y_s.vals[i] + h * f_xs_ys.vals[i];
 
