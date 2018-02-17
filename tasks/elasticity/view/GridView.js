@@ -1,7 +1,8 @@
 import {PointView} from "./PointView";
 import {SpringView} from "./SpringView";
 import {EventDispatcher, Event} from "../EventDispatcher";
-import springs_evaluator from "../model/springs_evaluator";
+import {PointWithPosition} from "../model/PointWithPosition";
+import {Spring} from "../model/Spring";
 
 export const WIDTH = 700;
 export const HEIGHT = 400;
@@ -38,17 +39,64 @@ export default class GridView {
     _points_set_view;
     _edges_set_view;
 
+    _is_creating_a_new_edge = false;
+    _point_being_moved;
+    _virtual_edge;
+    _virtual_edge_view;
+    _virtual_edge_layer = new createjs.Container();
+    _virtual_point;
+    _virtual_point_view;
+
     _ed = new EventDispatcher(); //'grid click' click out of any visible elements
     _allow_move = true;
 
-    constructor() {
+    constructor(type_selector) {
         this.init_display_object();
 
-        this._edges_set_view = new SetView(this._display_object, spring => new SpringView(spring));
+        this._edges_set_view = new SetView(this._display_object, spring => {
+            let view = new SpringView(spring);
+            view.display_object.addEventListener("dblclick", () => {
+                //TODO remove edge
+            });
+            return view;
+        });
+
+        this._display_object.addChild(this._virtual_edge_layer);
+
         this._points_set_view = new SetView(this._display_object, pwp => {
             let pv = new PointView(pwp, this._allow_move);
             pv.display_object.addEventListener("dblclick", () => {
                 this.point_set.remove_object(pwp);
+                //TODO remove all incident edges
+            });
+            pv.display_object.addEventListener("pressmove", e => {
+                let natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
+
+                if (!this._is_creating_a_new_edge) {
+                    this._is_creating_a_new_edge = true;
+                    this._point_being_moved = pv;
+
+                    this._virtual_point = new PointWithPosition(
+                        natural_pos.x,
+                        natural_pos.y,
+                        type_selector.current_point_type
+                    );
+                    this._virtual_point_view = new PointView(this._virtual_point, false);
+
+                    this._virtual_edge = new Spring(pv._point_with_position, this._virtual_point, 1); //TODO no length
+                    this._virtual_edge_view = new SpringView(this._virtual_edge);
+
+                    this._virtual_edge_layer.addChild(this._virtual_edge_view.display_object);
+                    this.display_object.addChild(this._virtual_point_view.display_object);
+                } else {
+                    this._virtual_point.set_location(natural_pos);
+                }
+            });
+            pv.display_object.addEventListener("pressup", () => {
+                if (_po)
+            });
+            pv.display_object.addEventListener("rollover", () => {
+                console.log('rolled over a point');
             });
             return pv;
         });

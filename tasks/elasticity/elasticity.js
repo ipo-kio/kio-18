@@ -1,7 +1,6 @@
 import './elasticity.scss';
 import GridView from "./view/GridView";
 import ObjectsSet from "./model/ObjectsSet";
-import springs_evaluator from "./model/springs_evaluator";
 import PointTypeSelector from "./view/TypeSelector";
 
 import {WIDTH as GRID_WIDTH, HEIGHT as GRID_HEIGHT} from "./view/GridView";
@@ -81,33 +80,18 @@ export class Elasticity {
     _grid_view;
     _point_set_manipulation_state = POINTS_CHANGEABLE;
     _point_set = new ObjectsSet();
+    _type_selector;
 
     initInterface(domNode, preferred_width) {
+        this._type_selector = new PointTypeSelector();
+
         this.init_canvas(domNode);
 
         //grid_view
         this._grid_view.point_set = this._point_set;
 
-        let point_set_changed_listener = () => {
-            this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
-        };
-
-        this._point_set.ed.add_listener('element change', point_set_changed_listener);
-        this._point_set.ed.add_listener('change', point_set_changed_listener);
-        point_set_changed_listener();
-
         //type selector
-        let type_selector = new PointTypeSelector();
-        domNode.appendChild(type_selector.html_object);
-        this._grid_view.ed.add_listener('grid click', e => {
-            if (this.point_set_manipulation_state === POINTS_CHANGEABLE)
-                this._grid_view.point_set.add_object(new PointWithPosition(
-                    e.natural_position.x,
-                    e.natural_position.y,
-                    type_selector.current_point_type
-                ));
-            }
-        );
+        domNode.appendChild(this._type_selector.html_object);
 
         //go button
         this._$go_button = $('<button type="button">');
@@ -131,7 +115,7 @@ export class Elasticity {
         this._canvas.height = GRID_HEIGHT;
         this._stage = new createjs.Stage(this._canvas);
 
-        this._grid_view = new GridView();
+        this._grid_view = new GridView(this._type_selector);
         this._stage.addChild(this._grid_view.display_object);
         this._stage.enableMouseOver(10);
         this._stage.update();
@@ -147,7 +131,7 @@ export class Elasticity {
         if (value === POINTS_FIXED) {
             this._grid_view.allow_move = false;
             this._grid_view.point_set = Elasticity.copy_points_set(this._point_set);
-            this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
+            this._grid_view.springs_set = new ObjectsSet();
             this._$go_button.html("Расположить точки");
 
             this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
@@ -159,7 +143,7 @@ export class Elasticity {
         } else if (value === POINTS_CHANGEABLE) {
             this._grid_view.allow_move = true;
             this._grid_view.point_set = this._point_set;
-            this._grid_view.springs_set = springs_evaluator(this._grid_view.point_set);
+            this._grid_view.springs_set = new ObjectsSet();
             this._$go_button.html("Смотреть движение");
             this._stage.removeEventListener('tick', this._points_animation_tick);
 

@@ -2,22 +2,15 @@ import {EventDispatcher} from "../EventDispatcher";
 
 export class Spring {
 
-    _points_set;
-    _first_point_with_position_index;
-    _second_point_with_position_index;
     _first_point_with_position;
     _second_point_with_position;
     _length;
     _change_listener;
     _ed = new EventDispatcher();
 
-    constructor(points_set, first_point_with_position_index, second_point_with_position_index, length) {
-        this._points_set = points_set;
-        this._first_point_with_position_index = first_point_with_position_index;
-        this._second_point_with_position_index = second_point_with_position_index;
-
-        this._first_point_with_position = points_set.get(this._first_point_with_position_index);
-        this._second_point_with_position = points_set.get(this._second_point_with_position_index);
+    constructor(first_point_with_position, second_point_with_position, length) {
+        this._first_point_with_position = first_point_with_position;
+        this._second_point_with_position = second_point_with_position;
 
         this._change_listener = () => this._ed.fire(new Event('change'), this);
         this.first_point_with_position.ed.add_listener('change', this._change_listener);
@@ -32,14 +25,6 @@ export class Spring {
 
     get second_point_with_position() {
         return this._second_point_with_position;
-    }
-
-    get first_point_with_position_index() {
-        return this._first_point_with_position_index;
-    }
-
-    get second_point_with_position_index() {
-        return this._second_point_with_position_index;
     }
 
     get length() {

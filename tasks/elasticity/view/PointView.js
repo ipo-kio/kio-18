@@ -24,15 +24,6 @@ export class PointView {
         let d = new createjs.Shape();
 
         d.mouseEnabled = true;
-        d.addEventListener("pressmove", e => {
-            if (!this._allow_move)
-                return;
-            if (!this._movable)
-                return;
-
-            let np = s2n({x: this._display_object.x + e.localX, y: this._display_object.y + e.localY});
-            this._point_with_position.set_location(np);
-        });
 
         d.addEventListener("rollover", () => this.over = true);
         d.addEventListener("rollout", () => this.over = false);
