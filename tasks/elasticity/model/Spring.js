@@ -8,15 +8,15 @@ export class Spring {
     _change_listener;
     _ed = new EventDispatcher();
 
-    constructor(first_point_with_position, second_point_with_position, length) {
+    constructor(first_point_with_position, second_point_with_position) {
         this._first_point_with_position = first_point_with_position;
         this._second_point_with_position = second_point_with_position;
 
-        this._change_listener = () => this._ed.fire(new Event('change'), this);
+        this._change_listener = () => this.fire();
         this.first_point_with_position.ed.add_listener('change', this._change_listener);
         this.second_point_with_position.ed.add_listener('change', this._change_listener);
 
-        this._length = length;
+        this._length = this.actual_length();
     }
 
     get first_point_with_position() {
@@ -36,16 +36,29 @@ export class Spring {
     }
 
     get relative_elongation() {
-        let {x:x1, y:y1} = this.first_point_with_position;
-        let {x:x2, y:y2} = this.second_point_with_position;
-
-        let dx = x2 - x1;
-        let dy = y2 - y1;
-        let d2 = dx * dx + dy * dy;
-        let d = Math.sqrt(d2);
+        let d = this.actual_length();
 
         let elongation = d - this.length;
 
         return elongation / this.length;
+    }
+
+    relength() {
+        this._length = this.actual_length();
+        this.fire();
+    }
+
+    fire() {
+        this._ed.fire(new Event('change'), this);
+    }
+
+    actual_length() {
+        let {x: x1, y: y1} = this.first_point_with_position;
+        let {x: x2, y: y2} = this.second_point_with_position;
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let d2 = dx * dx + dy * dy;
+        return Math.sqrt(d2);
     }
 }

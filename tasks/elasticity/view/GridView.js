@@ -3,6 +3,8 @@ import {SpringView} from "./SpringView";
 import {EventDispatcher, Event} from "../EventDispatcher";
 import {PointWithPosition} from "../model/PointWithPosition";
 import {Spring} from "../model/Spring";
+import {POINT_TYPE_NORMAL} from "../model/point_types";
+import {MODE_CREATE_VERTEX} from "./ModeSelector";
 
 export const WIDTH = 700;
 export const HEIGHT = 400;
@@ -44,62 +46,26 @@ export default class GridView {
     _virtual_edge;
     _virtual_edge_view;
     _virtual_edge_layer = new createjs.Container();
+    _virtual_point_layer = new createjs.Container();
     _virtual_point;
     _virtual_point_view;
+    _rolled_over_point = null;
 
     _ed = new EventDispatcher(); //'grid click' click out of any visible elements
     _allow_move = true;
 
-    constructor(type_selector) {
+    _point_type_to_create = POINT_TYPE_NORMAL;
+    _mouse_actions_mode = MODE_CREATE_VERTEX;
+
+    constructor() {
         this.init_display_object();
 
-        this._edges_set_view = new SetView(this._display_object, spring => {
-            let view = new SpringView(spring);
-            view.display_object.addEventListener("dblclick", () => {
-                //TODO remove edge
-            });
-            return view;
-        });
+        this._edges_set_view = new SetView(this._display_object, spring => this.init_edge(spring));
 
         this._display_object.addChild(this._virtual_edge_layer);
+        this._display_object.addChild(this._virtual_point_layer);
 
-        this._points_set_view = new SetView(this._display_object, pwp => {
-            let pv = new PointView(pwp, this._allow_move);
-            pv.display_object.addEventListener("dblclick", () => {
-                this.point_set.remove_object(pwp);
-                //TODO remove all incident edges
-            });
-            pv.display_object.addEventListener("pressmove", e => {
-                let natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
-
-                if (!this._is_creating_a_new_edge) {
-                    this._is_creating_a_new_edge = true;
-                    this._point_being_moved = pv;
-
-                    this._virtual_point = new PointWithPosition(
-                        natural_pos.x,
-                        natural_pos.y,
-                        type_selector.current_point_type
-                    );
-                    this._virtual_point_view = new PointView(this._virtual_point, false);
-
-                    this._virtual_edge = new Spring(pv._point_with_position, this._virtual_point, 1); //TODO no length
-                    this._virtual_edge_view = new SpringView(this._virtual_edge);
-
-                    this._virtual_edge_layer.addChild(this._virtual_edge_view.display_object);
-                    this.display_object.addChild(this._virtual_point_view.display_object);
-                } else {
-                    this._virtual_point.set_location(natural_pos);
-                }
-            });
-            pv.display_object.addEventListener("pressup", () => {
-                if (_po)
-            });
-            pv.display_object.addEventListener("rollover", () => {
-                console.log('rolled over a point');
-            });
-            return pv;
-        });
+        this._points_set_view = new SetView(this._display_object, pwp => this.init_point_with_position(pwp));
 
         this._grid.addEventListener('mousedown', e => {
             if (e.target === this._grid) {
@@ -107,6 +73,81 @@ export default class GridView {
                 this._ed.fire(new GridClickEvent(this, s2n(display_object_local)));
             }
         });
+    }
+
+    init_edge(spring) {
+        let view = new SpringView(spring);
+        view.display_object.addEventListener("dblclick", () => {
+            //TODO remove edge
+        });
+        return view;
+    }
+
+    init_point_with_position(pwp) {
+        let pv = new PointView(pwp, this._allow_move);
+
+        pv.display_object.addEventListener("dblclick", () => {
+            this.point_set.remove_object(pwp);
+            //TODO remove all incident edges
+        });
+        pv.display_object.addEventListener("pressmove", e => {
+            let natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
+
+            if (!this._is_creating_a_new_edge) {
+                this._is_creating_a_new_edge = true;
+                this._point_being_moved = pv;
+
+                this._virtual_point = new PointWithPosition(
+                    natural_pos.x,
+                    natural_pos.y,
+                    this._point_type_to_create
+                );
+                this._virtual_point_view = new PointView(this._virtual_point, false);
+
+                this._virtual_edge = new Spring(pv._point_with_position, this._virtual_point);
+                this._virtual_edge_view = new SpringView(this._virtual_edge);
+
+                this._virtual_edge_layer.addChild(this._virtual_edge_view.display_object);
+                this._virtual_point_layer.addChild(this._virtual_point_view.display_object);
+            } else {
+                this._virtual_point.set_location(natural_pos);
+                this._virtual_edge.relength();
+            }
+        });
+        pv.display_object.addEventListener("pressup", () => {
+            if (!this._is_creating_a_new_edge)
+                return;
+
+            if (this._rolled_over_point) {
+                this.springs_set.add_object(
+                    new Spring(
+                        this._point_being_moved.point_with_position,
+                        this._rolled_over_point.point_with_position
+                    )
+                );
+            } else {
+                //create new point
+                this.point_set.add_object(this._virtual_point);
+                this.springs_set.add_object(this._virtual_edge);
+            }
+
+            this._virtual_point_layer.removeChild(this._virtual_point_view.display_object);
+            this._virtual_edge_layer.removeChild(this._virtual_edge_view.display_object);
+
+            this._is_creating_a_new_edge = false;
+        });
+        pv.display_object.addEventListener("rollover", e => {
+            this._rolled_over_point = pv;
+            if (this._virtual_point_view)
+                this._virtual_point_view.display_object.visible = false;
+        });
+        pv.display_object.addEventListener("rollout", e => {
+            this._rolled_over_point = null;
+            if (this._virtual_point_view)
+                this._virtual_point_view.display_object.visible = true;
+        });
+
+        return pv;
     }
 
     get point_set() {
@@ -123,6 +164,22 @@ export default class GridView {
 
     set springs_set(value) {
         this._edges_set_view.set = value;
+    }
+
+    get point_type_to_create() {
+        return this._point_type_to_create;
+    }
+
+    set point_type_to_create(value) {
+        this._point_type_to_create = value;
+    }
+
+    get mouse_actions_mode() {
+        return this._mouse_actions_mode;
+    }
+
+    set mouse_actions_mode(value) {
+        this._mouse_actions_mode = value;
     }
 
     init_display_object() {

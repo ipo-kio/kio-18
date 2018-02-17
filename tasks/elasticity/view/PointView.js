@@ -55,6 +55,10 @@ export class PointView {
         this.draw_point(_over);
     }
 
+    get point_with_position() {
+        return this._point_with_position;
+    }
+
     draw_point(over) {
         let g = this._display_object.graphics;
         g.clear();
