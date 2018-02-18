@@ -7,6 +7,8 @@ import {WIDTH as GRID_WIDTH, HEIGHT as GRID_HEIGHT} from "./view/GridView";
 import {POINT_TYPE_FIXED, POINT_TYPE_NORMAL} from "./model/point_types";
 import TowerHistory from "./model/TowerHistory";
 import {PointWithPosition} from "./model/PointWithPosition.js";
+import {Spring} from "./model/Spring";
+import ModeSelector from "./view/ModeSelector";
 
 const POINTS_CHANGEABLE = 0;
 const POINTS_FIXED = 1;
@@ -32,8 +34,11 @@ export class Elasticity {
 
         this.initInterface(domNode, preferred_width);
 
-        this._point_set.add_object(new PointWithPosition(0, 0, POINT_TYPE_FIXED));
-        this._point_set.add_object(new PointWithPosition(-1, -1, POINT_TYPE_NORMAL));
+        let pwp1 = new PointWithPosition(0, 0, POINT_TYPE_FIXED);
+        this._point_set.add_object(pwp1);
+        let pwp2 = new PointWithPosition(-1, -1, POINT_TYPE_NORMAL);
+        this._point_set.add_object(pwp2);
+        this._springs_set.add_object(new Spring(pwp1, pwp2));
 
         createjs.Ticker.framerate = 20;
         createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
@@ -80,17 +85,23 @@ export class Elasticity {
     _grid_view;
     _point_set_manipulation_state = POINTS_CHANGEABLE;
     _point_set = new ObjectsSet();
+    _springs_set = new ObjectsSet();
     _type_selector;
+    _mouse_mode_selector;
 
     initInterface(domNode, preferred_width) {
+        this._mouse_mode_selector = new ModeSelector();
+        this._mouse_mode_selector.ed.add_listener('change',
+            () => this._grid_view.mouse_actions_mode = this._mouse_mode_selector.current_mode
+        );
         this._type_selector = new PointTypeSelector();
+        this._type_selector.ed.add_listener('change',
+            () => this._grid_view.point_type_to_create = this._type_selector.current_point_type
+        );
 
         this.init_canvas(domNode);
 
-        //grid_view
-        this._grid_view.point_set = this._point_set;
-
-        //type selector
+        domNode.appendChild(this._mouse_mode_selector.html_object);
         domNode.appendChild(this._type_selector.html_object);
 
         //go button
@@ -130,8 +141,7 @@ export class Elasticity {
 
         if (value === POINTS_FIXED) {
             this._grid_view.allow_move = false;
-            this._grid_view.point_set = Elasticity.copy_points_set(this._point_set);
-            this._grid_view.springs_set = new ObjectsSet();
+            this.copy_points_and_springs_set();
             this._$go_button.html("Расположить точки");
 
             this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
@@ -143,7 +153,7 @@ export class Elasticity {
         } else if (value === POINTS_CHANGEABLE) {
             this._grid_view.allow_move = true;
             this._grid_view.point_set = this._point_set;
-            this._grid_view.springs_set = new ObjectsSet();
+            this._grid_view.springs_set = this._springs_set;
             this._$go_button.html("Смотреть движение");
             this._stage.removeEventListener('tick', this._points_animation_tick);
 
@@ -151,11 +161,22 @@ export class Elasticity {
         }
     }
 
-    static copy_points_set(point_set) {
-        let result = new ObjectsSet();
-        for (let {x, y, point_type_ind} of point_set)
-            result.add_object(new PointWithPosition(x, y, point_type_ind));
-        return result;
+    copy_points_and_springs_set() {
+        let new_points_set = new ObjectsSet();
+        for (let {x, y, point_type_ind} of this._point_set)
+            new_points_set.add_object(new PointWithPosition(x, y, point_type_ind));
+
+        let new_springs_set = new ObjectsSet();
+        for (let {first_point_with_position, second_point_with_position} of this._springs_set) {
+            let i1 = this._point_set.get_index(first_point_with_position);
+            let i2 = this._point_set.get_index(second_point_with_position);
+            new_springs_set.add_object(new Spring(
+                new_points_set.get(i1), new_points_set.get(i2)
+            ));
+        }
+
+        this._grid_view.point_set = new_points_set;
+        this._grid_view.springs_set = new_springs_set;
     }
 
     points_animation_tick() {

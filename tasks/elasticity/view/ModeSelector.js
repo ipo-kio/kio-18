@@ -1,3 +1,5 @@
+import {EventDispatcher} from "../EventDispatcher";
+
 export let MODE_CREATE_EDGE = 0;
 export let MODE_CREATE_VERTEX = 1;
 export let MODE_DO_NOTHING = 2;
@@ -5,6 +7,7 @@ export let MODE_DO_NOTHING = 2;
 export default class ModeSelector {
 
     _html_object;
+    _ed = new EventDispatcher();
 
     _current_mode = MODE_CREATE_VERTEX;
 
@@ -14,6 +17,11 @@ export default class ModeSelector {
 
     get current_mode() {
         return this._current_mode;
+    }
+
+    set current_mode(value) {
+        this._current_mode = value;
+        this._ed.fire(new Event('change', this))
     }
 
     get html_object() {
@@ -32,10 +40,10 @@ export default class ModeSelector {
             let title = mode_titles[i];
             let id = 'mode-selector-' + i;
 
-            let $element = $('<input type="radio" name="point_type">');
+            let $element = $('<input type="radio" name="mouse_action_mode">');
             $element.attr('id', id);
             $element.attr('value', '' + mode);
-            if (mode === this._current_mode)
+            if (mode === this.current_mode)
                 $element.attr('checked', 'checked');
             $container.append($element);
 
@@ -45,10 +53,14 @@ export default class ModeSelector {
             $container.append($label);
 
             $element.change(e => {
-                this._current_mode = +$element.val();
+                this.current_mode = +$element.val();
             });
         }
 
         this._html_object = $container.get(0);
+    }
+
+    get ed() {
+        return this._ed;
     }
 }

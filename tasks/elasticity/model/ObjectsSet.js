@@ -7,7 +7,7 @@ export default class ObjectsSet {
     _element_change_handler;
 
     constructor() {
-        this._element_change_handler = () => this.fire_element_change(object);
+        this._element_change_handler = e => this.fire_element_change(e.source);
     }
 
     add_object(object) {
@@ -62,6 +62,22 @@ export default class ObjectsSet {
 
     [Symbol.iterator]() {
         return this._objects.values();
+    }
+
+    filter(predicate) {
+        let _new_objects = [];
+        for (let o of this._objects)
+            if (predicate(o))
+                _new_objects.push(o);
+            else
+                o.ed.remove_listener('change', this._element_change_handler);
+
+        let need_fire = _new_objects.length < this._objects.length;
+
+        this._objects = _new_objects;
+
+        if (need_fire)
+            this.fire_change();
     }
 }
 

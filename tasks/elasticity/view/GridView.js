@@ -78,7 +78,7 @@ export default class GridView {
     init_edge(spring) {
         let view = new SpringView(spring);
         view.display_object.addEventListener("dblclick", () => {
-            //TODO remove edge
+            this.springs_set.remove_object(spring);
         });
         return view;
     }
@@ -88,7 +88,11 @@ export default class GridView {
 
         pv.display_object.addEventListener("dblclick", () => {
             this.point_set.remove_object(pwp);
-            //TODO remove all incident edges
+
+            //remove all edges
+            this.springs_set.filter(
+                spring => spring.first_point_with_position !== pwp && spring.second_point_with_position !== pwp
+            );
         });
         pv.display_object.addEventListener("pressmove", e => {
             let natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});

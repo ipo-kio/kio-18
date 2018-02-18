@@ -1,8 +1,10 @@
 import {POINT_TYPE_NORMAL, point_types} from "../model/point_types";
+import {EventDispatcher} from "../EventDispatcher";
 
 export default class PointTypeSelector {
 
     _html_object;
+    _ed = new EventDispatcher();
 
     _current_point_type = POINT_TYPE_NORMAL;
 
@@ -40,9 +42,14 @@ export default class PointTypeSelector {
 
             $element.change(e => {
                 this._current_point_type = +$element.val();
+                this._ed.fire(new Event('change', this))
             });
         }
 
         this._html_object = $container.get(0);
+    }
+
+    get ed() {
+        return this._ed;
     }
 }

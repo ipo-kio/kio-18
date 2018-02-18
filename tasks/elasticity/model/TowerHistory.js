@@ -37,10 +37,13 @@ export default class TowerHistory {
 
             //Guk
             for (let {
-                first_point_with_position_index,
-                second_point_with_position_index,
+                first_point_with_position,
+                second_point_with_position,
                 length
             } of springs_set) {
+                let first_point_with_position_index = point_set.get_index(first_point_with_position);
+                let second_point_with_position_index = point_set.get_index(second_point_with_position);
+
                 let [fx, fy] = guk(
                     cords[x(first_point_with_position_index)],
                     cords[y(first_point_with_position_index)],
