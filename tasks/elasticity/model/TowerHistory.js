@@ -81,14 +81,15 @@ export default class TowerHistory {
             }
 
             //earth
-            for (let i = 0; i < n; i++) {
-                if (cords[y(i)] < -2) {
-                    result[x(i)] = 0; //result[x(i)] / 10;
-                    result[y(i)] = Math.max(0, result[y(i)]);
-                    result[vx(i)] = 0; //result[vx(i)] / 10;
-                    result[vy(i)] = Math.max(0, result[vy(i)]);
+            if (Constants.HAS_EARTH)
+                for (let i = 0; i < n; i++) {
+                    if (cords[y(i)] < -2) {
+                        result[x(i)] = 0; //result[x(i)] / 10;
+                        result[y(i)] = Math.max(0, result[y(i)]);
+                        result[vx(i)] = 0; //result[vx(i)] / 10;
+                        result[vy(i)] = Math.max(0, result[vy(i)]);
+                    }
                 }
-            }
 
             return result;
         };

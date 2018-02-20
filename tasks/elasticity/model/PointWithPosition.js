@@ -9,8 +9,8 @@ export class PointWithPosition {
     _ed = new EventDispatcher();
 
     constructor(x, y, _point_type_ind) {
-        this._x = x;
-        this._y = y;
+        this._x = PointWithPosition.normalize_x(x);
+        this._y = PointWithPosition.normalize_y(y);
         this._point_type_ind = _point_type_ind;
     }
 

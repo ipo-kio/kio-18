@@ -70,12 +70,10 @@ export default class GridView {
         this._points_set_view = new SetView(this._display_object, pwp => this.init_point_with_position(pwp));
 
         this._display_object.addEventListener("mousedown", e => {
-            console.info('global down');
             this._previous_click_shift_pressed = e.nativeEvent.shiftKey;
         }, true);
 
         this._grid.addEventListener('mousedown', e => {
-            console.info('grid down');
             switch (this.actual_mouse_actions_mode()) {
                 case MODE_CREATE_VERTEX:
                 case MODE_CREATE_EDGE:
@@ -250,7 +248,6 @@ export default class GridView {
 
         this._display_object.mouseEnabled = true;
         this._display_object.addEventListener("click", e => {
-            console.info('click at', e.stageX, e.stageY);
             this._previous_click_cords = {x: e.stageX, y: e.stageY};
         });
     }

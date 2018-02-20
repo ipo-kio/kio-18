@@ -14,6 +14,8 @@ export class Constants {
     static _TOTAL_SECONDS = 15;
     static _ODE_RESOLUTION = 1000;
 
+    static _HAS_EARTH = false;
+
     static get G() {
         return this._G;
     }
@@ -76,6 +78,14 @@ export class Constants {
 
     static set ODE_RESOLUTION(value) {
         this._ODE_RESOLUTION = value;
+    }
+
+    static get HAS_EARTH() {
+        return this._HAS_EARTH;
+    }
+
+    static set HAS_EARTH(value) {
+        this._HAS_EARTH = value;
     }
 }
 
