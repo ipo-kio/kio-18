@@ -11,6 +11,9 @@ export class Constants {
     //view
     static _POINT_RADIUS = 8;
 
+    static _TOTAL_SECONDS = 15;
+    static _ODE_RESOLUTION = 1000;
+
     static get G() {
         return this._G;
     }
@@ -57,6 +60,22 @@ export class Constants {
 
     static set POINT_RADIUS(value) {
         this._POINT_RADIUS = value;
+    }
+
+    static get TOTAL_SECONDS() {
+        return this._TOTAL_SECONDS;
+    }
+
+    static set TOTAL_SECONDS(value) {
+        this._TOTAL_SECONDS = value;
+    }
+
+    static get ODE_RESOLUTION() {
+        return this._ODE_RESOLUTION;
+    }
+
+    static set ODE_RESOLUTION(value) {
+        this._ODE_RESOLUTION = value;
     }
 }
 

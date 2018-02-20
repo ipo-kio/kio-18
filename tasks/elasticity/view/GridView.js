@@ -4,7 +4,8 @@ import {EventDispatcher, Event} from "../EventDispatcher";
 import {PointWithPosition} from "../model/PointWithPosition";
 import {Spring} from "../model/Spring";
 import {POINT_TYPE_NORMAL} from "../model/point_types";
-import {MODE_CREATE_VERTEX} from "./ModeSelector";
+import {MODE_CREATE_EDGE, MODE_CREATE_VERTEX} from "./ModeSelector";
+import {Point} from "../model/Point";
 
 export const WIDTH = 700;
 export const HEIGHT = 400;
@@ -70,7 +71,8 @@ export default class GridView {
         this._grid.addEventListener('mousedown', e => {
             if (e.target === this._grid) {
                 let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
-                this._ed.fire(new GridClickEvent(this, s2n(display_object_local)));
+                let {x, y} = s2n(display_object_local);
+                this._points_set_view.set.add_object(new PointWithPosition(x, y, this.point_type_to_create));
             }
         });
     }
@@ -87,6 +89,7 @@ export default class GridView {
         let pv = new PointView(pwp, this._allow_move);
 
         pv.display_object.addEventListener("dblclick", () => {
+            console.log('dblclicked');
             this.point_set.remove_object(pwp);
 
             //remove all edges
@@ -182,6 +185,19 @@ export default class GridView {
         return this._mouse_actions_mode;
     }
 
+    actual_mouse_actions_mode(e) {
+        let is_shift = e.nativeEvent.shiftKey;
+        if (!is_shift)
+            return this.mouse_actions_mode;
+
+        if (this.mouse_actions_mode === MODE_CREATE_VERTEX)
+            return MODE_CREATE_EDGE;
+        if (this.mouse_actions_mode === MODE_CREATE_EDGE)
+            return MODE_CREATE_VERTEX;
+
+        return this.mouse_actions_mode;
+    }
+
     set mouse_actions_mode(value) {
         this._mouse_actions_mode = value;
     }
@@ -200,6 +216,8 @@ export default class GridView {
         this._grid = new createjs.Shape();
 
         this.draw_grid();
+
+        //TODO add mouse move listener to draw a virtual vertex to create (stage mouse move may only be used)
     }
 
     draw_grid() {

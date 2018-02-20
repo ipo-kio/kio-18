@@ -157,6 +157,8 @@ export class Elasticity {
             this._$go_button.html("Смотреть движение");
             this._stage.removeEventListener('tick', this._points_animation_tick);
 
+            this._tower_history = null; //TODO either store it until any change, or don't store it at all
+
             this._grid_view.grid_visible = true;
         }
     }

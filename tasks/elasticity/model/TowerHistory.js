@@ -85,7 +85,7 @@ export default class TowerHistory {
 
         let ode = new ODE(fun, variables_n);
 
-        ode.nh = 60 * 1000; //1ms resolution
+        ode.nh = Constants.TOTAL_SECONDS * Constants.ODE_RESOLUTION; //1ms resolution
 
         //get initial values
         let y0 = new Array(variables_n);
@@ -97,7 +97,7 @@ export default class TowerHistory {
             y0[vy(i)] = 0;
         }
 
-        this._ts = ode.solve(0, 60, ...y0);
+        this._ts = ode.solve(0, Constants.TOTAL_SECONDS, ...y0);
     }
 
     get ts() {
@@ -107,8 +107,8 @@ export default class TowerHistory {
     get_by_time(passed) {
         if (passed < 0)
             passed = 0;
-        if (passed > 60)
-            passed = 60;
+        if (passed > Constants.TOTAL_SECONDS)
+            passed = Constants.TOTAL_SECONDS;
 
         let ind = this._ts.indexByX(passed);
         return this._ts.points[ind];
