@@ -6,6 +6,7 @@ import {Spring} from "../model/Spring";
 import {POINT_TYPE_NORMAL} from "../model/point_types";
 import {MODE_CREATE_EDGE, MODE_CREATE_VERTEX} from "./ModeSelector";
 import {Point} from "../model/Point";
+import {Constants} from "../model/constants";
 
 export const WIDTH = 700;
 export const HEIGHT = 400;
@@ -58,6 +59,8 @@ export default class GridView {
     _point_type_to_create = POINT_TYPE_NORMAL;
     _mouse_actions_mode = MODE_CREATE_VERTEX;
 
+    _previous_click_cords = {x: 0, y: 0}; //this will be hopefully rewritten before the first read access
+
     constructor() {
         this.init_display_object();
 
@@ -79,7 +82,9 @@ export default class GridView {
 
     init_edge(spring) {
         let view = new SpringView(spring);
-        view.display_object.addEventListener("dblclick", () => {
+        view.display_object.addEventListener("dblclick", e => {
+            if (!this.dblclick_is_correct(e))
+                return;
             this.springs_set.remove_object(spring);
         });
         return view;
@@ -88,8 +93,9 @@ export default class GridView {
     init_point_with_position(pwp) {
         let pv = new PointView(pwp, this._allow_move);
 
-        pv.display_object.addEventListener("dblclick", () => {
-            console.log('dblclicked');
+        pv.display_object.addEventListener("dblclick", e => {
+            if (!this.dblclick_is_correct(e))
+                return;
             this.point_set.remove_object(pwp);
 
             //remove all edges
@@ -98,50 +104,65 @@ export default class GridView {
             );
         });
         pv.display_object.addEventListener("pressmove", e => {
-            let natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
+            switch (this.actual_mouse_actions_mode(e)) {
+                case MODE_CREATE_EDGE:
+                    let natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
 
-            if (!this._is_creating_a_new_edge) {
-                this._is_creating_a_new_edge = true;
-                this._point_being_moved = pv;
+                    if (!this._is_creating_a_new_edge) {
+                        this._is_creating_a_new_edge = true;
+                        this._point_being_moved = pv;
 
-                this._virtual_point = new PointWithPosition(
-                    natural_pos.x,
-                    natural_pos.y,
-                    this._point_type_to_create
-                );
-                this._virtual_point_view = new PointView(this._virtual_point, false);
+                        this._virtual_point = new PointWithPosition(
+                            natural_pos.x,
+                            natural_pos.y,
+                            this._point_type_to_create
+                        );
+                        this._virtual_point_view = new PointView(this._virtual_point, false);
 
-                this._virtual_edge = new Spring(pv._point_with_position, this._virtual_point);
-                this._virtual_edge_view = new SpringView(this._virtual_edge);
+                        this._virtual_edge = new Spring(pv._point_with_position, this._virtual_point);
+                        this._virtual_edge_view = new SpringView(this._virtual_edge);
 
-                this._virtual_edge_layer.addChild(this._virtual_edge_view.display_object);
-                this._virtual_point_layer.addChild(this._virtual_point_view.display_object);
-            } else {
-                this._virtual_point.set_location(natural_pos);
-                this._virtual_edge.relength();
+                        this._virtual_edge_layer.addChild(this._virtual_edge_view.display_object);
+                        this._virtual_point_layer.addChild(this._virtual_point_view.display_object);
+                    } else {
+                        this._virtual_point.set_location(natural_pos);
+                        this._virtual_edge.relength();
+                    }
+                    break;
+                case MODE_CREATE_VERTEX:
+                    natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
+                    pv.point_with_position.set_location(natural_pos);
+                    break;
             }
         });
-        pv.display_object.addEventListener("pressup", () => {
-            if (!this._is_creating_a_new_edge)
-                return;
+        pv.display_object.addEventListener("pressup", e => {
+            switch (this.actual_mouse_actions_mode(e)) {
+                case MODE_CREATE_EDGE:
+                    if (!this._is_creating_a_new_edge)
+                        return;
 
-            if (this._rolled_over_point) {
-                this.springs_set.add_object(
-                    new Spring(
-                        this._point_being_moved.point_with_position,
-                        this._rolled_over_point.point_with_position
-                    )
-                );
-            } else {
-                //create new point
-                this.point_set.add_object(this._virtual_point);
-                this.springs_set.add_object(this._virtual_edge);
+                    if (this._rolled_over_point) {
+                        this.springs_set.add_object(
+                            new Spring(
+                                this._point_being_moved.point_with_position,
+                                this._rolled_over_point.point_with_position
+                            )
+                        );
+                    } else {
+                        //create new point
+                        this.point_set.add_object(this._virtual_point);
+                        this.springs_set.add_object(this._virtual_edge);
+                    }
+
+                    this._virtual_point_layer.removeChild(this._virtual_point_view.display_object);
+                    this._virtual_edge_layer.removeChild(this._virtual_edge_view.display_object);
+
+                    this._is_creating_a_new_edge = false;
+                    break;
+                case MODE_CREATE_VERTEX:
+                    //just do nothing
+                    break;
             }
-
-            this._virtual_point_layer.removeChild(this._virtual_point_view.display_object);
-            this._virtual_edge_layer.removeChild(this._virtual_edge_view.display_object);
-
-            this._is_creating_a_new_edge = false;
         });
         pv.display_object.addEventListener("rollover", e => {
             this._rolled_over_point = pv;
@@ -210,6 +231,12 @@ export default class GridView {
         this._grid.x = X0;
         this._grid.y = Y0;
         this._display_object.addChild(this._grid);
+
+        this._display_object.mouseEnabled = true;
+        this._display_object.addEventListener("click", e => {
+            console.info('click at', e.stageX, e.stageY);
+            this._previous_click_cords = {x: e.stageX, y: e.stageY};
+        });
     }
 
     init_grid() {
@@ -272,6 +299,13 @@ export default class GridView {
             this.draw_grid();
         else
             this.draw_empty_grid();
+    }
+
+    dblclick_is_correct(e) {
+        let {stageX: x1, stageY: y1} = e;
+        let {x: x2, y: y2} = this._previous_click_cords;
+        let sum = Math.abs(x1 - x2) + Math.abs(y1 - y2);
+        return sum < Constants.POINT_RADIUS;
     }
 }
 
