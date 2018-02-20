@@ -33,8 +33,8 @@ export default class ModeSelector {
         let $container = $('<div class="elasticity-mode-selector">');
 
         let modes = [MODE_CREATE_VERTEX, MODE_CREATE_EDGE];
-        let mode_titles = ['Точки', 'Стержни'];
-        $container.append($('<div class="title">Создавать</div>'));
+        let mode_titles = ['Двигать крепления', 'Устанавливать стержни'];
+        // $container.append($('<div class="title">Создавать</div>'));
         for (let i = 0; i < modes.length; i++) {
             let mode = modes[i];
             let title = mode_titles[i];

@@ -8,7 +8,7 @@ import {POINT_TYPE_FIXED, POINT_TYPE_NORMAL} from "./model/point_types";
 import TowerHistory from "./model/TowerHistory";
 import {PointWithPosition} from "./model/PointWithPosition.js";
 import {Spring} from "./model/Spring";
-import ModeSelector from "./view/ModeSelector";
+import ModeSelector, {MODE_DO_NOTHING} from "./view/ModeSelector";
 
 const POINTS_CHANGEABLE = 0;
 const POINTS_FIXED = 1;
@@ -140,7 +140,7 @@ export class Elasticity {
         this._point_set_manipulation_state = value;
 
         if (value === POINTS_FIXED) {
-            this._grid_view.allow_move = false;
+            this._grid_view.mouse_actions_mode = MODE_DO_NOTHING;
             this.copy_points_and_springs_set();
             this._$go_button.html("Расположить точки");
 
@@ -151,7 +151,7 @@ export class Elasticity {
 
             this._grid_view.grid_visible = false;
         } else if (value === POINTS_CHANGEABLE) {
-            this._grid_view.allow_move = true;
+            this._grid_view.mouse_actions_mode = this._mouse_mode_selector.current_mode;
             this._grid_view.point_set = this._point_set;
             this._grid_view.springs_set = this._springs_set;
             this._$go_button.html("Смотреть движение");

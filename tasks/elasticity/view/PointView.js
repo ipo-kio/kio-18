@@ -5,11 +5,9 @@ export class PointView {
     _display_object;
     _point_with_position;
     _movable = true;
-    _allow_move;
 
-    constructor(point_with_position, allow_move=true) {
+    constructor(point_with_position) {
         this._point_with_position = point_with_position;
-        this._allow_move = allow_move;
 
         this.init_display_object();
 

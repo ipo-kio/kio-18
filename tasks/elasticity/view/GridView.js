@@ -5,7 +5,6 @@ import {PointWithPosition} from "../model/PointWithPosition";
 import {Spring} from "../model/Spring";
 import {POINT_TYPE_NORMAL} from "../model/point_types";
 import {MODE_CREATE_EDGE, MODE_CREATE_VERTEX} from "./ModeSelector";
-import {Point} from "../model/Point";
 import {Constants} from "../model/constants";
 
 export const WIDTH = 700;
@@ -54,7 +53,6 @@ export default class GridView {
     _rolled_over_point = null;
 
     _ed = new EventDispatcher(); //'grid click' click out of any visible elements
-    _allow_move = true;
 
     _point_type_to_create = POINT_TYPE_NORMAL;
     _mouse_actions_mode = MODE_CREATE_VERTEX;
@@ -71,11 +69,22 @@ export default class GridView {
 
         this._points_set_view = new SetView(this._display_object, pwp => this.init_point_with_position(pwp));
 
+        this._display_object.addEventListener("mousedown", e => {
+            console.info('global down');
+            this._previous_click_shift_pressed = e.nativeEvent.shiftKey;
+        }, true);
+
         this._grid.addEventListener('mousedown', e => {
-            if (e.target === this._grid) {
-                let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
-                let {x, y} = s2n(display_object_local);
-                this._points_set_view.set.add_object(new PointWithPosition(x, y, this.point_type_to_create));
+            console.info('grid down');
+            switch (this.actual_mouse_actions_mode()) {
+                case MODE_CREATE_VERTEX:
+                case MODE_CREATE_EDGE:
+                    if (e.target === this._grid) {
+                        let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
+                        let {x, y} = s2n(display_object_local);
+                        this._points_set_view.set.add_object(new PointWithPosition(x, y, this.point_type_to_create));
+                    }
+                    break;
             }
         });
     }
@@ -91,20 +100,16 @@ export default class GridView {
     }
 
     init_point_with_position(pwp) {
-        let pv = new PointView(pwp, this._allow_move);
+        let pv = new PointView(pwp);
 
         pv.display_object.addEventListener("dblclick", e => {
             if (!this.dblclick_is_correct(e))
                 return;
             this.point_set.remove_object(pwp);
-
-            //remove all edges
-            this.springs_set.filter(
-                spring => spring.first_point_with_position !== pwp && spring.second_point_with_position !== pwp
-            );
+            this.remove_edges_from_point(pwp);
         });
         pv.display_object.addEventListener("pressmove", e => {
-            switch (this.actual_mouse_actions_mode(e)) {
+            switch (this.actual_mouse_actions_mode()) {
                 case MODE_CREATE_EDGE:
                     let natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
 
@@ -131,12 +136,18 @@ export default class GridView {
                     break;
                 case MODE_CREATE_VERTEX:
                     natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
-                    pv.point_with_position.set_location(natural_pos);
+                    let pwp = pv.point_with_position;
+                    pwp.set_location(natural_pos);
+
+                    for (let edge of this.springs_set)
+                        if (edge.first_point_with_position === pwp || edge.second_point_with_position === pwp)
+                            edge.relength();
+
                     break;
             }
         });
         pv.display_object.addEventListener("pressup", e => {
-            switch (this.actual_mouse_actions_mode(e)) {
+            switch (this.actual_mouse_actions_mode()) {
                 case MODE_CREATE_EDGE:
                     if (!this._is_creating_a_new_edge)
                         return;
@@ -164,18 +175,24 @@ export default class GridView {
                     break;
             }
         });
-        pv.display_object.addEventListener("rollover", e => {
+        pv.display_object.addEventListener("rollover", () => {
             this._rolled_over_point = pv;
             if (this._virtual_point_view)
                 this._virtual_point_view.display_object.visible = false;
         });
-        pv.display_object.addEventListener("rollout", e => {
+        pv.display_object.addEventListener("rollout", () => {
             this._rolled_over_point = null;
             if (this._virtual_point_view)
                 this._virtual_point_view.display_object.visible = true;
         });
 
         return pv;
+    }
+
+    remove_edges_from_point(pwp) {
+        this.springs_set.filter(
+            spring => spring.first_point_with_position !== pwp && spring.second_point_with_position !== pwp
+        );
     }
 
     get point_set() {
@@ -206,9 +223,8 @@ export default class GridView {
         return this._mouse_actions_mode;
     }
 
-    actual_mouse_actions_mode(e) {
-        let is_shift = e.nativeEvent.shiftKey;
-        if (!is_shift)
+    actual_mouse_actions_mode() {
+        if (!this._previous_click_shift_pressed)
             return this.mouse_actions_mode;
 
         if (this.mouse_actions_mode === MODE_CREATE_VERTEX)
@@ -284,14 +300,6 @@ export default class GridView {
 
     get ed() {
         return this._ed;
-    }
-
-    get allow_move() {
-        return this._allow_move;
-    }
-
-    set allow_move(value) {
-        this._allow_move = value;
     }
 
     set grid_visible(value) {
