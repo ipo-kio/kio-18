@@ -61,11 +61,18 @@ export class Elasticity {
 
     solution() {
         let p = []; //points
+        let s = []; //springs
 
-        for ({x, y, point_type_ind} of this._grid_view.point_set)
+        for (let {x, y, point_type_ind} of this._point_set)
             p.push({x, y, t: point_type_ind});
 
-        return {p};
+        for (let {first_point_with_position, second_point_with_position} of this._springs_set) {
+            let i1 = this._point_set.get_index(first_point_with_position);
+            let i2 = this._point_set.get_index(second_point_with_position);
+            s.push([i1, i2]);
+        }
+
+        return {p, s};
     }
 
 
@@ -73,9 +80,16 @@ export class Elasticity {
         if (!solution)
             return;
 
+        this._springs_set.clear();
         this._point_set.clear();
-        for ({x, y, t} of solution.p) //TODO add many objects by once
+
+        for (let {x, y, t} of solution.p) //TODO add many objects by once
             this._point_set.add_object(new PointWithPosition(x, y, t));
+
+        for (let [i1, i2] of solution.s)
+            this._springs_set.add_object(
+                new Spring(this._point_set.get(i1), this._point_set.get(i2))
+            )
     }
 
     // private methods
