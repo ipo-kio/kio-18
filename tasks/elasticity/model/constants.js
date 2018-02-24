@@ -5,7 +5,6 @@ export class Constants {
     static _FRICTION = 1;
 
     //points
-    static _MIN_POINTS = 3;
     static _MAX_DISTANCE = 2.5;
 
     //view
@@ -28,10 +27,6 @@ export class Constants {
         return this._FRICTION;
     }
 
-    static get MIN_POINTS() {
-        return this._MIN_POINTS;
-    }
-
     static get MAX_DISTANCE() {
         return this._MAX_DISTANCE;
     }
@@ -50,10 +45,6 @@ export class Constants {
 
     static set FRICTION(value) {
         this._FRICTION = value;
-    }
-
-    static set MIN_POINTS(value) {
-        this._MIN_POINTS = value;
     }
 
     static set MAX_DISTANCE(value) {

@@ -8,7 +8,7 @@ import {MODE_CREATE_EDGE, MODE_CREATE_VERTEX} from "./ModeSelector";
 import {Constants} from "../model/constants";
 
 export const WIDTH = 700;
-export const HEIGHT = 400;
+export const HEIGHT = 600;
 const X0 = WIDTH / 2;
 const Y0 = HEIGHT / 2;
 

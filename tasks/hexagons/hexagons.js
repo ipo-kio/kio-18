@@ -1,19 +1,6 @@
-import './elasticity.scss';
-import GridView from "./view/GridView";
-import ObjectsSet from "./model/ObjectsSet";
-import PointTypeSelector from "./view/TypeSelector";
+import './hexagons.scss';
 
-import {WIDTH as GRID_WIDTH, HEIGHT as GRID_HEIGHT} from "./view/GridView";
-import {POINT_TYPE_FIXED, POINT_TYPE_NORMAL} from "./model/point_types";
-import TowerHistory from "./model/TowerHistory";
-import {PointWithPosition} from "./model/PointWithPosition.js";
-import {Spring} from "./model/Spring";
-import ModeSelector, {MODE_DO_NOTHING} from "./view/ModeSelector";
-
-const POINTS_CHANGEABLE = 0;
-const POINTS_FIXED = 1;
-
-export class Elasticity {
+export class Hexagons {
 
     _$go_button;
     _points_animation_tick;
@@ -25,7 +12,7 @@ export class Elasticity {
     }
 
     id() {
-        return 'elasticity';
+        return 'hexagons';
     }
 
     initialize(domNode, kioapi, preferred_width) {
@@ -138,7 +125,7 @@ export class Elasticity {
     init_canvas(domNode) {
         this._canvas = document.createElement('canvas');
         domNode.appendChild(this._canvas);
-        this._canvas.className = "kio-elasticity-canvas";
+        this._canvas.className = "kio-hexagons-canvas";
         this._canvas.width = GRID_WIDTH;
         this._canvas.height = GRID_HEIGHT;
         this._stage = new createjs.Stage(this._canvas);

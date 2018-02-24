@@ -1,4 +1,5 @@
 import {EventDispatcher} from "../EventDispatcher";
+import {Constants} from "./constants";
 
 export class Spring {
 
@@ -16,7 +17,7 @@ export class Spring {
         this.first_point_with_position.ed.add_listener('change', this._change_listener);
         this.second_point_with_position.ed.add_listener('change', this._change_listener);
 
-        this._length = this.actual_length();
+        this._length = this.actual_length;
     }
 
     get first_point_with_position() {
@@ -36,7 +37,7 @@ export class Spring {
     }
 
     get relative_elongation() {
-        let d = this.actual_length();
+        let d = this.actual_length;
 
         let elongation = d - this.length;
 
@@ -44,7 +45,7 @@ export class Spring {
     }
 
     relength() {
-        this._length = this.actual_length();
+        this._length = this.actual_length;
         this.fire();
     }
 
@@ -52,7 +53,7 @@ export class Spring {
         this._ed.fire(new Event('change'), this);
     }
 
-    actual_length() {
+    get actual_length() {
         let {x: x1, y: y1} = this.first_point_with_position;
         let {x: x2, y: y2} = this.second_point_with_position;
 
@@ -61,4 +62,9 @@ export class Spring {
         let d2 = dx * dx + dy * dy;
         return Math.sqrt(d2);
     }
+
+    get too_long() {
+        return this.length > Constants._MAX_DISTANCE;
+    }
+
 }

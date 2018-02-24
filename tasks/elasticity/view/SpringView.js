@@ -1,5 +1,4 @@
 import {n2s} from "./GridView";
-import {HOT_COLD_PALETTE} from "./springs_view_palette";
 
 export class SpringView {
 
@@ -31,10 +30,10 @@ export class SpringView {
         //b' = (a + b) * this._spring.actual_length() / this._spring.length - 1;
         let a = 4;
         let b = 2;
-        let b_prime = (a + b) * this._spring.actual_length() / this._spring.length - a;
+        let b_prime = (a + b) * this._spring.actual_length / this._spring.length - a;
         if (b_prime < 0)
             b_prime = 0;
-        g.clear().setStrokeStyle(2).beginStroke(this.elongation_color()).setStrokeDash([a, b_prime]);
+        g.clear().setStrokeStyle(2).beginStroke(this.line_color()).setStrokeDash([a, b_prime]);
 
         let p1 = n2s(this._spring.first_point_with_position);
         let p2 = n2s(this._spring.second_point_with_position);
@@ -60,17 +59,11 @@ export class SpringView {
         this._spring_shape.addEventListener("rollout", () => this.highlighted = false);
     }
 
-    elongation_color() {
-        return "black";
-
-        let e = this._spring.relative_elongation;
-        // convert -1 -- 1 to 0 .. 89
-        let ind = Math.floor((-e + 0.1) / 0.2 * 90);
-        if (ind > 89)
-            ind = 89;
-        if (ind < 0)
-            ind = 0;
-        return HOT_COLD_PALETTE[ind];
+    line_color() {
+        if (this._spring.too_long)
+            return "rgba(255,0,0,0.25)";
+        else
+            return "#000088";
     }
 
 

@@ -15,7 +15,8 @@ const sourceFolders = [
 module.exports = function (env) {
     let config = {
         entry: {
-            'elasticity': 'elasticity/elasticity.js'
+            'elasticity': 'elasticity/elasticity.js',
+            'hexagons': 'hexagons/hexagons.js'
         },
         output: {
             path: path.join(__dirname, '/dist'),
@@ -61,7 +62,9 @@ module.exports = function (env) {
             new ExtractTextPlugin("[name].css"),
             new CopyWebpackPlugin([
                 {from: './tasks/elasticity/elasticity.html'},
-                {from: './tasks/elasticity/img/*', to: './elasticity-resources', flatten: true}
+                {from: './tasks/elasticity/img/*', to: './elasticity-resources', flatten: true},
+                {from: './tasks/hexagons/hexagons.html'},
+                {from: './tasks/hexagons/img/*', to: './hexagons-resources', flatten: true}
             ])
         ]
     };
