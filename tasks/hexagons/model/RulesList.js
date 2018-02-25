@@ -30,13 +30,32 @@ export class RulesList {
 
     init_interaction() {
         this._$add_rule_button.click(e => {
-            let editor = new RuleEditor();
-            this._$rules_list.append(editor.html_element);
-            this._rule_editors.push(editor);
+            this.add_new_rule();
         });
+    }
+
+    add_new_rule() {
+        let editor = new RuleEditor();
+        this._$rules_list.append(editor.html_element);
+        this._rule_editors.push(editor);
+
+        this.update_rules_list();
+    }
+
+    remove_rule(index) {
+
     }
 
     get html_element() {
         return this._html_element;
+    }
+
+    update_rules_list() {
+        let i = 0;
+        for (let rule_editor of this._rule_editors) {
+            rule_editor.show_up = i !== 0;
+            rule_editor.show_down = i !== this._rule_editors.length - 1;
+            i++;
+        }
     }
 }

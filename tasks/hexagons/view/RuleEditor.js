@@ -1,7 +1,7 @@
 import {Rule} from "../../hexagons/model/HexBoard";
 import {HexBoardView} from "./HexBoardView";
 import {Sizing} from "../model/sizing";
-import {EventDispatcherMixin} from "../EventDispatcherMixin";
+import {EventDispatcherMixin, Event} from "../EventDispatcherMixin";
 import {
     RULE_REGIME_AT_LEAST_ANY_POSITION, RULE_REGIME_AT_MOST_ANY_POSITION, RULE_REGIME_EXACT,
     RULE_REGIME_EXACT_ANY_POSITION
@@ -36,23 +36,23 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
         controls_container.className = 'rule-controls-container';
         this._html_element.appendChild(controls_container);
 
-        let up_button = document.createElement('button');
-        up_button.innerHTML = '&uarr;';
+        this._up_button = document.createElement('button');
+        this._up_button.innerHTML = '&uarr;';
 
         let remove_button = document.createElement('button');
         remove_button.innerHTML = '-'; //'&#x274C;';
 
-        let down_button = document.createElement('button');
-        down_button.innerHTML = '&darr;';
+        this._down_button = document.createElement('button');
+        this._down_button.innerHTML = '&darr;';
 
         let state = document.createElement('a');
         state.href = '#';
         state.innerText = regime_to_title(this._rule.regime);
         state.className = 'rule-regime';
 
-        controls_container.appendChild(up_button);
+        controls_container.appendChild(this._up_button);
         controls_container.appendChild(remove_button);
-        controls_container.appendChild(down_button);
+        controls_container.appendChild(this._down_button);
         controls_container.appendChild(state);
 
         // add listeners
@@ -62,6 +62,18 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
             state.innerText = regime_to_title(this._rule.regime);
 
             e.preventDefault();
+        });
+
+        $(remove_button).click(e => {
+            this.fire(new Event('remove', this));
+        });
+
+        $(this._down_button).click(e => {
+            this.fire(new Event('up', this));
+        });
+
+        $(this._up_button).click(e => {
+            this.fire(new Event('down', this));
         });
     }
 
@@ -75,6 +87,14 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
 
     set rule(value) {
         this._rule = value;
+    }
+
+    set show_up(value) {
+        this._up_button.style.visibility = value ? 'visible' : 'hidden';
+    }
+
+    set show_down(value) {
+        this._down_button.style.visibility = value ? 'visible' : 'hidden';
     }
 }
 
