@@ -18,6 +18,6 @@ export class Sizing {
     }
 
     get center_distance() {
-        return 2 * this._R;
+        return 2 * this.H;
     }
 }

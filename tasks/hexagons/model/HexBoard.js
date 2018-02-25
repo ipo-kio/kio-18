@@ -29,6 +29,18 @@ export class HexBoard {
     conforms_to_a_rule(rule) {
 
     }
+
+    get lines() {
+        return this._shape.length;
+    }
+
+    *cells() {
+        for (let line = 0; line < this.lines; line++) {
+            let {from, to} = this.line_borders(line);
+            for (let index = from; index <= to; index++)
+                yield new HexagonCell(line, index);
+        }
+    }
 }
 
 export class Rule extends HexBoard {
@@ -81,14 +93,24 @@ export class HexagonCell {
 
     coordinates(sizing) {
         return {
-            x: sizing.center_distance * (this._line - this._index / 2),
-            y: sizing.center_distance * this._index * Math.sqrt(3) / 2
+            x: sizing.center_distance * (this._index - this._line / 2),
+            y: sizing.center_distance * this._line
         }
     }
 }
 
-export function create_rectangular_shape(lines, columns /* in shorter lines*/, first_is_left) {
+export function rectangular_shape(lines, columns, first_is_left=true) {
+    let _shape = new Array(lines);
+    let delta = first_is_left ? 1 : 0;
+    for (let line = 0; line < lines; line++) {
+        let from = Math.floor((line + delta) / 2);       // 0 0 1 1 2 2 3 3
+        let to = columns - (line + 1 + delta) % 2;
 
+        _shape[line] = {from, to: from + to - 1};
+    }
+
+    console.log(_shape);
+    return _shape;
 }
 
 export function rule_shape(r) {

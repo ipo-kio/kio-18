@@ -15,6 +15,7 @@ export class HexagonView {
         this._hex_cell = hex_cell;
 
         this.init_display_object();
+        this.redraw();
     }
 
     init_display_object() {
@@ -24,22 +25,23 @@ export class HexagonView {
     redraw() {
         let g = this._display_object.graphics;
 
-        let dx1 = this.sizing.R * sin30;
-        let dy1 = this.sizing.R * sin60;
-        let dx2 = this.sizing.R;
-        let {x, y} = this._hex_cell.coordinates();
+        let dx1 = this.sizing.R * sin60;
+        let dy1 = this.sizing.R * sin30;
+        let dy2 = this.sizing.R;
+        let {x, y} = this._hex_cell.coordinates(this.sizing);
 
         g
             .clear()
+            .setStrokeStyle(1)
             .beginStroke(this._state === CELL_STATE_NORMAL ? "black" : "black")
             .beginFill(this._state === CELL_STATE_NORMAL ? "blue" : "yellow")
             .moveTo(x - dx1, y - dy1)
+            .lineTo(x, y - dy2)
             .lineTo(x + dx1, y - dy1)
-            .lineTo(x + dx2, y)
             .lineTo(x + dx1, y + dy1)
+            .lineTo(x, y + dy2)
             .lineTo(x - dx1, y + dy1)
-            .lineTo(x - dx2, y)
-            .close();
+            .closePath();
     }
 
     get display_object() {
@@ -51,7 +53,7 @@ export class HexagonView {
     }
 
     get sizing() {
-        return this._hex_cell.sizing;
+        return this._board_view.sizing;
     }
 
     set state(value) {
