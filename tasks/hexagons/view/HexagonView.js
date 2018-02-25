@@ -33,18 +33,26 @@ export class HexagonView {
         let {x, y} = this._hex_cell.coordinates(this.sizing);
         let val = this._board_view.board.value(this._hex_cell);
 
+        let go_around = () => {
+            g.moveTo(x - dx1, y - dy1)
+                .lineTo(x, y - dy2)
+                .lineTo(x + dx1, y - dy1)
+                .lineTo(x + dx1, y + dy1)
+                .lineTo(x, y + dy2)
+                .lineTo(x - dx1, y + dy1)
+                .closePath();
+        };
+
         g
             .clear()
             .setStrokeStyle(1)
-            .beginStroke(this._state === CELL_STATE_NORMAL ? "black" : "black")
-            .beginFill(types[val].bg_color)
-            .moveTo(x - dx1, y - dy1)
-            .lineTo(x, y - dy2)
-            .lineTo(x + dx1, y - dy1)
-            .lineTo(x + dx1, y + dy1)
-            .lineTo(x, y + dy2)
-            .lineTo(x - dx1, y + dy1)
-            .closePath();
+            .beginStroke("black")
+            .beginFill(types[val].bg_color);
+        go_around();
+        if (this._state === CELL_STATE_HIGHLIGHTED) {
+            g.beginFill('rgba(255,255,128,0.7)').setStrokeStyle(0);
+            go_around();
+        }
 
         types[val].drawer(g, x, y);
     }
