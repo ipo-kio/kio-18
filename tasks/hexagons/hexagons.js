@@ -2,6 +2,7 @@ import './hexagons.scss';
 import {HexBoardView} from "./view/HexBoardView";
 import {Sizing} from "./model/sizing";
 import {HexBoard, rectangular_shape} from "./model/HexBoard";
+import {RulesList} from "./model/RulesList";
 
 export class Hexagons {
 
@@ -25,7 +26,6 @@ export class Hexagons {
 
         createjs.Ticker.framerate = 20;
         createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
-        createjs.Ticker.addEventListener("tick", this._stage);
     }
 
     static preloadManifest___________________1() {
@@ -55,27 +55,20 @@ export class Hexagons {
     // private methods
 
     _canvas;
-    _stage;
     _grid_view;
+    _rules_list = new RulesList();
 
     initInterface(domNode, preferred_width) {
+        domNode.appendChild(this._rules_list.html_element);
         this.init_canvas(domNode);
     }
 
     init_canvas(domNode) {
-        this._canvas = document.createElement('canvas');
-        domNode.appendChild(this._canvas);
-        this._canvas.className = "kio-hexagons-canvas";
-        this._canvas.width = 500;
-        this._canvas.height = 500;
-        this._stage = new createjs.Stage(this._canvas);
-
         let board = new HexBoard(rectangular_shape(5, 10));
 
-        this._grid_view = new HexBoardView(board, new Sizing(10));
+        let sizing = new Sizing(20);
+        this._grid_view = new HexBoardView(board, sizing);
 
-        this._stage.addChild(this._grid_view.display_object);
-        this._stage.enableMouseOver(10);
-        this._stage.update();
+        domNode.appendChild(this._grid_view.canvas);
     }
 }
