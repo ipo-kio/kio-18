@@ -64,9 +64,9 @@ export class Hexagons {
     }
 
     init_canvas(domNode) {
-        let board = new HexBoard(rectangular_shape(5, 10));
+        let board = new HexBoard(rectangular_shape(16, 20));
 
-        let sizing = new Sizing(20);
+        let sizing = new Sizing(16);
         this._grid_view = new HexBoardView(board, sizing);
 
         domNode.appendChild(this._grid_view.canvas);

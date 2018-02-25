@@ -74,8 +74,15 @@ export class HexBoard {
     }
 }
 
+export const RULE_REGIME_EXACT = 0;
+export const RULE_REGIME_EXACT_ANY_POSITION = 1;
+export const RULE_REGIME_AT_LEAST_ANY_POSITION = 2;
+export const RULE_REGIME_AT_MOST_ANY_POSITION = 3;
+export const RULE_REGIMES_COUNT = 4;
+
 export class Rule extends HexBoard {
     _center_cell;
+    _regime = RULE_REGIME_EXACT;
 
     constructor() {
         let shape = rule_shape(RULE_SIZE);
@@ -86,6 +93,20 @@ export class Rule extends HexBoard {
 
     get center_cell() {
         return this._center_cell;
+    }
+
+    get regime() {
+        return this._regime;
+    }
+
+    set regime(value) {
+        this._regime = value;
+    }
+
+    next_regime() {
+        this._regime++;
+        if (this._regime >= RULE_REGIMES_COUNT)
+            this._regime = 0;
     }
 }
 
