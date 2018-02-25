@@ -64,16 +64,16 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
             e.preventDefault();
         });
 
-        $(remove_button).click(e => {
+        $(remove_button).dblclick(e => {
             this.fire(new Event('remove', this));
         });
 
         $(this._down_button).click(e => {
-            this.fire(new Event('up', this));
+            this.fire(new Event('down', this));
         });
 
         $(this._up_button).click(e => {
-            this.fire(new Event('down', this));
+            this.fire(new Event('up', this));
         });
     }
 
