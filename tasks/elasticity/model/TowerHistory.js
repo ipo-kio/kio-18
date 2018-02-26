@@ -23,9 +23,7 @@ export default class TowerHistory {
                 result[vy(i)] = 0;
             }
 
-            //TODO eval this just once: w === 0 ? 0 : fy / w;
-
-            //Gravity //TODO by the way, we don't really need mass here, because acceleration does not depend on it
+            //Gravity
             for (let i = 0; i < n; i++) {
                 let {point} = point_set.get(i);
                 let w = point.weight;

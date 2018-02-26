@@ -34,7 +34,7 @@ export class PointType {
     }
 }
 
-export let point_types = [ // todo create class PointType
+export let point_types = [
     new PointType(new Point(1), "Обычная", just_color_point_drawer(color_from_type(1), color_from_type(2))),
     new PointType(new Point(2), "Двойная", just_color_point_drawer(color_from_type(2), color_from_type(3))),
     new PointType(new Point(3), "Тройная", just_color_point_drawer(color_from_type(3), color_from_type(4))),

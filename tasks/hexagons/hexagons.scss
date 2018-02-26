@@ -1,5 +1,4 @@
 .rules-list-container {
-  float: right;
   overflow-y: scroll;
   height: 400px;
   padding-left: 1em;
@@ -25,4 +24,16 @@
   height: 1.9em;
   padding: 0;
   font-weight: bold;
+}
+
+.rule-editor-container {
+  display: inline-block;
+}
+
+.rules-list {
+  text-align: center;
+}
+
+.main-board-container {
+  float:left;
 }

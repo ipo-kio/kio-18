@@ -1,4 +1,5 @@
 import {RuleEditor} from "../view/RuleEditor";
+import {Rule} from "./HexBoard";
 
 export class RulesList {
 
@@ -36,13 +37,22 @@ export class RulesList {
     }
 
     add_new_rule() {
-        let editor = new RuleEditor();
+        this.add_rule(new Rule());
+    }
+
+    add_rule(rule) {
+        let editor = new RuleEditor(rule);
         this._rules_list.appendChild(editor.html_element);
         this._rule_editors.push(editor);
 
         this.add_listeners_to_editor(editor);
 
         this.update_rules_list();
+    }
+
+    clear_rules() {
+        while (this._rule_editors.length > 0)
+            this.remove_rule(this._rule_editors[0]);
     }
 
     get html_element() {
@@ -85,16 +95,20 @@ export class RulesList {
         this.update_rules_list();
     };
     __remove_listener = e => {
-        this._rules_list.removeChild(e.source.html_element);
+        this.remove_rule(e.source);
+    };
+
+    remove_rule(editor) {
+        this._rules_list.removeChild(editor.html_element);
 
         //remove editor from list of editors
-        let i = this._rule_editors.indexOf(e.source);
+        let i = this._rule_editors.indexOf(editor);
         this._rule_editors.splice(i, 1);
 
-        this.remove_listeners_from_editor(e.source);
+        this.remove_listeners_from_editor(editor);
 
         this.update_rules_list();
-    };
+    }
 
     add_listeners_to_editor(editor) {
         editor.add_listener("up", this.__up_listener);
@@ -108,10 +122,8 @@ export class RulesList {
         editor.remove_listener("remove", this.__remove_listener);
     }
 
-    get raw_rules() {
-        let result = [];
+    *raw_rules() {
         for (let rule_editor of this._rule_editors)
-            result.push(rule_editor.rule);
-        return result;
+            yield rule_editor.rule;
     }
 }

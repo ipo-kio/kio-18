@@ -13,14 +13,12 @@ class Nothing {} //TODO is there something else like this?
 
 export class RuleEditor extends EventDispatcherMixin(Nothing) {
     _html_element;
-    _rule;
     _rule_view;
 
-    constructor() {
+    constructor(rule) {
         super();
 
-        this._rule = new Rule();
-        this._rule_view = new HexBoardView(this._rule, sizing);
+        this._rule_view = new HexBoardView(rule, sizing);
         this._rule_view.changeable = true;
 
         this.init_html_element();
@@ -47,7 +45,7 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
 
         let state = document.createElement('a');
         state.href = '#';
-        state.innerText = regime_to_title(this._rule.regime);
+        state.innerText = regime_to_title(this.rule.regime);
         state.className = 'rule-regime';
 
         controls_container.appendChild(this._up_button);
@@ -58,8 +56,8 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
         // add listeners
 
         $(state).click(e => {
-            this._rule.next_regime();
-            state.innerText = regime_to_title(this._rule.regime);
+            this.rule.next_regime();
+            state.innerText = regime_to_title(this.rule.regime);
 
             e.preventDefault();
         });
@@ -82,11 +80,7 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
     }
 
     get rule() {
-        return this._rule;
-    }
-
-    set rule(value) {
-        this._rule = value;
+        return this._rule_view.board;
     }
 
     set show_up(value) {

@@ -15,10 +15,13 @@ export class HexBoard {
     _shape; //array of board lines
     _values;
 
-    constructor(shape) {
+    constructor(shape, values=false) {
         this._shape = shape;
 
-        this.init_values_by_shape();
+        if (values)
+            this._values = values;
+        else
+            this.init_values_by_shape();
     }
 
     init_values_by_shape() {
@@ -35,7 +38,14 @@ export class HexBoard {
     }
 
     value({line, index}) {
-        let {from} = this.line_borders(line);
+        if (line < 0 || line >= this._shape.length)
+            return -1;
+
+        let {from, to} = this.line_borders(line);
+
+        if (index < from || index > to)
+            return -1;
+
         return this._values[line][index - from];
     }
 
@@ -72,21 +82,30 @@ export class HexBoard {
         }
         return {left, right};
     }
+
+    get values() {
+        return this._values.slice();
+    }
+
+    set values(value) {
+        this._values = value.slice();
+    }
 }
 
 export const RULE_REGIME_EXACT = 0;
 export const RULE_REGIME_EXACT_ANY_POSITION = 1;
 export const RULE_REGIME_AT_LEAST_ANY_POSITION = 2;
 export const RULE_REGIME_AT_MOST_ANY_POSITION = 3;
+
 export const RULE_REGIMES_COUNT = 4;
 
 export class Rule extends HexBoard {
     _center_cell;
     _regime = RULE_REGIME_EXACT;
 
-    constructor() {
+    constructor(values=false) {
         let shape = rule_shape(RULE_SIZE);
-        super(shape);
+        super(shape, values);
 
         this._center_cell = new HexagonCell(RULE_SIZE - 1, RULE_SIZE - 1);
     }
@@ -108,23 +127,98 @@ export class Rule extends HexBoard {
         if (this._regime >= RULE_REGIMES_COUNT)
             this._regime = 0;
     }
-}
 
-class BoardLine {
-    _from;
-    _to;
-
-    constructor(from, to) {
-        this._from = from;
-        this._to = to;
+    get rule_size() {
+        // if (RULE_SIZE === 2)
+            return 6;
+        // else
+        //     throw new Error("Unknown rule size");
     }
 
-    get from() {
-        return this._from;
+    // static _1 = new HexagonCell(0, 0);
+    // static _2 = new HexagonCell(0, 1);
+    // static _4 = new HexagonCell(1, 2);
+    // static _5 = new HexagonCell(2, 2);
+    // static _6 = new HexagonCell(2, 1);
+    // static _7 = new HexagonCell(1, 0);
+
+    get values_list() {
+        return [
+            // this.value(Rule._1),
+            // this.value(Rule._2),
+            // this.value(Rule._3),
+            // this.value(Rule._4),
+            // this.value(Rule._5),
+            // this.value(Rule._6),
+            this._values[0][0],
+            this._values[0][1],
+            this._values[1][2],
+            this._values[2][2],
+            this._values[2][1],
+            this._values[1][0]
+        ];
     }
 
-    get to() {
-        return this._to;
+    get type_counts() {
+        let result = new Array(TYPES_COUNT);
+        result.fill(0);
+        for (let v of this.values_list)
+            result[v - 1]++;
+        return result;
+    }
+
+    conforms(board, {line, index}) {
+        if (this._regime === RULE_REGIME_EXACT) {
+            for (let {line: rule_line, index: rule_index} of this.cells()) {
+                let dx = rule_line - this._center_cell.line;
+                let dy = rule_index - this._center_cell.index;
+                if (dx === 0 && dy === 0)
+                    continue;
+                let rule_v = this.value({line: rule_line, index: rule_index});
+
+                if (rule_v === 0)
+                    continue;
+
+                let v = board.value({line: line + dx, index: index + dy});
+
+                if (rule_v !== v)
+                    return false;
+            }
+
+            return true;
+        }
+
+        //count
+        let rule_tc = this.type_counts;
+        let tc = new Array(TYPES_COUNT);
+        tc.fill(0);
+        for (let {line: rule_line, index: rule_index} of this.cells()) {
+            let dx = rule_line - this._center_cell.line;
+            let dy = rule_index - this._center_cell.index;
+            if (dx === 0 && dy === 0)
+                continue;
+            let v = board.value({line: line + dx, index: index + dy});
+            if (v >= 0)
+                tc[v - 1]++;
+        }
+
+        let has_more = false;
+        let has_less = false;
+        for (let i = 0; i < rule_tc.length; i++) {
+            if (rule_tc[i] === 0)
+                continue;
+            if (tc[i] < rule_tc[i])
+                has_less = true;
+            if (tc[i] > rule_tc[i])
+                has_more = true;
+        }
+
+        if (this.regime === RULE_REGIME_AT_MOST_ANY_POSITION && has_more)
+            return false;
+        if (this.regime === RULE_REGIME_AT_LEAST_ANY_POSITION && has_less)
+            return false;
+
+        return !(has_more || has_less);
     }
 }
 
