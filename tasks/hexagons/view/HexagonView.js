@@ -12,6 +12,8 @@ export class HexagonView {
     _state = CELL_STATE_NORMAL;
     _changeable = false;
 
+    _allow_zero = true;
+
     constructor(board_view, hex_cell) {
         this._board_view = board_view;
         this._hex_cell = hex_cell;
@@ -95,7 +97,7 @@ export class HexagonView {
             let val = this._board_view.board.value(this._hex_cell);
             val += 1;
             if (val > TYPES_COUNT)
-                val = 0;
+                val = this._allow_zero ? 0 : 1;
             this._board_view.board.set_value(this._hex_cell, val);
             this.redraw();
         };
@@ -109,6 +111,14 @@ export class HexagonView {
             this._display_object.removeEventListener('rollout', rollout_handler);
             this._display_object.removeEventListener('click', click_handler);
         }
+    }
+
+    get allow_zero() {
+        return this._allow_zero;
+    }
+
+    set allow_zero(value) {
+        this._allow_zero = value;
     }
 }
 

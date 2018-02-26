@@ -108,6 +108,9 @@ export class Rule extends HexBoard {
         super(shape, values);
 
         this._center_cell = new HexagonCell(RULE_SIZE - 1, RULE_SIZE - 1);
+
+        if (!values)
+            this.set_value(this._center_cell, 1);
     }
 
     get center_cell() {
@@ -192,6 +195,7 @@ export class Rule extends HexBoard {
         let rule_tc = this.type_counts;
         let tc = new Array(TYPES_COUNT);
         tc.fill(0);
+
         for (let {line: rule_line, index: rule_index} of this.cells()) {
             let dx = rule_line - this._center_cell.line;
             let dy = rule_index - this._center_cell.index;
@@ -213,10 +217,10 @@ export class Rule extends HexBoard {
                 has_more = true;
         }
 
-        if (this.regime === RULE_REGIME_AT_MOST_ANY_POSITION && has_more)
-            return false;
-        if (this.regime === RULE_REGIME_AT_LEAST_ANY_POSITION && has_less)
-            return false;
+        if (this.regime === RULE_REGIME_AT_MOST_ANY_POSITION)
+            return !has_more;
+        if (this.regime === RULE_REGIME_AT_LEAST_ANY_POSITION)
+            return !has_less;
 
         return !(has_more || has_less);
     }
@@ -244,6 +248,12 @@ export class HexagonCell {
             x: sizing.center_distance * (this._index - this._line / 2),
             y: sizing.R * 3 / 2 * this._line
         }
+    }
+
+    equals(other_cell) {
+        if (!other_cell)
+            return false;
+        return this._line === other_cell._line && this._index === other_cell._index;
     }
 }
 

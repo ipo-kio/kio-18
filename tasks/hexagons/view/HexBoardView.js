@@ -1,4 +1,5 @@
 import {HexagonView} from "./HexagonView";
+import {Rule} from "../model/HexBoard";
 
 export class HexBoardView {
 
@@ -36,6 +37,10 @@ export class HexBoardView {
         let cell_x = -left + this._sizing.H;
         let cell_y = this._sizing.R;
 
+        let rule_cell = null;
+        if (this.board instanceof Rule)
+            rule_cell = this.board.center_cell;
+
         this._cell_views = [];
         for (let cell of this._board.cells()) {
             let cell_view = new HexagonView(this, cell);
@@ -43,6 +48,9 @@ export class HexBoardView {
             cell_view._display_object.x = cell_x;
             cell_view._display_object.y = cell_y;
             this._cell_views.push(cell_view);
+
+            if (cell.equals(rule_cell))
+                cell_view.allow_zero = false;
         }
     }
 

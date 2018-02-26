@@ -1,12 +1,29 @@
 import {
+    Rule,
     RULE_REGIME_AT_LEAST_ANY_POSITION, RULE_REGIME_AT_MOST_ANY_POSITION, RULE_REGIME_EXACT,
     RULE_REGIME_EXACT_ANY_POSITION,
     RULE_SIZE
 } from "./HexBoard";
 
+class TreeElement {
+    _rule;
+    _children = [];
+
+    constructor(rule) {
+        this._rule = rule;
+    }
+
+    add_child(tree_element) {
+        this._children.add_child(tree_element);
+    }
+}
+
 export class RuleSet {
 
+    _root;
+
     constructor(array_of_rules) {
+        let root_rule = new Rule([[0, 0], [0, 0, 0], [0, 0]]); //TODO generate
 
     }
 
@@ -67,7 +84,7 @@ export class RuleSet {
         return true;
     }
 
-    static compare_rules(rule1, rule2) { //-1, 0, 1 if compared, 2 if can not be compared
+    /*static compare_rules(rule1, rule2) { //-1, 0, 1 if compared, 2 if can not be compared
         let tc1 = rule1.type_counts;
         let tc2 = rule2.type_counts;
         let has_more = false;
@@ -85,6 +102,6 @@ export class RuleSet {
         if (has_more)
             return 1;
         return 0;
-    }
+    }*/
 
 }
