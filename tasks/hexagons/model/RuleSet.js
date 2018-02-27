@@ -4,9 +4,10 @@ import {
     RULE_REGIME_EXACT_ANY_POSITION,
     RULE_SIZE
 } from "./HexBoard";
+import {Graph} from "./Graph";
 
 class TreeElement {
-    _rule;
+    _rules; //a set of equivalent rules
     _children = [];
 
     constructor(rule) {
@@ -20,11 +21,27 @@ class TreeElement {
 
 export class RuleSet {
 
-    _root;
+    _graph;
 
     constructor(array_of_rules) {
         let root_rule = new Rule([[0, 0], [0, 0, 0], [0, 0]]); //TODO generate
+        array_of_rules.push(root_rule);
 
+        let full_graph = new Graph();
+
+        for (let rule of array_of_rules)
+            full_graph.add_vertex(rule);
+
+        full_graph.add_edges((r1, r2) => RuleSet.implies(r1, r2));
+
+        console.info(full_graph.toString());
+        this._graph = full_graph.factorize();
+        console.info(this._graph.toString());
+    }
+
+
+    static equiv(rule1, rule2) {
+        return this.implies(rule1, rule2) && this.implies(rule2, rule1);
     }
 
     static implies(rule1, rule2) {
@@ -47,7 +64,7 @@ export class RuleSet {
 
         if (rule2.regime === RULE_REGIME_EXACT) {
             for (let i = 0; i < vl1.length; i++)
-                if (vl1[i] !== 0 && vl1[i] !== vl2[i])
+                if (vl2[i] !== 0 && vl1[i] !== vl2[i])
                     return false;
             return true;
         }

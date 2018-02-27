@@ -16,7 +16,9 @@ module.exports = function (env) {
     let config = {
         entry: {
             'elasticity': 'elasticity/elasticity.js',
-            'hexagons': 'hexagons/hexagons.js'
+            'hexagons': 'hexagons/hexagons.js',
+            // 'hexagons_test': ['babel-polyfill', 'hexagons/test/tests.js']
+            'hexagons_test': 'hexagons/test/tests.js'
         },
         output: {
             path: path.join(__dirname, '/dist'),
@@ -64,7 +66,8 @@ module.exports = function (env) {
                 {from: './tasks/elasticity/elasticity.html'},
                 {from: './tasks/elasticity/img/*', to: './elasticity-resources', flatten: true},
                 {from: './tasks/hexagons/hexagons.html'},
-                {from: './tasks/hexagons/img/*', to: './hexagons-resources', flatten: true}
+                {from: './tasks/hexagons/img/*', to: './hexagons-resources', flatten: true},
+                {from: './tasks/hexagons/hexagons-test.html'}
             ])
         ]
     };

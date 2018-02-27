@@ -156,8 +156,8 @@ export class Rule extends HexBoard {
             this._values[0][0],
             this._values[0][1],
             this._values[1][2],
-            this._values[2][2],
             this._values[2][1],
+            this._values[2][0],
             this._values[1][0]
         ];
     }
@@ -166,7 +166,8 @@ export class Rule extends HexBoard {
         let result = new Array(TYPES_COUNT);
         result.fill(0);
         for (let v of this.values_list)
-            result[v - 1]++;
+            if (v !== 0)
+                result[v - 1]++;
         return result;
     }
 
@@ -223,6 +224,21 @@ export class Rule extends HexBoard {
             return !has_less;
 
         return !(has_more || has_less);
+    }
+
+    toString() {
+        function r(rr) {
+            switch (rr) {
+                case RULE_REGIME_EXACT: return 'e';
+                case RULE_REGIME_EXACT_ANY_POSITION: return '=';
+                case RULE_REGIME_AT_LEAST_ANY_POSITION: return '>';
+                case RULE_REGIME_AT_MOST_ANY_POSITION: return '<';
+            }
+        }
+        let result = '';
+        for (let v of this.values_list)
+            result += v;
+        return result + ' -> ' + this.value(this._center_cell) + r(this.regime);
     }
 }
 
