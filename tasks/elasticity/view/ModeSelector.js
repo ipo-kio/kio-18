@@ -49,7 +49,7 @@ export default class ModeSelector {
 
             let $label = $('<label>');
             $label.attr('for', id);
-            $label.html(title);
+            $label.html('&nbsp;');
             $container.append($label);
 
             $element.change(e => {

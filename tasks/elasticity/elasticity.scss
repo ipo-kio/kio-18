@@ -1,3 +1,29 @@
-#asdf {
-  color: red;
+.kio-elasticity-canvas {
+  float:left;
+}
+
+.elasticity-controls-container {
+  text-align: center;
+}
+
+.elasticity-mode-selector {
+
+  input[type=radio] {
+    width   : 28px;
+    margin  : 0;
+    padding : 0;
+    opacity : 0;
+  }
+
+  input[type=radio] + label {
+    display      : inline-block;
+    margin-left  : -28px;
+    padding-left : 28px;
+    background   : url('hexagons-resources/grass.jpg') no-repeat 0 0;
+    line-height  : 24px;
+  }
+
+  input[type=radio]:checked + label {
+    background   : url('hexagons-resources/fly1.png') no-repeat 0 0;
+  }
 }

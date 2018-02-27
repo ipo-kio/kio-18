@@ -115,8 +115,15 @@ export class Elasticity {
 
         this.init_canvas(domNode);
 
+        let controls_container = document.createElement('div');
+        controls_container.className = 'elasticity-controls-container';
+        domNode.appendChild(controls_container);
+        this.init_controls(controls_container);
+    }
+
+    init_controls(domNode) {
         domNode.appendChild(this._mouse_mode_selector.html_object);
-        domNode.appendChild(this._type_selector.html_object);
+        //domNode.appendChild(this._type_selector.html_object);
 
         //go button
         this._$go_button = $('<button type="button">');
