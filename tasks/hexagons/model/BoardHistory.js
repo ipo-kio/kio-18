@@ -1,7 +1,7 @@
 import {RuleSet} from "./RuleSet";
 import {HexBoard} from "./HexBoard";
 
-const STEPS = 100;
+export const STEPS = 100;
 
 export class BoardHistory {
 

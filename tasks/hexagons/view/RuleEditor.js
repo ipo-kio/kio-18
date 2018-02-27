@@ -17,9 +17,13 @@ export class RuleEditor extends EventDispatcherInterface {
 
         this._rule_view = new HexBoardView(rule, sizing);
         this._rule_view.changeable = true;
-        this._rule_view.add_listener('change', () => this.fire(new Event('change', this)));
+        this._rule_view.add_listener('change', () => this.fire_change());
 
         this.init_html_element();
+    }
+
+    fire_change() {
+        return this.fire(new Event('change', this));
     }
 
     init_html_element() {
@@ -56,6 +60,7 @@ export class RuleEditor extends EventDispatcherInterface {
         $(state).click(e => {
             this.rule.next_regime();
             state.innerText = regime_to_title(this.rule.regime);
+            this.fire_change();
 
             e.preventDefault();
         });

@@ -4,13 +4,13 @@ import {Sizing} from "./model/sizing";
 import {HexagonCell, HexBoard, rectangular_shape, Rule} from "./model/HexBoard";
 import {RulesList} from "./model/RulesList";
 import {Slider} from "./slider";
-import {BoardHistory} from "./model/BoardHistory";
+import {BoardHistory, STEPS} from "./model/BoardHistory";
 
 export class Hexagons {
 
     _$go_button;
     _points_animation_tick;
-    _board_history;
+    _board_history = null;
     _initial_board;
 
     _canvas;
@@ -18,6 +18,7 @@ export class Hexagons {
     _rules_list = new RulesList();
 
     _slider;
+    _time_shower;
 
     constructor(settings) {
         this.settings = settings;
@@ -35,6 +36,8 @@ export class Hexagons {
 
         createjs.Ticker.framerate = 20;
         createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
+
+        this.move_time_to(0);
     }
 
     static preloadManifest() {
@@ -92,32 +95,36 @@ export class Hexagons {
         domNode.appendChild(canvas_container);
         domNode.appendChild(this._rules_list.html_element);
 
-        this.initTimeControls(domNode);
+        this.init_time_controls(domNode);
 
-        this._rules_list.add_listener('change', () => this.update_history());
+        this._rules_list.add_listener('change', () => {
+            this._board_history = null;
+            this._slider.value = 0;
+        });
     }
 
-    initTimeControls(domNode) {
+    init_time_controls(domNode) {
         this._slider = new Slider(domNode, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
         this._slider.domNode.className = 'hexagons-slider';
         domNode.appendChild(this._slider.domNode);
 
+        function add_button(title, action) {
+            let button = document.createElement('button');
+            button.innerText = title;
+            $(button).click(action);
+            domNode.appendChild(button);
+        }
+
+        add_button('0', () => this._slider.value = 0);
+        add_button('-1', () => this._slider.value--);
+        add_button('+1', () => this._slider.value++);
+        add_button('max', () => this._slider.value = STEPS);
+
+        this._time_shower = document.createElement('span');
+        this._time_shower.className = 'hexagons-time-shower';
+        domNode.appendChild(this._time_shower);
+
         this._slider.onvaluechange = () => this.move_time_to(this.board_time());
-
-        let plus_button = document.createElement('button');
-        plus_button.innerText = '+1';
-        $(plus_button).click(() => this._slider.value++);
-        domNode.appendChild(plus_button);
-
-        let minus_button = document.createElement('button');
-        minus_button.innerText = '-1';
-        $(minus_button).click(() => this._slider.value--);
-        domNode.appendChild(minus_button);
-    }
-
-    update_history() {
-        this.new_history();
-        this.move_time_to(this.board_time());
     }
 
     new_history() {
@@ -125,10 +132,14 @@ export class Hexagons {
     }
 
     move_time_to(time) {
-        if (!this._board_history)
+        if (time < 0)
+            time = 0;
+
+        if (!this._board_history && time > 0)
             this.new_history();
 
-        this._grid_view.board = this._board_history.get(time);
+        this._grid_view.board = time === 0 ? this._initial_board : this._board_history.get(time);
+        this._time_shower.innerHTML = 'Шаг: <b>' + this.board_time() + '</b>';
     }
 
     init_canvas(domNode) {

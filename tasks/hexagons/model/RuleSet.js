@@ -61,8 +61,6 @@ export class RuleSet {
             if (!rule.conforms(board, {line, index}))
                 return 0;
 
-            if (list.length === 0)
-                return 0;
             let result = 0;
             for (let i = 0; i < list.length; i++)
                 if (list[i] !== 0) {
