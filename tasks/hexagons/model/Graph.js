@@ -30,9 +30,11 @@ export class Graph {
         return set1.has(object2);
     }
 
-    factorize() { //return
+    factorize(list_mapper) { //return
         let result = new Graph();
         let used = new Set();
+
+        let vertex_to_list_of_initial_vertices = new Map();
 
         for (let v of this._data.keys()) {
             if (used.has(v))
@@ -45,49 +47,43 @@ export class Graph {
                     used.add(v2);
                 }
 
-            result.add_vertex(list);
+            let new_vertex = list_mapper(list);
+            if (new_vertex !== null) {
+                result.add_vertex(new_vertex);
+                vertex_to_list_of_initial_vertices.set(new_vertex, list);
+            }
         }
 
-        result.add_edges((l1, l2) => l1 !== l2 && l1.length > 0 && l2.length > 0 && this.has_edge(l1[0], l2[0]));
+        result.add_edges((v1, v2) => {
+            let l1 = vertex_to_list_of_initial_vertices.get(v1);
+            let l2 = vertex_to_list_of_initial_vertices.get(v2);
+            return l1 !== l2 && l1.length > 0 && l2.length > 0 && this.has_edge(l1[0], l2[0]);
+        });
 
         return result;
     }
 
-    top_sort() {
+    *vertices() {
+        for (let v of this._data.keys())
+            yield v;
+    }
+
+    transitive_reduce() {
         let result = new Graph();
-        let degrees = new Map();
-        for (let vertex of this._data.keys()) {
+
+        for (let vertex of this._data.keys())
             result.add_vertex(vertex);
-            degrees.set(vertex, this._data.get(vertex).size);
-        }
 
-        let used_waiting = new Set();
-        let used_closed = new Set();
-
-        while (true) {
-            //search for vertex of zero degree
-            let zero_vertex = null;
-            for (let [k, v] of degrees)
-                if (!used_waiting.has(k) && !used_closed.has(k) && v === 0) {
-                    zero_vertex = k;
-                    break;
-                }
-
-            if (zero_vertex === null)
-                break;
-
-            for (let to_vertex of this._data.get(zero_vertex))
-                if (used_waiting.has(to_vertex)) {
-                    result.add_edge(zero_vertex, to_vertex);
-                    used_waiting.delete(to_vertex);
-                    used_closed.add(to_vertex);
-                }
-            used_waiting.add(zero_vertex);
-
-            for (let vertex of this._data.keys())
-                if (this.has_edge(vertex, zero_vertex))
-                    degrees.set(vertex, degrees.get(vertex) - 1);
-        }
+        for (let [vertex, edges] of this._data)
+            for (let vertex_to of edges) {
+                //search for a path
+                let not_copy_edge = false;
+                for (let v of this._data.keys())
+                    if (v !== vertex && v !== vertex_to && this.has_edge(vertex, v) && this.has_edge(v, vertex_to))
+                        not_copy_edge = true;
+                if (!not_copy_edge)
+                    result.add_edge(vertex, vertex_to);
+            }
 
         return result;
     }
@@ -104,5 +100,15 @@ export class Graph {
         for (let [k, v] of this._data)
             result += k + ": " + setToString(v) + "\n";
         return result;
+    }
+
+    dfs(vertex, fun) {
+        let edges = this._data.get(vertex);
+        let list = [];
+        if (edges !== undefined)
+            for (let v of edges)
+                list.push(this.dfs(v, fun));
+
+        return fun(vertex, list);
     }
 }

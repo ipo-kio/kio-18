@@ -54,10 +54,6 @@ export class HexBoard {
         this._values[line][index - from] = value;
     }
 
-    conforms_to_a_rule(rule) {
-
-    }
-
     get lines() {
         return this._shape.length;
     }
@@ -68,6 +64,10 @@ export class HexBoard {
             for (let index = from; index <= to; index++)
                 yield new HexagonCell(line, index);
         }
+    }
+
+    get shape() {
+        return this._shape;
     }
 
     coordinate_diapason(sizing) {
@@ -129,6 +129,10 @@ export class Rule extends HexBoard {
         this._regime++;
         if (this._regime >= RULE_REGIMES_COUNT)
             this._regime = 0;
+    }
+
+    get value_to_set() {
+        return this.value(this.center_cell);
     }
 
     get rule_size() {

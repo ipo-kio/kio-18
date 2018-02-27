@@ -1,7 +1,6 @@
-import {Rule} from "../../hexagons/model/HexBoard";
 import {HexBoardView} from "./HexBoardView";
 import {Sizing} from "../model/sizing";
-import {EventDispatcherMixin, Event} from "../EventDispatcherMixin";
+import {EventDispatcherMixin, Event, EventDispatcherInterface} from "../EventDispatcherMixin";
 import {
     RULE_REGIME_AT_LEAST_ANY_POSITION, RULE_REGIME_AT_MOST_ANY_POSITION, RULE_REGIME_EXACT,
     RULE_REGIME_EXACT_ANY_POSITION
@@ -9,9 +8,7 @@ import {
 
 const sizing = new Sizing(20);
 
-class Nothing {} //TODO is there something else like this?
-
-export class RuleEditor extends EventDispatcherMixin(Nothing) {
+export class RuleEditor extends EventDispatcherInterface {
     _html_element;
     _rule_view;
 
@@ -20,6 +17,7 @@ export class RuleEditor extends EventDispatcherMixin(Nothing) {
 
         this._rule_view = new HexBoardView(rule, sizing);
         this._rule_view.changeable = true;
+        this._rule_view.add_listener('change', () => this.fire(new Event('change', this)));
 
         this.init_html_element();
     }

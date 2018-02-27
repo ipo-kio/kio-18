@@ -1,3 +1,7 @@
+class Nothing {}
+
+export let EventDispatcherInterface = EventDispatcherMixin(Nothing);
+
 export let EventDispatcherMixin = superclass => class extends superclass {
 
     _listeners = [];

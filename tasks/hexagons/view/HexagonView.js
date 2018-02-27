@@ -1,10 +1,11 @@
 import {sin30, sin60} from "../model/sizing";
 import {TYPES_COUNT} from "../model/HexBoard";
+import {EventDispatcherInterface, Event} from "../EventDispatcherMixin";
 
 export const CELL_STATE_NORMAL = 0;
 export const CELL_STATE_HIGHLIGHTED = 1;
 
-export class HexagonView {
+export class HexagonView extends EventDispatcherInterface {
     _board_view;
     _hex_cell;
     _display_object;
@@ -15,6 +16,7 @@ export class HexagonView {
     _allow_zero = true;
 
     constructor(board_view, hex_cell) {
+        super();
         this._board_view = board_view;
         this._hex_cell = hex_cell;
 
@@ -100,6 +102,8 @@ export class HexagonView {
                 val = this._allow_zero ? 0 : 1;
             this._board_view.board.set_value(this._hex_cell, val);
             this.redraw();
+
+            this.fire(new Event('change', this));
         };
 
         if (value) {

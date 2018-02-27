@@ -1,7 +1,8 @@
 import {HexagonView} from "./HexagonView";
 import {Rule} from "../model/HexBoard";
+import {Event, EventDispatcherInterface} from "../EventDispatcherMixin";
 
-export class HexBoardView {
+export class HexBoardView extends EventDispatcherInterface {
 
     _board;
     _cell_views;
@@ -14,6 +15,8 @@ export class HexBoardView {
     _changeable = false;
 
     constructor(board, sizing) {
+        super();
+
         this._board = board;
         this._sizing = sizing;
 
@@ -51,6 +54,8 @@ export class HexBoardView {
 
             if (cell.equals(rule_cell))
                 cell_view.allow_zero = false;
+
+            cell_view.add_listener('change', () => this.fire(new Event('change', this)));
         }
     }
 

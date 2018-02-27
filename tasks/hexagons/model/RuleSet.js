@@ -22,11 +22,9 @@ class TreeElement {
 export class RuleSet {
 
     _graph;
+    _root_rule;
 
     constructor(array_of_rules) {
-        let root_rule = new Rule([[0, 0], [0, 0, 0], [0, 0]]); //TODO generate
-        array_of_rules.push(root_rule);
-
         let full_graph = new Graph();
 
         for (let rule of array_of_rules)
@@ -34,13 +32,52 @@ export class RuleSet {
 
         full_graph.add_edges((r1, r2) => RuleSet.implies(r2, r1));
 
-        let factored_graph = full_graph.factorize();
+        let factored_graph = full_graph.factorize(list => {
+            if (list.length === 0)
+                return null;
+            let first_rule = list[0];
+            let first_value_to_set = first_rule.value_to_set;
+            for (let i = 1; i < list.length; i++)
+                if (list[i].value_to_set !== first_value_to_set)
+                    return null;
+            return first_rule;
+        });
 
-        this._graph = factored_graph.top_sort();
+        this._root_rule = new Rule([[0, 0], [0, 0, 0], [0, 0]]); //TODO generate
+        factored_graph.add_vertex(this._root_rule);
+        for (let v of factored_graph.vertices())
+            if (v !== this._root_rule)
+                factored_graph.add_edge(this._root_rule, v);
 
-        console.log(full_graph.toString());
-        console.log(factored_graph.toString());
-        console.log(this._graph.toString());
+        this._graph = factored_graph.transitive_reduce();
+    }
+
+    toString() {
+        return this._graph.toString();
+    }
+
+    value_to_set(board, {line, index}) {
+        return this._graph.dfs(this._root_rule, (rule, list) => {
+            if (!rule.conforms(board, {line, index}))
+                return 0;
+
+            if (list.length === 0)
+                return 0;
+            let result = 0;
+            for (let i = 0; i < list.length; i++)
+                if (list[i] !== 0) {
+                    if (result === 0)
+                        result = list[i];
+                    else if (result !== 0 && list[i] !== result) {
+                        result = 0;
+                        break;
+                    }
+                }
+
+            if (result !== 0)
+                return result;
+            return rule.value_to_set;
+        });
     }
 
     static equiv(rule1, rule2) {
