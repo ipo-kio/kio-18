@@ -25,6 +25,11 @@ export class HexBoardView extends EventDispatcherInterface {
         this.init_canvas();
     }
 
+    set board(value) {
+        this._board = value;
+        this.redraw();
+    }
+
     get board() {
         return this._board;
     }
@@ -99,5 +104,10 @@ export class HexBoardView extends EventDispatcherInterface {
 
         for (let cell_view of this._cell_views)
             cell_view.changeable = value;
+    }
+
+    redraw() {
+        for (let cell_view of this._cell_views)
+            cell_view.redraw();
     }
 }

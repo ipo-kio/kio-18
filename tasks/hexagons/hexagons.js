@@ -4,12 +4,14 @@ import {Sizing} from "./model/sizing";
 import {HexagonCell, HexBoard, rectangular_shape, Rule} from "./model/HexBoard";
 import {RulesList} from "./model/RulesList";
 import {Slider} from "./slider";
+import {BoardHistory} from "./model/BoardHistory";
 
 export class Hexagons {
 
     _$go_button;
     _points_animation_tick;
-    _tower_history;
+    _board_history;
+    _initial_board;
 
     _canvas;
     _grid_view;
@@ -74,10 +76,10 @@ export class Hexagons {
 
         this._rules_list.clear_rules();
 
-        for (let values of solution.r) {
-            let rule = new Rule(values);
-            this._rules_list.add_rule(rule);
-        }
+        let rules = [];
+        for (let values of solution.r)
+            rules.push(new Rule(values));
+        this._rules_list.add_rules(rules);
     }
 
     // private methods
@@ -90,15 +92,43 @@ export class Hexagons {
         domNode.appendChild(canvas_container);
         domNode.appendChild(this._rules_list.html_element);
 
+        this.initTimeControls(domNode);
+
+        this._rules_list.add_listener('change', () => this.update_history());
+    }
+
+    initTimeControls(domNode) {
         this._slider = new Slider(domNode, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
         this._slider.domNode.className = 'hexagons-slider';
         domNode.appendChild(this._slider.domNode);
 
         this._slider.onvaluechange = () => this.move_time_to(this.board_time());
+
+        let plus_button = document.createElement('button');
+        plus_button.innerText = '+1';
+        $(plus_button).click(() => this._slider.value++);
+        domNode.appendChild(plus_button);
+
+        let minus_button = document.createElement('button');
+        minus_button.innerText = '-1';
+        $(minus_button).click(() => this._slider.value--);
+        domNode.appendChild(minus_button);
+    }
+
+    update_history() {
+        this.new_history();
+        this.move_time_to(this.board_time());
+    }
+
+    new_history() {
+        this._board_history = new BoardHistory(Array.from(this._rules_list.raw_rules()), this._initial_board);
     }
 
     move_time_to(time) {
-        let board = this._board_history.get(time);
+        if (!this._board_history)
+            this.new_history();
+
+        this._grid_view.board = this._board_history.get(time);
     }
 
     init_canvas(domNode) {
@@ -117,5 +147,6 @@ export class Hexagons {
         this._grid_view = new HexBoardView(board, sizing);
 
         domNode.appendChild(this._grid_view.canvas);
+        this._initial_board = board;
     }
 }

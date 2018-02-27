@@ -1,7 +1,8 @@
 import {RuleEditor} from "../view/RuleEditor";
 import {Rule} from "./HexBoard";
+import {Event,EventDispatcherInterface} from "../EventDispatcherMixin";
 
-export class RulesList {
+export class RulesList extends EventDispatcherInterface {
 
     _html_element;
     _rule_editors = []; //array of rule editors
@@ -9,6 +10,7 @@ export class RulesList {
     _$add_rule_button;
 
     constructor() {
+        super();
         this.init_html_element();
         this.init_interaction();
     }
@@ -37,17 +39,20 @@ export class RulesList {
     }
 
     add_new_rule() {
-        this.add_rule(new Rule());
+        this.add_rules([new Rule()]);
     }
 
-    add_rule(rule) {
-        let editor = new RuleEditor(rule);
-        this._rules_list.appendChild(editor.html_element);
-        this._rule_editors.push(editor);
+    add_rules(rules) {
+        for (let rule of rules) {
+            let editor = new RuleEditor(rule);
+            this._rules_list.appendChild(editor.html_element);
+            this._rule_editors.push(editor);
 
-        this.add_listeners_to_editor(editor);
+            this.add_listeners_to_editor(editor);
 
-        this.update_rules_list();
+            this.update_rules_list();
+        }
+        this.fire_change();
     }
 
     clear_rules() {
@@ -97,6 +102,13 @@ export class RulesList {
     __remove_listener = e => {
         this.remove_rule(e.source);
     };
+    __change_listener = e => {
+        this.fire_change();
+    };
+
+    fire_change() {
+        this.fire(new Event('change', this));
+    }
 
     remove_rule(editor) {
         this._rules_list.removeChild(editor.html_element);
@@ -108,18 +120,22 @@ export class RulesList {
         this.remove_listeners_from_editor(editor);
 
         this.update_rules_list();
+
+        this.fire_change();
     }
 
     add_listeners_to_editor(editor) {
         editor.add_listener("up", this.__up_listener);
         editor.add_listener("down", this.__down_listener);
         editor.add_listener("remove", this.__remove_listener);
+        editor.add_listener("change", this.__change_listener);
     }
 
     remove_listeners_from_editor(editor) {
         editor.remove_listener("up", this.__up_listener);
         editor.remove_listener("down", this.__down_listener);
         editor.remove_listener("remove", this.__remove_listener);
+        editor.remove_listener("change", this.__change_listener);
     }
 
     *raw_rules() {

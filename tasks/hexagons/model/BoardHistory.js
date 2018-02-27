@@ -29,8 +29,12 @@ export class BoardHistory {
         return new_board;
     }
 
-    apply_to_cell(board, cell) {
-
+    get(index) {
+        if (index < 0)
+            index = 0;
+        if (index > STEPS)
+            index = STEPS;
+        return this._boards[index];
     }
 
 }
