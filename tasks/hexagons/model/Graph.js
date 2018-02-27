@@ -48,7 +48,46 @@ export class Graph {
             result.add_vertex(list);
         }
 
-        result.add_edges((l1, l2) => l1.length > 0 && l2.length > 0 && this.has_edge(l1[0], l2[0]));
+        result.add_edges((l1, l2) => l1 !== l2 && l1.length > 0 && l2.length > 0 && this.has_edge(l1[0], l2[0]));
+
+        return result;
+    }
+
+    top_sort() {
+        let result = new Graph();
+        let degrees = new Map();
+        for (let vertex of this._data.keys()) {
+            result.add_vertex(vertex);
+            degrees.set(vertex, this._data.get(vertex).size);
+        }
+
+        let used_waiting = new Set();
+        let used_closed = new Set();
+
+        while (true) {
+            //search for vertex of zero degree
+            let zero_vertex = null;
+            for (let [k, v] of degrees)
+                if (!used_waiting.has(k) && !used_closed.has(k) && v === 0) {
+                    zero_vertex = k;
+                    break;
+                }
+
+            if (zero_vertex === null)
+                break;
+
+            for (let to_vertex of this._data.get(zero_vertex))
+                if (used_waiting.has(to_vertex)) {
+                    result.add_edge(zero_vertex, to_vertex);
+                    used_waiting.delete(to_vertex);
+                    used_closed.add(to_vertex);
+                }
+            used_waiting.add(zero_vertex);
+
+            for (let vertex of this._data.keys())
+                if (this.has_edge(vertex, zero_vertex))
+                    degrees.set(vertex, degrees.get(vertex) - 1);
+        }
 
         return result;
     }

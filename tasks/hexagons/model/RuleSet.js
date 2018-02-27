@@ -32,13 +32,16 @@ export class RuleSet {
         for (let rule of array_of_rules)
             full_graph.add_vertex(rule);
 
-        full_graph.add_edges((r1, r2) => RuleSet.implies(r1, r2));
+        full_graph.add_edges((r1, r2) => RuleSet.implies(r2, r1));
 
-        console.info(full_graph.toString());
-        this._graph = full_graph.factorize();
-        console.info(this._graph.toString());
+        let factored_graph = full_graph.factorize();
+
+        this._graph = factored_graph.top_sort();
+
+        console.log(full_graph.toString());
+        console.log(factored_graph.toString());
+        console.log(this._graph.toString());
     }
-
 
     static equiv(rule1, rule2) {
         return this.implies(rule1, rule2) && this.implies(rule2, rule1);
