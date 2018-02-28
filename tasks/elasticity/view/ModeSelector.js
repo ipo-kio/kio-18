@@ -50,6 +50,10 @@ export default class ModeSelector {
             let $label = $('<label>');
             $label.attr('for', id);
             $label.html('&nbsp;');
+            if (i === 0)
+                $label.addClass('mode-move');
+            else
+                $label.addClass('mode-stick');
             $container.append($label);
 
             $element.change(e => {

@@ -6,10 +6,12 @@
   text-align: center;
 }
 
+$mode-img-size: 42px;
+
 .elasticity-mode-selector {
 
   input[type=radio] {
-    width   : 28px;
+    width   : $mode-img-size;
     margin  : 0;
     padding : 0;
     opacity : 0;
@@ -17,13 +19,33 @@
 
   input[type=radio] + label {
     display      : inline-block;
-    margin-left  : -28px;
-    padding-left : 28px;
-    background   : url('hexagons-resources/grass.jpg') no-repeat 0 0;
-    line-height  : 24px;
+    margin-left  : -$mode-img-size;
+    padding-left : $mode-img-size;
+    line-height  : $mode-img-size;
+    width: 0;
   }
 
-  input[type=radio]:checked + label {
-    background   : url('hexagons-resources/fly1.png') no-repeat 0 0;
+  input[type=radio] + label.mode-move {
+    background   : url('elasticity-resources/bt_move.png') no-repeat 0 0;
+    margin-right: 1em;
   }
+
+  input[type=radio]:checked + label.mode-move {
+    //background   : url('elasticity-resources/bt_move.png') no-repeat 0 0;
+  }
+
+  input[type=radio] + label.mode-stick {
+    background   : url('elasticity-resources/bt_stick.png') no-repeat 0 0;
+  }
+
+  input[type=radio]:checked + label/*.mode-stick*/ {
+    //background   : url('elasticity-resources/bt_stick.png') no-repeat 0 0, rgba(255,255,0,0.5);
+    border: 2px solid yellow;
+  }
+}
+
+.elasticity-go {
+  background-color: #ffb60f;
+  font-size: 1.2em;
+  margin-top: 1em;
 }

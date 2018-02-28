@@ -9,6 +9,7 @@ import TowerHistory from "./model/TowerHistory";
 import {PointWithPosition} from "./model/PointWithPosition.js";
 import {Spring} from "./model/Spring";
 import ModeSelector, {MODE_DO_NOTHING} from "./view/ModeSelector";
+import {Evaluator, HeightValue} from "./model/value";
 
 const POINTS_CHANGEABLE = 0;
 const POINTS_FIXED = 1;
@@ -34,15 +35,19 @@ export class Elasticity {
 
         this.initInterface(domNode, preferred_width);
 
+        this.setup_initial_points();
+
+        createjs.Ticker.framerate = 20;
+        createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
+        createjs.Ticker.addEventListener("tick", this._stage);
+    }
+
+    setup_initial_points() {
         let pwp1 = new PointWithPosition(0, 0, POINT_TYPE_FIXED);
         this._point_set.add_object(pwp1);
         let pwp2 = new PointWithPosition(-1, -1, POINT_TYPE_NORMAL);
         this._point_set.add_object(pwp2);
         this._springs_set.add_object(new Spring(pwp1, pwp2));
-
-        createjs.Ticker.framerate = 20;
-        createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
-        createjs.Ticker.addEventListener("tick", this._stage);
     }
 
     static preloadManifest___________________1() {
@@ -54,7 +59,28 @@ export class Elasticity {
             {
                 name: 'height',
                 title: 'Высота',
-                ordering: 'maximize'
+                ordering: 'maximize',
+                view(v) {
+                    if (v === -1)
+                        return "Башня нестабильна";
+                    else if (v === -2)
+                        return "Башня упала";
+                    else
+                        return v.toFixed(1);
+                }
+            },
+            {
+                name: 'length',
+                title: 'Материал',
+                ordering: 'minimize',
+                view(v) {
+                    return v.toFixed(1);
+                }
+            },
+            {
+                name: 'shrinkage',
+                title: 'Усадка',
+                ordering: 'minimize'
             }
         ];
     }
@@ -126,7 +152,7 @@ export class Elasticity {
         //domNode.appendChild(this._type_selector.html_object);
 
         //go button
-        this._$go_button = $('<button type="button">');
+        this._$go_button = $('<button type="button" class="elasticity-go">');
 
         this.point_set_manipulation_state = POINTS_CHANGEABLE;
 
@@ -169,6 +195,8 @@ export class Elasticity {
             this._$go_button.html("Расположить точки");
 
             this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
+
+            this.submitResult();
 
             this._animation_start_time = new Date().getTime();
             this._stage.addEventListener('tick', this._points_animation_tick);
@@ -221,5 +249,27 @@ export class Elasticity {
             if (spring.too_long)
                 return true;
         return false;
+    }
+
+    submitResult() {
+        if (!this._tower_history)
+            return;
+        let value = new HeightValue();
+        let evaluator = new Evaluator(value, this._tower_history);
+        console.log(evaluator);
+
+        //get length
+        let length = 0;
+        for (let spring of this._springs_set)
+            length += spring.length;
+        let length_acc = 0.1;
+        length = Math.round(length / length_acc) * length_acc;
+
+        if (evaluator.error)
+            this.kioapi.submitResult({height: -2, length, shrinkage: 0});
+        else if (evaluator.ding_dong)
+            this.kioapi.submitResult({height: -1, length, shrinkage: 0});
+        else
+            this.kioapi.submitResult({height: evaluator.result, length, shrinkage: 0});
     }
 }
