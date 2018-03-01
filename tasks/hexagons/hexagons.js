@@ -8,7 +8,6 @@ import {BoardHistory, STEPS} from "./model/BoardHistory";
 
 export class Hexagons {
 
-    _$go_button;
     _points_animation_tick;
     _board_history = null;
     _initial_board;
@@ -66,7 +65,7 @@ export class Hexagons {
         let r = [];
         for (let rule of this._rules_list.raw_rules())
             r.push(rule.values);
-        return {r};
+        return {r, f: this._initial_board.values};
     }
 
     board_time() {
@@ -83,6 +82,11 @@ export class Hexagons {
         for (let values of solution.r)
             rules.push(new Rule(values));
         this._rules_list.add_rules(rules);
+
+        //load initial field
+        this._initial_board.values = solution.f;
+
+        this.reset_solution();
     }
 
     // private methods
@@ -97,10 +101,12 @@ export class Hexagons {
 
         this.init_time_controls(domNode);
 
-        this._rules_list.add_listener('change', () => {
-            this._board_history = null;
-            this._slider.value = 0;
-        });
+        this._rules_list.add_listener('change', () => this.reset_solution());
+    }
+
+    reset_solution() {
+        this._board_history = null;
+        this._slider.value = 0;
     }
 
     init_time_controls(domNode) {
@@ -138,6 +144,8 @@ export class Hexagons {
         if (!this._board_history && time > 0)
             this.new_history();
 
+        this._grid_view.changeable = time === 0;
+
         this._grid_view.board = time === 0 ? this._initial_board : this._board_history.get(time);
         this._time_shower.innerHTML = 'Шаг: <b>' + this.board_time() + '</b>';
     }
@@ -156,6 +164,7 @@ export class Hexagons {
 
         let sizing = new Sizing(16);
         this._grid_view = new HexBoardView(board, sizing);
+        this._grid_view.changeable = true;
 
         domNode.appendChild(this._grid_view.canvas);
         this._initial_board = board;

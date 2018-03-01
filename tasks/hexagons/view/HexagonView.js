@@ -82,38 +82,38 @@ export class HexagonView extends EventDispatcherInterface {
         return this._changeable;
     }
 
+    __rollover_handler = () => {
+        this._state = CELL_STATE_HIGHLIGHTED;
+        this.redraw();
+    };
+
+    __rollout_handler = () => {
+        this._state = CELL_STATE_NORMAL;
+        this.redraw();
+    };
+
+    __click_handler = () => {
+        let val = this._board_view.board.value(this._hex_cell);
+        val += 1;
+        if (val > TYPES_COUNT)
+            val = this._allow_zero ? 0 : 1;
+        this._board_view.board.set_value(this._hex_cell, val);
+        this.redraw();
+
+        this.fire(new Event('change', this));
+    };
+
     set changeable(value) {
         this._changeable = value;
 
-        let rollover_handler = () => {
-            this._state = CELL_STATE_HIGHLIGHTED;
-            this.redraw();
-        };
-
-        let rollout_handler = () => {
-            this._state = CELL_STATE_NORMAL;
-            this.redraw();
-        };
-
-        let click_handler = () => {
-            let val = this._board_view.board.value(this._hex_cell);
-            val += 1;
-            if (val > TYPES_COUNT)
-                val = this._allow_zero ? 0 : 1;
-            this._board_view.board.set_value(this._hex_cell, val);
-            this.redraw();
-
-            this.fire(new Event('change', this));
-        };
-
         if (value) {
-            this._display_object.addEventListener('rollover', rollover_handler);
-            this._display_object.addEventListener('rollout', rollout_handler);
-            this._display_object.addEventListener('click', click_handler);
+            this._display_object.addEventListener('rollover', this.__rollover_handler);
+            this._display_object.addEventListener('rollout', this.__rollout_handler);
+            this._display_object.addEventListener('click', this.__click_handler);
         } else {
-            this._display_object.removeEventListener('rollover', rollover_handler);
-            this._display_object.removeEventListener('rollout', rollout_handler);
-            this._display_object.removeEventListener('click', click_handler);
+            this._display_object.removeEventListener('rollover', this.__rollover_handler);
+            this._display_object.removeEventListener('rollout', this.__rollout_handler);
+            this._display_object.removeEventListener('click', this.__click_handler);
         }
     }
 

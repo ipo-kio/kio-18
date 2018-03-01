@@ -83,12 +83,19 @@ export class HexBoard {
         return {left, right};
     }
 
+    static _deep_copy_array(a) {
+        let b = new Array(a.length);
+        for (let i = 0; i < a.length; i++)
+            b[i] = a[i].slice();
+        return b;
+    }
+
     get values() {
-        return this._values.slice();
+        return HexBoard._deep_copy_array(this._values);
     }
 
     set values(value) {
-        this._values = value.slice();
+        this._values = HexBoard._deep_copy_array(value);
     }
 }
 
