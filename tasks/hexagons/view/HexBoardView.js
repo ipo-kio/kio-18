@@ -110,4 +110,9 @@ export class HexBoardView extends EventDispatcherInterface {
         for (let cell_view of this._cell_views)
             cell_view.redraw();
     }
+
+    add_listener_to_all_cell_views(type, action) {
+        for (let cell_view of this._cell_views)
+            cell_view.add_listener(type, action);
+    }
 }

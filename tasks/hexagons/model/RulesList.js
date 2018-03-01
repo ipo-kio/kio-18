@@ -151,4 +151,16 @@ export class RulesList extends EventDispatcherInterface {
     get rule_set() {
         return this._rule_set;
     }
+
+    rule_editors() {
+        return this._rule_editors.values();
+    }
+
+    find_editor_by_rule(rule) {
+        for (let editor of this._rule_editors)
+            if (editor.rule === rule)
+                return editor;
+
+        return null;
+    }
 }

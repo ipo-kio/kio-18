@@ -88,11 +88,13 @@ export class HexagonView extends EventDispatcherInterface {
     __rollover_handler = () => {
         this._state = CELL_STATE_HIGHLIGHTED;
         this.redraw();
+        this.fire(new Event('rollover', this));
     };
 
     __rollout_handler = () => {
         this._state = CELL_STATE_NORMAL;
         this.redraw();
+        this.fire(new Event('rollout', this));
     };
 
     __click_handler = () => {
@@ -126,6 +128,10 @@ export class HexagonView extends EventDispatcherInterface {
 
     set allow_zero(value) {
         this._allow_zero = value;
+    }
+
+    get hex_cell() {
+        return this._hex_cell;
     }
 }
 

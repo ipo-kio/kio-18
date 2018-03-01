@@ -165,6 +165,31 @@ export class Hexagons {
         let sizing = new Sizing(16);
         this._grid_view = new HexBoardView(board, sizing);
         this._grid_view.changeable = true;
+        this._grid_view.add_listener_to_all_cell_views('rollover', e => {
+            let cell_view = e.source;
+            let hc = cell_view.hex_cell;
+            let rs = this._rules_list.rule_set;
+
+            //highlight conforming rules
+            let conforming_rules = rs.all_conforming_rules(this._grid_view.board, hc);
+            for (let conforming_rule of conforming_rules) {
+                let editor = this._rules_list.find_editor_by_rule(conforming_rule);
+                if (editor !== null)
+                    editor.extra_class = 'rule-conforms';
+            }
+
+            //highlight fired rule
+            let [value_to_set, rule_fired] = rs.value_to_set(this._grid_view.board, hc);
+            let fired_editor = this._rules_list.find_editor_by_rule(rule_fired);
+            if (fired_editor !== null)
+                fired_editor.extra_class = 'rule-fired';
+
+        });
+        this._grid_view.add_listener_to_all_cell_views('rollout', e => {
+            //unhighlight everything
+            for (let editor of this._rules_list.rule_editors())
+                editor.extra_class = '';
+        });
 
         domNode.appendChild(this._grid_view.canvas);
         this._initial_board = board;
