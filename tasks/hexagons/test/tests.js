@@ -7,6 +7,14 @@ import {
 import {RuleSet} from "../model/RuleSet";
 import {BoardHistory} from "../model/BoardHistory";
 
+let rule1 = new Rule([[1, 2], [0, 3, 0], [0, 0]]);
+let board = new HexBoard(rectangular_shape(10, 10));
+board.set_value({line: 5, index: 5}, 1);     //. 1
+board.set_value({line: 6, index: 5}, 2);     // 2 x
+console.log(rule1.conforms(board, {line: 5, index: 4}) === true);
+console.log(rule1.conforms(board, {line: 6, index: 6}) === true);
+
+/*
 let rule1 = new Rule([[1, 1], [1, 1, 1], [1, 1]]);
 let rule2 = new Rule([[0, 0], [1, 1, 1], [1, 1]]);
 let rule3 = new Rule([[1, 1], [1, 1, 1], [0, 0]]);
@@ -43,4 +51,4 @@ function create_board() {
 let board = create_board();
 
 let bh = new BoardHistory([rule1, rule2, rule3, rule4, rule31], board);
-console.info(bh);
+console.info(bh);*/

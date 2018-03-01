@@ -88,24 +88,33 @@ export class RuleSet {
 
         //1st case. not exact position imply exact positions only if not exact positions are all equal
         if (rule1.regime !== RULE_REGIME_EXACT && rule2.regime === RULE_REGIME_EXACT) {
-            let i1 = tc1.indexOf(rule1.rule_size);
-            let i2 = tc2.indexOf(rule2.rule_size);
-            let all_full = i1 === i2 && i1 !== -1;
-            if (!all_full)
+            if (rule1.regime !== RULE_REGIME_AT_LEAST_ANY_POSITION && rule1.regime !== RULE_REGIME_EXACT_ANY_POSITION)
                 return false;
-            return rule1.regime === RULE_REGIME_AT_LEAST_ANY_POSITION || rule1.regime === RULE_REGIME_EXACT_ANY_POSITION;
+
+            { //1st case, 006000 = 006000
+                let i1 = tc1.indexOf(rule1.rule_size);
+                let i2 = tc2.indexOf(rule2.rule_size);
+                if (i1 === i2 && i1 !== -1)
+                    return true;
+            }
+            { //2nd case, 005100 = 005100
+                let i1 = tc1.indexOf(rule1.rule_size - 1);
+                let i2 = tc2.indexOf(rule2.rule_size - 1);
+                let j1 = tc1.indexOf(1);
+                let j2 = tc2.indexOf(1);
+                if (i1 === i2 && i1 !== -1 && j1 === j2 && j1 !== -1)
+                    return true;
+            }
+            return false;
         }
 
         //2nd case, both are exact
+
+        if (rule2.regime === RULE_REGIME_EXACT)
+            return rule2.conforms(rule1, {line: 1, index: 1});
+
         let vl1 = rule1.values_list;
         let vl2 = rule2.values_list;
-
-        if (rule2.regime === RULE_REGIME_EXACT) {
-            for (let i = 0; i < vl1.length; i++)
-                if (vl2[i] !== 0 && vl1[i] !== vl2[i])
-                    return false;
-            return true;
-        }
 
         //now, we know that second rule is not 'exact places'
         //let first rule be also not 'exact places'.

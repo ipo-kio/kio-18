@@ -38,6 +38,10 @@ export class HexBoard {
     }
 
     value({line, index}) {
+        return this.value_by_ints(line, index);
+    }
+
+    value_by_ints(line, index) {
         if (line < 0 || line >= this._shape.length)
             return -1;
 
@@ -184,23 +188,36 @@ export class Rule extends HexBoard {
 
     conforms(board, {line, index}) {
         if (this._regime === RULE_REGIME_EXACT) {
-            for (let {line: rule_line, index: rule_index} of this.cells()) {
-                let dx = rule_line - this._center_cell.line;
-                let dy = rule_index - this._center_cell.index;
-                if (dx === 0 && dy === 0)
-                    continue;
-                let rule_v = this.value({line: rule_line, index: rule_index});
+            let rule_vals = this.values_list;
+            let board_vals = [
+                board.value_by_ints(line - 1, index - 1),
+                board.value_by_ints(line - 1, index),
+                board.value_by_ints(line, index + 1),
+                board.value_by_ints(line + 1, index + 1),
+                board.value_by_ints(line + 1, index),
+                board.value_by_ints(line, index - 1)
+            ];
 
-                if (rule_v === 0)
-                    continue;
+            //[...x6], [...x6]
+            for (let dir = -1; dir <= 1; dir++)
+                for (let delta = 0; delta < 6; delta++) {
+                    let ok = true;
+                    for (let i = 0; i < 6; i++) {
+                        if (rule_vals[i] === 0)
+                            continue;
+                        let j = i * dir + delta;
+                        while (j < 0) j += 6;
+                        while (j >= 6) j -= 6;
+                        if (rule_vals[i] !== board_vals[j]) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (ok)
+                        return true;
+                }
 
-                let v = board.value({line: line + dx, index: index + dy});
-
-                if (rule_v !== v)
-                    return false;
-            }
-
-            return true;
+            return false;
         }
 
         //count
@@ -213,7 +230,7 @@ export class Rule extends HexBoard {
             let dy = rule_index - this._center_cell.index;
             if (dx === 0 && dy === 0)
                 continue;
-            let v = board.value({line: line + dx, index: index + dy});
+            let v = board.value_by_ints(line + dx, index + dy);
             if (v >= 0)
                 tc[v - 1]++;
         }
