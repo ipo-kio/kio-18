@@ -3,22 +3,22 @@ import {SpringView} from "./SpringView";
 import {EventDispatcher, Event} from "../EventDispatcher";
 import {PointWithPosition} from "../model/PointWithPosition";
 import {Spring} from "../model/Spring";
-import {POINT_TYPE_NORMAL} from "../model/point_types";
-import {MODE_CREATE_EDGE, MODE_CREATE_VERTEX} from "./ModeSelector";
+import {POINT_TYPE_FIXED, POINT_TYPE_NORMAL} from "../model/point_types";
+import {MODE_CREATE_EDGE, MODE_CREATE_VERTEX, MODE_DO_NOTHING} from "./ModeSelector";
 import {Constants} from "../model/constants";
-
-export const WIDTH = 700;
-export const HEIGHT = 600;
-const X0 = WIDTH / 2;
-const Y0 = HEIGHT / 2;
 
 const GRID_STEP = 5;
 export const GRID_STEP_SIZE = 0.1;
 
-export const NATURAL_X_MIN = Math.ceil(-X0 / GRID_STEP * GRID_STEP_SIZE);
-export const NATURAL_Y_MIN = Math.ceil(-Y0 / GRID_STEP * GRID_STEP_SIZE);
-export const NATURAL_X_MAX = Math.floor((WIDTH - X0) / GRID_STEP * GRID_STEP_SIZE);
-export const NATURAL_Y_MAX = Math.floor((HEIGHT - Y0) / GRID_STEP * GRID_STEP_SIZE);
+export const WIDTH = 700;
+export const HEIGHT = 600;
+const X0 = WIDTH / 2;
+const Y0 = HEIGHT - 2 * GRID_STEP;
+
+export const NATURAL_X_MIN = Math.ceil(-X0 / GRID_STEP) * GRID_STEP_SIZE;
+export const NATURAL_X_MAX = Math.floor((WIDTH - X0) / GRID_STEP) * GRID_STEP_SIZE;
+export const NATURAL_Y_MIN = Math.ceil((Y0 - HEIGHT) / GRID_STEP) * GRID_STEP_SIZE;
+export const NATURAL_Y_MAX = Math.floor(Y0 / GRID_STEP) * GRID_STEP_SIZE;
 
 export function n2s({x: x_natural, y: y_natural}) {
     return {
@@ -80,6 +80,7 @@ export default class GridView {
                     if (e.target === this._grid) {
                         let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
                         let {x, y} = s2n(display_object_local);
+                        console.log(x, y);
                         this._points_set_view.set.add_object(new PointWithPosition(x, y, this.point_type_to_create));
                     }
                     break;
@@ -90,6 +91,8 @@ export default class GridView {
     init_edge(spring) {
         let view = new SpringView(spring);
         view.display_object.addEventListener("dblclick", e => {
+            if (this.actual_mouse_actions_mode() === MODE_DO_NOTHING)
+                return;
             if (!this.dblclick_is_correct(e))
                 return;
             this.springs_set.remove_object(spring);
@@ -101,6 +104,10 @@ export default class GridView {
         let pv = new PointView(pwp);
 
         pv.display_object.addEventListener("dblclick", e => {
+            if (this.actual_mouse_actions_mode() === MODE_DO_NOTHING)
+                return;
+            if (pwp.point_type_ind === POINT_TYPE_FIXED)
+                return;
             if (!this.dblclick_is_correct(e))
                 return;
             this.point_set.remove_object(pwp);
@@ -133,6 +140,8 @@ export default class GridView {
                     }
                     break;
                 case MODE_CREATE_VERTEX:
+                    if (pv.point_with_position.point_type_ind === POINT_TYPE_FIXED)
+                        return;
                     natural_pos = s2n({x: pv.display_object.x + e.localX, y: pv.display_object.y + e.localY});
                     let pwp = pv.point_with_position;
                     pwp.set_location(natural_pos);
@@ -174,11 +183,15 @@ export default class GridView {
             }
         });
         pv.display_object.addEventListener("rollover", () => {
+            if (this.actual_mouse_actions_mode() === MODE_DO_NOTHING)
+                return;
             this._rolled_over_point = pv;
             if (this._virtual_point_view)
                 this._virtual_point_view.display_object.visible = false;
         });
         pv.display_object.addEventListener("rollout", () => {
+            if (this.actual_mouse_actions_mode() === MODE_DO_NOTHING)
+                return;
             this._rolled_over_point = null;
             if (this._virtual_point_view)
                 this._virtual_point_view.display_object.visible = true;

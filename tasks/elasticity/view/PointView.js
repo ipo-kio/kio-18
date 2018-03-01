@@ -4,7 +4,6 @@ export class PointView {
 
     _display_object;
     _point_with_position;
-    _movable = true;
 
     constructor(point_with_position) {
         this._point_with_position = point_with_position;
@@ -39,14 +38,6 @@ export class PointView {
 
     get display_object() {
         return this._display_object;
-    }
-
-    get movable() {
-        return this._movable;
-    }
-
-    set movable(value) {
-        this._movable = value;
     }
 
     set over(_over) {

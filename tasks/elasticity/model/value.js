@@ -1,9 +1,7 @@
 import {Constants} from "./constants";
-import GridView, {NATURAL_Y_MIN} from "../view/GridView";
 
 export class Value {
     evaluate(history_point) {
-        //do nothing
     }
 
     get max_spread() {
@@ -13,23 +11,34 @@ export class Value {
     get rounding_to() {
 
     }
+
+    evaluate_and_round(history_point) {
+        return this.round(this.evaluate(history_point));
+    }
+
+    round(x) {
+        return Math.round(x / this.rounding_to) * this.rounding_to;
+    }
 }
 
 export class HeightValue extends Value {
 
     evaluate(history_point) {
         let max_value = -Infinity;
+        let min_value = +Infinity;
         for (let i = 0; i < history_point.vals.length; i += 4) {
             // let x = history_point.vals[i];
             let y = history_point.vals[i + 1];
             if (y > max_value)
                 max_value = y;
+            if (y < min_value)
+                min_value = y;
         }
 
-        if (max_value < NATURAL_Y_MIN)
+        if (min_value < 0)
             return; //return undefined
 
-        return max_value - NATURAL_Y_MIN;
+        return max_value;
     }
 
     get max_spread() {
@@ -74,9 +83,7 @@ export class Evaluator {
                 this._ding_dong = true;
         }
 
-        this._result = (min_value + max_value) / 2;
-
-        this._result = Math.round(this._result / this._value.rounding_to) * this._value.rounding_to;
+        this._result = this._value.round((min_value + max_value) / 2);
     }
 
 

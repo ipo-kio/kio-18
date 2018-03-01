@@ -14,13 +14,30 @@
     <script src="elasticity.js"></script>
     <link rel="stylesheet" type="text/css" href="elasticity.css">
     <script>
-        $(function() {
-            kio_api.initializeKioProblem(elasticity.Elasticity, document.getElementById('problem'), {count_windows: true, rounding: 10});
+        var query = location.search.substr(1).trim().split('&');
+        var level = 0;
+        // console.log(query);
+        for (var i = 0; i < query.length; i++) {
+            if (query[i] === "level=1")
+                level = 1;
+            else if (query[i] === "level=2")
+                level = 2;
+        }
+
+        console.log('level', level);
+
+        $(function () {
+            kio_api.initializeKioProblem(
+                elasticity.Elasticity,
+                document.getElementById('problem'),
+                {level: level}
+            );
         });
     </script>
 </head>
 <body>
 <div id="stud-unique-id" style="display: none">kio-task-elasticity</div> <!--TODO get this somehow from task id -->
+<script>$('#stud-unique-id').text('kio-task-elasticity-' + level);</script>
 <div id="problem">
 </div>
 </body>

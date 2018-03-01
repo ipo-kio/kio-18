@@ -10,6 +10,7 @@ import {PointWithPosition} from "./model/PointWithPosition.js";
 import {Spring} from "./model/Spring";
 import ModeSelector, {MODE_DO_NOTHING} from "./view/ModeSelector";
 import {Evaluator, HeightValue} from "./model/value";
+import {Constants} from "./model/constants";
 
 const POINTS_CHANGEABLE = 0;
 const POINTS_FIXED = 1;
@@ -23,6 +24,16 @@ export class Elasticity {
     constructor(settings) {
         this.settings = settings;
         this._points_animation_tick = this.points_animation_tick.bind(this);
+
+        switch (settings.level) {
+            case 0:
+                Constants.E = 400;
+                break;
+            case 1:
+            case 2:
+                Constants.E = 650;
+                break;
+        }
     }
 
     id() {
@@ -43,11 +54,22 @@ export class Elasticity {
     }
 
     setup_initial_points() {
-        let pwp1 = new PointWithPosition(0, 0, POINT_TYPE_FIXED);
-        this._point_set.add_object(pwp1);
-        let pwp2 = new PointWithPosition(-1, -1, POINT_TYPE_NORMAL);
-        this._point_set.add_object(pwp2);
-        this._springs_set.add_object(new Spring(pwp1, pwp2));
+        if (this.settings.level === 0) {
+            for (let i = -3; i <= 3; i++) {
+                let pwp = new PointWithPosition(2 * i, 0, POINT_TYPE_FIXED);
+                this._point_set.add_object(pwp);
+            }
+        } else if (this.settings.level === 1) {
+            for (let i = -1; i <= 1; i++) {
+                let pwp = new PointWithPosition(2 * i, 0, POINT_TYPE_FIXED);
+                this._point_set.add_object(pwp);
+            }
+        } else if (this.settings.level === 2) {
+            for (let i = 0; i <= 1; i++) {
+                let pwp = new PointWithPosition(3 * i - 1.5, 0, POINT_TYPE_FIXED);
+                this._point_set.add_object(pwp);
+            }
+        }
     }
 
     static preloadManifest___________________1() {
@@ -65,6 +87,8 @@ export class Elasticity {
                         return "Башня нестабильна";
                     else if (v === -2)
                         return "Башня упала";
+                    else if (v === -3)
+                        return "-";
                     else
                         return v.toFixed(1);
                 }
@@ -74,13 +98,20 @@ export class Elasticity {
                 title: 'Материал',
                 ordering: 'minimize',
                 view(v) {
+                    if (v <= 0)
+                        return "-";
                     return v.toFixed(1);
                 }
             },
             {
                 name: 'shrinkage',
                 title: 'Усадка',
-                ordering: 'minimize'
+                ordering: 'minimize',
+                view(v) {
+                    if (v <= 0)
+                        return "-";
+                    return v.toFixed(1);
+                }
             }
         ];
     }
@@ -106,6 +137,8 @@ export class Elasticity {
         if (!solution)
             return;
 
+        this.point_set_manipulation_state = POINTS_CHANGEABLE;
+
         this._springs_set.clear();
         this._point_set.clear();
 
@@ -116,6 +149,10 @@ export class Elasticity {
             this._springs_set.add_object(
                 new Spring(this._point_set.get(i1), this._point_set.get(i2))
             )
+
+        //evaluate history and submit result
+        this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
+        this.submitResult();
     }
 
     // private methods
@@ -154,7 +191,7 @@ export class Elasticity {
         //go button
         this._$go_button = $('<button type="button" class="elasticity-go">');
 
-        this.point_set_manipulation_state = POINTS_CHANGEABLE;
+        this.set_global_regime_changeable();
 
         $(domNode).append(this._$go_button);
         this._$go_button.click(() => {
@@ -187,32 +224,42 @@ export class Elasticity {
     }
 
     set point_set_manipulation_state(value) {
+        if (this._point_set_manipulation_state === value)
+            return;
         this._point_set_manipulation_state = value;
 
-        if (value === POINTS_FIXED) {
-            this._grid_view.mouse_actions_mode = MODE_DO_NOTHING;
-            this.copy_points_and_springs_set();
-            this._$go_button.html("Расположить точки");
+        if (value === POINTS_FIXED)
+            this.set_global_regime_fixed();
+        else if (value === POINTS_CHANGEABLE)
+            this.set_global_regime_changeable();
+    }
 
-            this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
+    set_global_regime_fixed() {
+        this._grid_view.mouse_actions_mode = MODE_DO_NOTHING;
+        this.copy_points_and_springs_set();
+        this._$go_button.html("Расположить точки");
 
-            this.submitResult();
+        this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
 
-            this._animation_start_time = new Date().getTime();
-            this._stage.addEventListener('tick', this._points_animation_tick);
+        this.submitResult();
 
-            this._grid_view.grid_visible = false;
-        } else if (value === POINTS_CHANGEABLE) {
-            this._grid_view.mouse_actions_mode = this._mouse_mode_selector.current_mode;
-            this._grid_view.point_set = this._point_set;
-            this._grid_view.springs_set = this._springs_set;
-            this._$go_button.html("Смотреть движение");
-            this._stage.removeEventListener('tick', this._points_animation_tick);
+        this._animation_start_time = new Date().getTime();
+        this._stage.addEventListener('tick', this._points_animation_tick);
 
-            this._tower_history = null; //TODO either store it until any change, or don't store it at all
+        this._grid_view.grid_visible = false;
+    }
 
-            this._grid_view.grid_visible = true;
-        }
+    set_global_regime_changeable() {
+        this._grid_view.mouse_actions_mode = this._mouse_mode_selector.current_mode;
+        this._grid_view.point_set = this._point_set;
+        this._grid_view.springs_set = this._springs_set;
+        this._$go_button.html("Смотреть движение");
+        this._stage.removeEventListener('tick', this._points_animation_tick);
+
+        this._tower_history = null; //TODO either store it until any change, or don't store it at all
+        this.submitResult({height: -3, length: 0, shrinkage: 0});
+
+        this._grid_view.grid_visible = true;
     }
 
     copy_points_and_springs_set() {
@@ -256,7 +303,7 @@ export class Elasticity {
             return;
         let value = new HeightValue();
         let evaluator = new Evaluator(value, this._tower_history);
-        console.log(evaluator);
+        let height = evaluator.result;
 
         //get length
         let length = 0;
@@ -269,7 +316,12 @@ export class Elasticity {
             this.kioapi.submitResult({height: -2, length, shrinkage: 0});
         else if (evaluator.ding_dong)
             this.kioapi.submitResult({height: -1, length, shrinkage: 0});
-        else
-            this.kioapi.submitResult({height: evaluator.result, length, shrinkage: 0});
+        else {
+            //get shrinkage
+            let initial_height = value.evaluate_and_round(this._tower_history.get_by_time(0));
+            let shrinkage = Math.abs(initial_height - height);
+
+            this.kioapi.submitResult({height, length, shrinkage});
+        }
     }
 }
