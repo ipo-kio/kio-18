@@ -26,6 +26,9 @@ export class HexagonView extends EventDispatcherInterface {
 
     init_display_object() {
         this._display_object = new createjs.Shape();
+
+        this._display_object.addEventListener('rollover', this.__rollover_handler);
+        this._display_object.addEventListener('rollout', this.__rollout_handler);
     }
 
     redraw() {
@@ -107,12 +110,12 @@ export class HexagonView extends EventDispatcherInterface {
         this._changeable = value;
 
         if (value) {
-            this._display_object.addEventListener('rollover', this.__rollover_handler);
-            this._display_object.addEventListener('rollout', this.__rollout_handler);
+            // this._display_object.addEventListener('rollover', this.__rollover_handler);
+            // this._display_object.addEventListener('rollout', this.__rollout_handler);
             this._display_object.addEventListener('click', this.__click_handler);
         } else {
-            this._display_object.removeEventListener('rollover', this.__rollover_handler);
-            this._display_object.removeEventListener('rollout', this.__rollout_handler);
+            // this._display_object.removeEventListener('rollover', this.__rollover_handler);
+            // this._display_object.removeEventListener('rollout', this.__rollout_handler);
             this._display_object.removeEventListener('click', this.__click_handler);
         }
     }

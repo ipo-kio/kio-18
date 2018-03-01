@@ -6,25 +6,14 @@ import {
 } from "./HexBoard";
 import {Graph} from "./Graph";
 
-class TreeElement {
-    _rules; //a set of equivalent rules
-    _children = [];
-
-    constructor(rule) {
-        this._rule = rule;
-    }
-
-    add_child(tree_element) {
-        this._children.add_child(tree_element);
-    }
-}
-
 export class RuleSet {
 
     _graph;
     _root_rule;
+    _all_rules;
 
     constructor(array_of_rules) {
+        this._all_rules = array_of_rules.slice();
         let full_graph = new Graph();
 
         for (let rule of array_of_rules)
@@ -59,24 +48,42 @@ export class RuleSet {
     value_to_set(board, {line, index}) {
         return this._graph.dfs(this._root_rule, (rule, list) => {
             if (!rule.conforms(board, {line, index}))
-                return 0;
+                return [0, null];
 
             let result = 0;
-            for (let i = 0; i < list.length; i++)
-                if (list[i] !== 0) {
-                    if (result === 0)
-                        result = list[i];
-                    else if (result !== 0 && list[i] !== result) {
+            let this_fired_rule = null;
+            for (let i = 0; i < list.length; i++) {
+                let [deep_val, fired_rule] = list[i];
+                if (deep_val !== 0) {
+                    if (result === 0) {
+                        result = deep_val;
+                        this_fired_rule = fired_rule;
+                    } else if (result !== 0 && deep_val !== result) {
                         result = 0;
+                        this_fired_rule = null;
                         break;
                     }
                 }
+            }
 
             if (result !== 0)
-                return result;
-            return rule.value_to_set;
+                return [result, this_fired_rule];
+
+            if (rule.value_to_set === 0)
+                return [0, null];
+            else
+                return [rule.value_to_set, rule];
         });
     }
+
+    all_conforming_rules(board, {line, index}) {
+        let result = [];
+        for (let rule of this._all_rules)
+            if (rule.conforms(board, {line, index}))
+                result.push(rule);
+        return result;
+    }
+
 
     static equiv(rule1, rule2) {
         return this.implies(rule1, rule2) && this.implies(rule2, rule1);

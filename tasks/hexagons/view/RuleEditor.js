@@ -11,6 +11,7 @@ const sizing = new Sizing(20);
 export class RuleEditor extends EventDispatcherInterface {
     _html_element;
     _rule_view;
+    _extra_class = '';
 
     constructor(rule) {
         super();
@@ -28,7 +29,7 @@ export class RuleEditor extends EventDispatcherInterface {
 
     init_html_element() {
         this._html_element = document.createElement('div');
-        this._html_element.className = 'rule-editor-container';
+        this.update_class_name();
         this._html_element.appendChild(this._rule_view.canvas);
 
         //add controls to the right
@@ -92,6 +93,19 @@ export class RuleEditor extends EventDispatcherInterface {
 
     set show_down(value) {
         this._down_button.style.visibility = value ? 'visible' : 'hidden';
+    }
+
+    get extra_class() {
+        return this._extra_class;
+    }
+
+    set extra_class(value) {
+        this._extra_class = value;
+        this.update_class_name();
+    }
+
+    update_class_name() {
+        this._html_element.className = ('rule-editor-container ' + this._extra_class).trim();
     }
 }
 

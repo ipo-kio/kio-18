@@ -20,7 +20,7 @@ export class BoardHistory {
         let new_board = new HexBoard(board.shape);
 
         for (let cell of board.cells()) {
-            let vts = this._rule_set.value_to_set(board, cell);
+            let [vts, fired_rule] = this._rule_set.value_to_set(board, cell);
             if (vts === 0)
                 vts = board.value(cell);
             new_board.set_value(cell, vts);

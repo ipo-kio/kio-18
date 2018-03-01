@@ -1,12 +1,14 @@
 import {RuleEditor} from "../view/RuleEditor";
 import {Rule} from "./HexBoard";
 import {Event,EventDispatcherInterface} from "../EventDispatcherMixin";
+import {RuleSet} from "./RuleSet";
 
 export class RulesList extends EventDispatcherInterface {
 
     _html_element;
     _rule_editors = []; //array of rule editors
     _rules_list;
+    _rule_set = new RuleSet([]);
     _$add_rule_button;
 
     constructor() {
@@ -35,6 +37,9 @@ export class RulesList extends EventDispatcherInterface {
     init_interaction() {
         this._$add_rule_button.click(() => {
             this.add_new_rule();
+        });
+        this.add_listener('change', () => { //TODO this code smells... we add this listener in the constructor, so we hope it will be fired first
+            this._rule_set = new RuleSet(Array.from(this.raw_rules()));
         });
     }
 
@@ -141,5 +146,9 @@ export class RulesList extends EventDispatcherInterface {
     *raw_rules() {
         for (let rule_editor of this._rule_editors)
             yield rule_editor.rule;
+    }
+
+    get rule_set() {
+        return this._rule_set;
     }
 }
