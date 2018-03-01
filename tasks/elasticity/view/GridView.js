@@ -62,12 +62,12 @@ export default class GridView {
     constructor() {
         this.init_display_object();
 
-        this._edges_set_view = new SetView(this._display_object, spring => this.init_edge(spring));
+        this._edges_set_view = new SetView(this, spring => this.init_edge(spring));
 
         this._display_object.addChild(this._virtual_edge_layer);
         this._display_object.addChild(this._virtual_point_layer);
 
-        this._points_set_view = new SetView(this._display_object, pwp => this.init_point_with_position(pwp));
+        this._points_set_view = new SetView(this, pwp => this.init_point_with_position(pwp));
 
         this._display_object.addEventListener("mousedown", e => {
             this._previous_click_shift_pressed = e.nativeEvent.shiftKey;
@@ -80,7 +80,6 @@ export default class GridView {
                     if (e.target === this._grid) {
                         let display_object_local = this._grid.localToLocal(e.localX, e.localY, this._display_object);
                         let {x, y} = s2n(display_object_local);
-                        console.log(x, y);
                         this._points_set_view.set.add_object(new PointWithPosition(x, y, this.point_type_to_create));
                     }
                     break;
@@ -152,6 +151,8 @@ export default class GridView {
 
                     break;
             }
+
+            this.fire_change();
         });
         pv.display_object.addEventListener("pressup", e => {
             switch (this.actual_mouse_actions_mode()) {
@@ -312,6 +313,10 @@ export default class GridView {
         return this._ed;
     }
 
+    fire_change() {
+        this._ed.fire(new Event('change', this));
+    }
+
     set grid_visible(value) {
         if (value)
             this.draw_grid();
@@ -334,11 +339,15 @@ class SetView {
     _layer = new createjs.Container();
     _set_element_2_view;
 
-    constructor(view_container, set_element_2_view) {
-        this._change_listener = () => this.draw_set_elements();
+    constructor(grid_view, set_element_2_view) {
+        this._change_listener = () => {
+            this.draw_set_elements();
+            grid_view.fire_change();
+        };
+
         this._set_element_2_view = set_element_2_view;
 
-        view_container.addChild(this._layer);
+        grid_view.display_object.addChild(this._layer);
     }
 
     get set() {
@@ -370,19 +379,5 @@ class SetView {
                 this._views.push(view);
                 this._layer.addChild(view.display_object);
             }
-    }
-}
-
-export class GridClickEvent extends Event {
-
-    _natural_position; // {x, y}
-
-    constructor(source, natural_position) {
-        super('grid click', source);
-        this._natural_position = natural_position;
-    }
-
-    get natural_position() {
-        return this._natural_position;
     }
 }

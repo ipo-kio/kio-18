@@ -79,6 +79,23 @@ export class Elasticity {
     parameters() {
         return [
             {
+                name: 'points',
+                title: 'Блоков',
+                ordering: 'maximize',
+                normalize(v) {
+                    if (v > 30 || v < 0)
+                        return -1;
+                    else
+                        return 0;
+                },
+                view(v) {
+                    if (v > 30)
+                        return v + ' (слишком много)';
+                    else
+                        return v;
+                }
+            },
+            {
                 name: 'height',
                 title: 'Высота',
                 ordering: 'maximize',
@@ -214,6 +231,10 @@ export class Elasticity {
         this._stage = new createjs.Stage(this._canvas);
 
         this._grid_view = new GridView();
+        this._grid_view.ed.add_listener('change', () => {
+            this._tower_history = null;
+            this.submitResult();
+        });
         this._stage.addChild(this._grid_view.display_object);
         this._stage.enableMouseOver(10);
         this._stage.update();
@@ -257,7 +278,6 @@ export class Elasticity {
         this._stage.removeEventListener('tick', this._points_animation_tick);
 
         this._tower_history = null; //TODO either store it until any change, or don't store it at all
-        this.submitResult({height: -3, length: 0, shrinkage: 0});
 
         this._grid_view.grid_visible = true;
     }
@@ -299,11 +319,7 @@ export class Elasticity {
     }
 
     submitResult() {
-        if (!this._tower_history)
-            return;
-        let value = new HeightValue();
-        let evaluator = new Evaluator(value, this._tower_history);
-        let height = evaluator.result;
+        let points = this._point_set.length;
 
         //get length
         let length = 0;
@@ -312,16 +328,25 @@ export class Elasticity {
         let length_acc = 0.1;
         length = Math.round(length / length_acc) * length_acc;
 
+        if (!this._tower_history) {
+            this.kioapi.submitResult({points, height: -3, length, shrinkage: -1});
+            return;
+        }
+
+        let value = new HeightValue();
+        let evaluator = new Evaluator(value, this._tower_history);
+        let height = evaluator.result;
+
         if (evaluator.error)
-            this.kioapi.submitResult({height: -2, length, shrinkage: 0});
+            this.kioapi.submitResult({points, height: -2, length, shrinkage: -1});
         else if (evaluator.ding_dong)
-            this.kioapi.submitResult({height: -1, length, shrinkage: 0});
+            this.kioapi.submitResult({points, height: -1, length, shrinkage: -1});
         else {
             //get shrinkage
             let initial_height = value.evaluate_and_round(this._tower_history.get_by_time(0));
             let shrinkage = Math.abs(initial_height - height);
 
-            this.kioapi.submitResult({height, length, shrinkage});
+            this.kioapi.submitResult({points, height, length, shrinkage});
         }
     }
 }
