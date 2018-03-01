@@ -17,8 +17,8 @@ module.exports = function (env) {
         entry: {
             'elasticity': 'elasticity/elasticity.js',
             'hexagons': 'hexagons/hexagons.js',
-            // 'hexagons_test': ['babel-polyfill', 'hexagons/test/tests.js']
-            'hexagons_test': 'hexagons/test/tests.js'
+            'hexagons_test': 'hexagons/test/tests.js',
+            'lamps': 'lamps/lamps.js'
         },
         output: {
             path: path.join(__dirname, '/dist'),
@@ -67,7 +67,9 @@ module.exports = function (env) {
                 {from: './tasks/elasticity/img/*', to: './elasticity-resources', flatten: true},
                 {from: './tasks/hexagons/hexagons.html'},
                 {from: './tasks/hexagons/img/*', to: './hexagons-resources', flatten: true},
-                {from: './tasks/hexagons/hexagons-test.html'}
+                {from: './tasks/hexagons/hexagons-test.html'},
+                {from: './tasks/lamps/lamps.html'},
+                {from: './tasks/lamps/img/*', to: './lamps-resources', flatten: true},
             ])
         ]
     };
