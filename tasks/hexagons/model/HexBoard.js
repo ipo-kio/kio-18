@@ -199,7 +199,7 @@ export class Rule extends HexBoard {
             ];
 
             //[...x6], [...x6]
-            for (let dir = -1; dir <= 1; dir++)
+            for (let dir = -1; dir <= 1; dir += 2)
                 for (let delta = 0; delta < 6; delta++) {
                     let ok = true;
                     for (let i = 0; i < 6; i++) {

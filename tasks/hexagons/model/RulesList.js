@@ -10,6 +10,7 @@ export class RulesList extends EventDispatcherInterface {
     _rules_list;
     _rule_set = new RuleSet([]);
     _$add_rule_button;
+    _$remove_rules_button
 
     constructor() {
         super();
@@ -27,9 +28,13 @@ export class RulesList extends EventDispatcherInterface {
 
         let $add_rule_button = $('<button>');
         $add_rule_button.text('Добавить');
-
         this._$add_rule_button = $add_rule_button;
         $container.append(this._$add_rule_button);
+
+        let $remove_rules_button = $('<button>');
+        $remove_rules_button.text('Очистить');
+        this._$remove_rules_button = $remove_rules_button;
+        $container.append(this._$remove_rules_button);
 
         this._html_element = $container.get(0);
     }
@@ -37,6 +42,9 @@ export class RulesList extends EventDispatcherInterface {
     init_interaction() {
         this._$add_rule_button.click(() => {
             this.add_new_rule();
+        });
+        this._$remove_rules_button.dblclick(() => {
+            this.clear_rules();
         });
         this.add_listener('change', () => { //TODO this code smells... we add this listener in the constructor, so we hope it will be fired first
             this._rule_set = new RuleSet(Array.from(this.raw_rules()));

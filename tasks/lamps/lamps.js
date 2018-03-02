@@ -40,5 +40,6 @@ export class Lamps {
     }
 
     initInterface(domNode, preferred_width) {
+
     }
 }

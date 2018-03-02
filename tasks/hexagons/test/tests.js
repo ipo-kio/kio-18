@@ -7,12 +7,18 @@ import {
 import {RuleSet} from "../model/RuleSet";
 import {BoardHistory} from "../model/BoardHistory";
 
-let rule1 = new Rule([[1, 2], [0, 3, 0], [0, 0]]);
 let board = new HexBoard(rectangular_shape(10, 10));
+
+let rule1 = new Rule([[1, 1], [0, 2, 0], [0, 0]]);
+board.set_value({line: 5, index: 5}, 1);
+console.log(rule1.conforms(board, {line: 5, index: 6}) === false);
+
+
+/*let rule1 = new Rule([[1, 2], [0, 3, 0], [0, 0]]);
 board.set_value({line: 5, index: 5}, 1);     //. 1
 board.set_value({line: 6, index: 5}, 2);     // 2 x
 console.log(rule1.conforms(board, {line: 5, index: 4}) === true);
-console.log(rule1.conforms(board, {line: 6, index: 6}) === true);
+console.log(rule1.conforms(board, {line: 6, index: 6}) === true);*/
 
 /*
 let rule1 = new Rule([[1, 1], [1, 1, 1], [1, 1]]);
