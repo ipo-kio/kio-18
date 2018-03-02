@@ -66,7 +66,7 @@ export class Elasticity {
             }
         } else if (this.settings.level === 2) {
             for (let i = 0; i <= 1; i++) {
-                let pwp = new PointWithPosition(3 * i - 1.5, 0, POINT_TYPE_FIXED);
+                let pwp = new PointWithPosition(10 * i - 5, 0, POINT_TYPE_FIXED);
                 this._point_set.add_object(pwp);
             }
         }
