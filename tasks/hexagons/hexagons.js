@@ -11,6 +11,7 @@ export class Hexagons {
     _points_animation_tick;
     _board_history = null;
     _initial_board;
+    _standard_initial_board_values;
 
     _canvas;
     _grid_view;
@@ -130,7 +131,10 @@ export class Hexagons {
         this._time_shower.className = 'hexagons-time-shower';
         domNode.appendChild(this._time_shower);
 
-        add_button('Очистить поле', () => console.log('asdf'));
+        add_button('Очистить поле', () => {
+            this._initial_board.values = this._standard_initial_board_values;
+            this.reset_solution();
+        });
 
         this._slider.onvaluechange = () => this.move_time_to(this.board_time());
     }
@@ -163,6 +167,7 @@ export class Hexagons {
         let w = (from + to) / 2;
 
         board.set_value(new HexagonCell(h, w), 1);
+        this._standard_initial_board_values = board.values;
 
         let sizing = new Sizing(16);
         this._grid_view = new HexBoardView(board, sizing);
