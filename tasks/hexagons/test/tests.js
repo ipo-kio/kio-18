@@ -1,4 +1,32 @@
-import {
+import {Graph} from "../../lamps/model/Graph";
+
+let graph = new Graph();
+let v1 = "a";
+let v2 = "b";
+let v3 = "c";
+let v4 = "d";
+let v5 = "e";
+let v6 = "f";
+
+graph.add_vertex(v1);                  // 1-2-3
+graph.add_vertex(v2);                  // | | |
+graph.add_vertex(v3);                  // 4-5-6
+graph.add_vertex(v4);
+graph.add_vertex(v5);
+graph.add_vertex(v6);
+
+graph.add_edge(v1, v2);
+graph.add_edge(v2, v3);
+graph.add_edge(v4, v5);
+graph.add_edge(v5, v6);
+graph.add_edge(v1, v4);
+graph.add_edge(v2, v5);
+graph.add_edge(v3, v6);
+
+for (let loop of graph.all_loops())
+    console.log(loop);
+
+/*import {
     HexagonCell,
     HexBoard, rectangular_shape,
     Rule, RULE_REGIME_AT_LEAST_ANY_POSITION, RULE_REGIME_AT_MOST_ANY_POSITION,
@@ -11,7 +39,7 @@ let board = new HexBoard(rectangular_shape(10, 10));
 
 let rule1 = new Rule([[1, 1], [0, 2, 0], [0, 0]]);
 board.set_value({line: 5, index: 5}, 1);
-console.log(rule1.conforms(board, {line: 5, index: 6}) === false);
+console.log(rule1.conforms(board, {line: 5, index: 6}) === false);*/
 
 
 /*let rule1 = new Rule([[1, 2], [0, 3, 0], [0, 0]]);
