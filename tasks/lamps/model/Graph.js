@@ -41,6 +41,14 @@ export class Graph {
             yield v;
     }
 
+    *edges(vertex, back=false) {
+        let data = back ? this._back_data : this._data;
+
+        let e = data.get(vertex);
+        if (e !== undefined)
+            yield* e;
+    }
+
     toString() {
         function mapToString(m) {
             let result = '';

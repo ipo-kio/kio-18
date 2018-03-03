@@ -1,3 +1,10 @@
+import {CurrentMap} from "../../lamps/model/CurrentMap";
+
+let matrix = [[1, 2, 3, 4], [4, 2, 4, 5], [1, 5, 5, -3]];
+
+console.log(CurrentMap.solve(matrix));
+
+
 import {Graph} from "../../lamps/model/Graph";
 
 let graph = new Graph();
@@ -14,7 +21,7 @@ graph.add_vertex(v3);                  // d-e-f
 graph.add_vertex(v4);
 graph.add_vertex(v5);
 graph.add_vertex(v6);
-
+graph.add_vertex("u");
 graph.add_edge(v1, v2, "ab");
 graph.add_edge(v2, v3, "bc");
 graph.add_edge(v4, v5, "de");
@@ -22,6 +29,7 @@ graph.add_edge(v5, v6, "ef");
 graph.add_edge(v1, v4, "ad");
 graph.add_edge(v2, v5, "be");
 graph.add_edge(v3, v6, "cf");
+graph.add_edge(v6, "u", "uuu");
 
 for (let loop of graph.all_loops())
     console.log(loop);
