@@ -9,6 +9,7 @@ export class Connection {
         this._terminal1 = terminal1;
         this._terminal2 = terminal2;
         this._resistance = resistance;
+        this._emf = emf;
     }
 
     get terminal1() {
@@ -21,5 +22,9 @@ export class Connection {
 
     get resistance() {
         return this._resistance;
+    }
+
+    get emf() {
+        return this._emf;
     }
 }
