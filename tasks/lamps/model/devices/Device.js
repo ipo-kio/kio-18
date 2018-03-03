@@ -15,6 +15,10 @@ export class Device {
     get_connections() {
     }
 
+    get_info(array_of_currencies) {
+        return {currencies: array_of_currencies};
+    }
+
     get width() {
         return this._width;
     }

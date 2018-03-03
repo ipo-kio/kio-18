@@ -1,5 +1,5 @@
 export class CurrentMap {
-    
+
     _connector_2_current = new Map();
 
     get_connector(connector) {
@@ -12,7 +12,7 @@ export class CurrentMap {
         let edge2index = new Map();
         let edges = [];
         for (let v1 of vertices)
-            for (let [v2, edge_value] of connectors_graph.edges(v)) {
+            for (let [v2, edge_value] of connectors_graph.edges(v1)) {
                 let index = edges.length;
                 edges.push(edge_value);
                 edge2index.set(edge_value, index);
@@ -104,5 +104,4 @@ export class CurrentMap {
 
         return x;
     }
-
 }

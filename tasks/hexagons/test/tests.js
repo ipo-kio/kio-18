@@ -1,38 +1,64 @@
-import {CurrentMap} from "../../lamps/model/CurrentMap";
-
-let matrix = [[1, 2, 3, 4], [4, 2, 4, 5], [1, 5, 5, -3]];
-
-console.log(CurrentMap.solve(matrix));
-
-
 import {Graph} from "../../lamps/model/Graph";
+import {BatteryDevice} from "../../lamps/model/devices/BatteryDevice";
+import {CurrentMap} from "../../lamps/model/CurrentMap";
+import {LampDevice} from "../../lamps/model/devices/LampDevice";
+import {WireDevice} from "../../lamps/model/devices/WireDevice1";
+import {Layout} from "../../lamps/model/Layout";
+import {DeviceWithPosition} from "../../lamps/model/DeviceWithPosition";
+import {Terminal} from "../../lamps/model/Terminal";
 
-let graph = new Graph();
-let v1 = "a";
-let v2 = "b";
-let v3 = "c";
-let v4 = "d";
-let v5 = "e";
-let v6 = "f";
+let d1 = new BatteryDevice();
+let d2 = new LampDevice();
+let d3 = new WireDevice(2);
+let d4 = new WireDevice(2);
 
-graph.add_vertex(v1);                  // a-b-c
-graph.add_vertex(v2);                  // | | |
-graph.add_vertex(v3);                  // d-e-f
-graph.add_vertex(v4);
-graph.add_vertex(v5);
-graph.add_vertex(v6);
-graph.add_vertex("u");
-graph.add_edge(v1, v2, "ab");
-graph.add_edge(v2, v3, "bc");
-graph.add_edge(v4, v5, "de");
-graph.add_edge(v5, v6, "ef");
-graph.add_edge(v1, v4, "ad");
-graph.add_edge(v2, v5, "be");
-graph.add_edge(v3, v6, "cf");
-graph.add_edge(v6, "u", "uuu");
+let layout = new Layout(
+    2, 2,
+    [
+        new DeviceWithPosition(d1, new Terminal(0, 1)),
+        new DeviceWithPosition(d2, new Terminal(0, 0)),
+        new DeviceWithPosition(d3, new Terminal(0, 0)),
+        new DeviceWithPosition(d4, new Terminal(1, 0))
+    ]
+);
 
-for (let loop of graph.all_loops())
-    console.log(loop);
+console.log(layout.get_info(d1).currencies[0]);
+console.log(layout.get_info(d2).currencies[0]);
+console.log(layout.get_info(d3).currencies[0]);
+console.log(layout.get_info(d4).currencies[0]);
+
+function test_graph() {
+    let matrix = [[1, 2, 3, 4], [4, 2, 4, 5], [1, 5, 5, -3]];
+
+    console.log(CurrentMap.solve(matrix));
+
+    let graph = new Graph();
+    let v1 = "a";
+    let v2 = "b";
+    let v3 = "c";
+    let v4 = "d";
+    let v5 = "e";
+    let v6 = "f";
+
+    graph.add_vertex(v1);                  // a-b-c
+    graph.add_vertex(v2);                  // | | |
+    graph.add_vertex(v3);                  // d-e-f
+    graph.add_vertex(v4);
+    graph.add_vertex(v5);
+    graph.add_vertex(v6);
+    graph.add_vertex("u");
+    graph.add_edge(v1, v2, "ab");
+    graph.add_edge(v2, v3, "bc");
+    graph.add_edge(v4, v5, "de");
+    graph.add_edge(v5, v6, "ef");
+    graph.add_edge(v1, v4, "ad");
+    graph.add_edge(v2, v5, "be");
+    graph.add_edge(v3, v6, "cf");
+    graph.add_edge(v6, "u", "uuu");
+
+    for (let loop of graph.all_loops())
+        console.log(loop);
+}
 
 /*import {
     HexagonCell,

@@ -5,14 +5,11 @@ import {LampConstants} from "../LampConstants";
 
 export class BatteryDevice extends Device {
 
-    _emf;
-
-    constructor(emf) {
+    constructor() {
         super(2, 1);
-        this._emf = emf;
     }
 
-    get_next() {
+    get_next(currencies) {
         return this;
     }
 
