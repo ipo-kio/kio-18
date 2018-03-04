@@ -1,26 +1,76 @@
 import {Graph} from "./Graph";
 import {CurrentMap} from "./CurrentMap";
 import {DeviceWithPosition} from "./DeviceWithPosition";
+import {Event, EventDispatcherInterface} from "../view/EventDispatcherMixin";
 
-export class Layout {
+export class Layout extends EventDispatcherInterface {
     _width;
     _height;
 
-    _devices_with_positions;
+    _devices_with_positions = [];
     _devices_connections;
     _current_map;
 
     _device_2_info = new Map();
 
-    constructor(width, height, devices_with_positions) {
+    constructor(width, height) {
+        super();
         this._width = width;
         this._height = height;
-        this._devices_with_positions = devices_with_positions;
 
+        this._refresh();
+    }
+
+    __device_changed_listener = e => {
+        this._refresh();
+        this.fire(new Event('element change', this));
+    };
+
+    add_device_with_position(device_with_position) {
+        this._devices_with_positions.push(device_with_position);
+        device_with_position.add_listener('change', this.__device_changed_listener);
+
+        this._refresh();
+        this.fire(new Event('change', this));
+    }
+
+    add_devices_with_position(devices_with_position) {
+        for (let device_with_position of devices_with_position) {
+            this._devices_with_positions.push(device_with_position);
+            device_with_position.add_listener('change', this.__device_changed_listener);
+        }
+
+        this._refresh();
+        this.fire(new Event('change', this));
+    }
+
+    remove_device_with_position(device_with_position) {
+        let ind = this._devices_with_positions.indexOf(device_with_position);
+        if (ind >= 0) {
+            this._devices_with_positions.splice(ind, 1);
+            device_with_position.remove_listener('change', this.__device_changed_listener);
+            this.fire(new Event('change', this));
+            this._refresh();
+        }
+    }
+
+    clear_all_devices_with_position() {
+        for (let dwp of this._devices_with_positions)
+            dwp.remove_listener('change', this.__device_changed_listener);
+        this._devices_with_positions = [];
+        this.fire(new Event('change', this));
+        this._refresh();
+    }
+
+    _refresh() {
         let connectors_graph = this._connectors_graph();
         this._current_map = new CurrentMap(connectors_graph);
 
         this._eval_devices_info();
+    }
+
+    *all_devices() {
+        yield* this._devices_with_positions;
     }
 
     _connectors_graph() {
@@ -40,7 +90,6 @@ export class Layout {
                 let t1 = con.terminal1;
                 let t2 = con.terminal2;
                 g.add_edge(tag(t1), tag(t2), con);
-                console.log('adding', tag(t1), tag(t2));
                 device_connections.push(con);
             }
             devices_connections.push(device_connections);
@@ -89,5 +138,13 @@ export class Layout {
 
     get_info(device) {
         return this._device_2_info.get(device);
+    }
+
+    get width() {
+        return this._width;
+    }
+
+    get height() {
+        return this._height;
     }
 }

@@ -27,21 +27,36 @@ export class CurrentMap {
             matrix[i].fill(0);
         }
 
+        let {colors} = connectors_graph.kraskal();
+        let colors_cnt = new Array(colors.length);
+        colors_cnt.fill(0);
+        for (let i = 0; i < colors.length; i++)
+            colors_cnt[colors[i]]++;
+
         //first add equations about vertices
         //these are first N - 1 lines
-        for (let i = 0; i < N - 1; i++) {
+        let j = 0;
+        for (let i = 0; i < N; i++) {
+            colors_cnt[colors[i]]--;
+            if (colors_cnt[colors[i]] === 0)
+                continue;
+
             let v = vertices[i];
+
             for (let [v2, edge_value] of connectors_graph.edges(v, true)) {
                 let index = edge2index.get(edge_value);
-                matrix[i][index] = 1;
+                matrix[j][index] = 1;
             }
             for (let [v2, edge_value] of connectors_graph.edges(v, false)) {
                 let index = edge2index.get(edge_value);
-                matrix[i][index] = -1;
+                matrix[j][index] = -1;
             }
+
+            j++;
         }
 
         //second add equations about loops
+        //these are next M - (N - 1)
         let matrix_line = N - 1;
         for (let loop of connectors_graph.all_loops()) {
             let sum_emf = 0;

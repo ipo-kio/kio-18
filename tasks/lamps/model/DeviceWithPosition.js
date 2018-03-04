@@ -1,12 +1,14 @@
 import {Connection} from "./Connection";
 import {Terminal} from "./Terminal";
+import {EventDispatcherInterface, Event} from "../view/EventDispatcherMixin";
 
-export class DeviceWithPosition {
+export class DeviceWithPosition extends EventDispatcherInterface {
 
     _device;
     _terminal;
 
     constructor(device, terminal) {
+        super();
         this._device = device;
         this._terminal = terminal;
     }
@@ -30,5 +32,10 @@ export class DeviceWithPosition {
             result.push(new Connection(t1, t2, c.resistance, c.emf));
         }
         return result;
+    }
+
+    set terminal(t) {
+        this._terminal = t;
+        this.fire(new Event('change', this));
     }
 }

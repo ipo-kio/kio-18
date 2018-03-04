@@ -2,6 +2,8 @@ export class Graph {
     _data = new Map(); //Map<object,Map<object, value>>
     _back_data = new Map();
 
+    _kraskal_result = null;
+
     constructor() {
     }
 
@@ -10,6 +12,7 @@ export class Graph {
             this._data.set(object, new Map());
         if (!this._back_data.has(object))
             this._back_data.set(object, new Map());
+        this._invalidate();
     }
 
     add_edge(object1, object2, value) {
@@ -20,6 +23,7 @@ export class Graph {
         let map2 = this._back_data.get(object2);
         if (map2 !== undefined)
             map2.set(object1, value);
+        this._invalidate();
     }
 
     has_edge(object1, object2) {
@@ -93,6 +97,9 @@ export class Graph {
     }
 
     kraskal() { //returns list of edges [v1, v2] and list of all other edges
+        if (this._kraskal_result !== null)
+            return this._kraskal_result;
+
         let vertices = Array.from(this.vertices());
         let n = vertices.length;
         let v2index = new Map();
@@ -136,7 +143,8 @@ export class Graph {
         for (let [v1, v2, edge_value] of edges)
             skeleton.add_edge(v1, v2, edge_value);
 
-        return {skeleton, extra_edges};
+        this._kraskal_result = {skeleton, extra_edges, colors};
+        return this._kraskal_result;
     }
 
     *all_loops() {
@@ -163,5 +171,9 @@ export class Graph {
 
             yield path;
         }
+    }
+
+    _invalidate() {
+        this._kraskal_result = null;
     }
 }
