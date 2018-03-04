@@ -56,11 +56,12 @@ export class Lamps {
 
     initInterface(domNode, preferred_width) {
         let d1 = new BatteryDevice();
-        let d2 = new LampDevice();
+        let d2 = new LampDevice([255, 255, 0]);
         let d3 = new RotatedDevice(new WireDevice(2));
         let d4 = new RotatedDevice(new WireDevice(2));
 
         let layout = new Layout(2, 2);
+
         layout.add_device_with_position(new DeviceWithPosition(d1, new Terminal(0, 1)));
         layout.add_device_with_position(new DeviceWithPosition(d2, new Terminal(0, 0)));
         layout.add_device_with_position(new DeviceWithPosition(d3, new Terminal(0, 0)));

@@ -19,13 +19,14 @@ export class DeviceView {
 
         this._layout_view = layout_view;
 
-        this.init_display_object();
+        this._init_display_object();
         this._reposition();
     }
 
-    init_display_object() {
-        let info = this._layout_view.layout.get_info(this._device_with_position.device);
-        this._display_object = this._create_display_object(info);
+    _init_display_object() {
+        let device = this._device_with_position.device;
+        let info = this._layout_view.layout.get_info(device);
+        this._display_object = this._create_display_object(device, info);
     }
 
     _reposition() {
@@ -38,14 +39,12 @@ export class DeviceView {
         return this._layout_view.kioapi.getResource(id);
     }
 
-    _create_display_object(device_info) {
-        let {device} = this._device_with_position;
-
+    _create_display_object(device, device_info) {
         let d;
         if (device instanceof BatteryDevice) {
             d = new createjs.Shape();
             let g = d.graphics;
-            g.beginStroke('blue').strokeStyle(1);
+            g.beginStroke('blue').setStrokeStyle(1);
             g.rect(2, -4, TERMINAL_DISTANCE - 4, 8);
             g.moveTo(0, 0).lineTo(2, 0);
             g.moveTo(TERMINAL_DISTANCE - 2, 0).lineTo(TERMINAL_DISTANCE, 0);
@@ -54,8 +53,10 @@ export class DeviceView {
             d.regX = 4;
             d.regY = 4;
         } else if (device instanceof LampDevice) {
-            let d = new createjs.Container();
-            let img = new createjs.Bitmap(this._get_resource(device.is_on() ? 'lamp_on' : 'lamp_off'));
+            d = new createjs.Container();
+            let is_on = device_info.power > 1e-4;
+
+            let img = new createjs.Bitmap(this._get_resource(is_on ? 'lamp_on' : 'lamp_off'));
             img.regX = 4;
             img.regY = img.height / 2;
             d.addChild(img);
@@ -65,7 +66,9 @@ export class DeviceView {
             circle.y = img.height / 2;
             d.addChild(circle);
 
-            d.beginRadialGradientFill([device.color(1), device.color(0)], [0, 1], 0, 0, 10, 0, 0, 100);
+            circle.graphics
+                .beginRadialGradientFill([device.color(1), device.color(0)], [0, 1], 0, 0, 10, 0, 0, 100)
+                .drawCircle(0, 0, 100);
         } else if (device instanceof ResistanceDevice) {
             d = new createjs.Shape();
         } else if (device instanceof RotatedDevice) {
@@ -99,5 +102,9 @@ export class DeviceView {
         }
 
         return d;
+    }
+
+    get display_object() {
+        return this._display_object;
     }
 }
