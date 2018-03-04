@@ -21,7 +21,9 @@ export class UpDownDevice extends Device {
         for (let c of this._device.get_connections()) {
             let {x: x1, y: y1} = c.terminal1;
             let {x: x2, y: y2} = c.terminal2;
-            connections.add(new Connection(new Terminal(y1, x1), new Terminal(y2, x2), c.resistance, c.emf));
+            y1 = this._device.height - y1 - 1;
+            y2 = this._device.height - y2 - 1;
+            connections.push(new Connection(new Terminal(x1, y1), new Terminal(x2, y2), c.resistance, c.emf));
         }
         return connections;
     }

@@ -58,8 +58,8 @@ export class Layout {
             let connections = this._devices_connections[i];
 
             let currencies = new Array(connections.length);
-            for (let j = 0; j < currencies; j++)
-                currencies[j] = this._current_map.get(connections[j]);
+            for (let j = 0; j < currencies.length; j++)
+                currencies[j] = this._current_map.get_current(connections[j]);
 
             let info = device.get_info(currencies);
 

@@ -2,7 +2,7 @@ export class CurrentMap {
 
     _connector_2_current = new Map();
 
-    get_connector(connector) {
+    get_current(connector) {
         return this._connector_2_current.get(connector);
     }
 
@@ -58,13 +58,13 @@ export class CurrentMap {
             matrix[matrix_line][M] = sum_emf;
         }
 
-        let currents = CurrentMap.solve(matrix);
+        let currents = CurrentMap._solve(matrix);
 
         for (let i = 0; i < M; i++)
             this._connector_2_current.set(edges[i], currents[i]);
     }
 
-    static solve(matrix) {
+    static _solve(matrix) {
         let M = matrix.length;
         let indices = new Array(M);
 

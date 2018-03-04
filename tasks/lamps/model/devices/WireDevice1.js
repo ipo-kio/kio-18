@@ -8,7 +8,7 @@ export class WireDevice extends Device {
     _size; //vertical
 
     constructor(size) {
-        super(1, size);
+        super(size, 1);
         this._size = size;
     }
 
@@ -20,8 +20,8 @@ export class WireDevice extends Device {
         return [
             new Connection(
                 new Terminal(0, 0),
-                new Terminal(0, this._size - 1),
-                LampConstants.LAMP_RESISTANCE,
+                new Terminal(this._size - 1, 0),
+                LampConstants.WIRE_RESISTANCE,
                 0
             )
         ];

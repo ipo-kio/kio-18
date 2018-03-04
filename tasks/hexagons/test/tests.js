@@ -6,11 +6,12 @@ import {WireDevice} from "../../lamps/model/devices/WireDevice1";
 import {Layout} from "../../lamps/model/Layout";
 import {DeviceWithPosition} from "../../lamps/model/DeviceWithPosition";
 import {Terminal} from "../../lamps/model/Terminal";
+import {RotatedDevice} from "../../lamps/model/devices/RotatedDevice";
 
 let d1 = new BatteryDevice();
 let d2 = new LampDevice();
-let d3 = new WireDevice(2);
-let d4 = new WireDevice(2);
+let d3 = new RotatedDevice(new WireDevice(2));
+let d4 = new RotatedDevice(new WireDevice(2));
 
 let layout = new Layout(
     2, 2,
@@ -22,15 +23,15 @@ let layout = new Layout(
     ]
 );
 
-console.log(layout.get_info(d1).currencies[0]);
-console.log(layout.get_info(d2).currencies[0]);
-console.log(layout.get_info(d3).currencies[0]);
-console.log(layout.get_info(d4).currencies[0]);
+console.log(layout.get_info(d1));
+console.log(layout.get_info(d2));
+console.log(layout.get_info(d3));
+console.log(layout.get_info(d4));
 
 function test_graph() {
     let matrix = [[1, 2, 3, 4], [4, 2, 4, 5], [1, 5, 5, -3]];
 
-    console.log(CurrentMap.solve(matrix));
+    console.log(CurrentMap._solve(matrix));
 
     let graph = new Graph();
     let v1 = "a";

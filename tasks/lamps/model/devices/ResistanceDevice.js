@@ -7,7 +7,7 @@ export class ResistanceDevice extends Device {
     _resistance;
 
     constructor(resistance) {
-        super(1, 2);
+        super(2, 1);
         this._resistance = resistance;
     }
 
@@ -17,7 +17,7 @@ export class ResistanceDevice extends Device {
 
     get_connections() {
         return [
-            new Connection(new Terminal(0, 0), new Terminal(0, 1), this._resistance, 0)
+            new Connection(new Terminal(0, 0), new Terminal(1, 0), this._resistance, 0)
         ];
     }
 

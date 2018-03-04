@@ -17,7 +17,7 @@ export class BatteryDevice extends Device {
         return [
             new Connection(
                 new Terminal(0, 0),
-                new Terminal(0, 1),
+                new Terminal(1, 0),
                 LampConstants.BATTERY_RESISTANCE,
                 LampConstants.BATTERY_EMF
             )
