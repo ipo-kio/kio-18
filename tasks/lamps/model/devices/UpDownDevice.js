@@ -28,4 +28,7 @@ export class UpDownDevice extends Device {
         return connections;
     }
 
+    get_info(array_of_currencies) {
+        return this._device.get_info(array_of_currencies);
+    }
 }

@@ -30,7 +30,7 @@ export class DeviceView {
     }
 
     _reposition() {
-        let {x, y} = this._device_with_position;
+        let {x, y} = this._device_with_position.terminal;
         this._display_object.x = GAP + x * TERMINAL_DISTANCE;
         this._display_object.y = GAP + y * TERMINAL_DISTANCE;
     }
@@ -44,10 +44,10 @@ export class DeviceView {
         if (device instanceof BatteryDevice) {
             d = new createjs.Shape();
             let g = d.graphics;
-            g.beginStroke('blue').setStrokeStyle(1);
-            g.rect(2, -4, TERMINAL_DISTANCE - 4, 8);
-            g.moveTo(0, 0).lineTo(2, 0);
-            g.moveTo(TERMINAL_DISTANCE - 2, 0).lineTo(TERMINAL_DISTANCE, 0);
+            g.beginStroke('blue').setStrokeStyle(1).beginFill('blue');
+            g.rect(8, -4, TERMINAL_DISTANCE - 16, 8);
+            g.moveTo(0, 0).lineTo(8, 0);
+            g.moveTo(TERMINAL_DISTANCE - 8, 0).lineTo(TERMINAL_DISTANCE, 0);
         } else if (device instanceof ControllerDevice) {
             d = new createjs.Bitmap(this._get_resource(device.is_on() ? 'c_on' : 'c_off'));
             d.regX = 4;
@@ -56,32 +56,37 @@ export class DeviceView {
             d = new createjs.Container();
             let is_on = device_info.power > 1e-4;
 
-            let img = new createjs.Bitmap(this._get_resource(is_on ? 'lamp_on' : 'lamp_off'));
+            let res = this._get_resource(is_on ? 'lamp_on' : 'lamp_off');
+            let img = new createjs.Bitmap(res);
             img.regX = 4;
-            img.regY = img.height / 2;
+            img.regY = res.height / 2;
             d.addChild(img);
 
-            let circle = new createjs.Shape();
-            circle.x = img.width / 2;
-            circle.y = img.height / 2;
-            d.addChild(circle);
+            if (is_on) {
+                let circle = new createjs.Shape();
+                circle.x = res.width / 2 - img.regX;
+                circle.y = 0;
+                d.addChild(circle);
 
-            circle.graphics
-                .beginRadialGradientFill([device.color(1), device.color(0)], [0, 1], 0, 0, 10, 0, 0, 100)
-                .drawCircle(0, 0, 100);
+                let big = device_info.power;
+                console.log(big);
+                if (big > 1)
+                    big = 1;
+
+                circle.graphics
+                    .beginRadialGradientFill([device.color(big), device.color(0)], [0, 1], 0, 0, 0, 0, 0, TERMINAL_DISTANCE)
+                    .drawCircle(0, 0, TERMINAL_DISTANCE);
+            }
         } else if (device instanceof ResistanceDevice) {
             d = new createjs.Shape();
         } else if (device instanceof RotatedDevice) {
             let prerotated_device = device._device;
             let prerotated_d = this._create_display_object(prerotated_device, device_info);
 
-            prerotated_d.scaleX *= -1;
             prerotated_d.scaleY *= -1;
+            prerotated_d.rotation += 90;
 
-            prerotated_d.x += device.width * TERMINAL_DISTANCE;
-            prerotated_d.y += device.height * TERMINAL_DISTANCE;
-
-            d = new createjs.Container;
+            d = new createjs.Container();
             d.addChild(prerotated_d);
         } else if (device instanceof UpDownDevice) {
             let prerotated_device = device._device;
@@ -89,9 +94,9 @@ export class DeviceView {
 
             prerotated_d.scaleY *= -1;
 
-            prerotated_d.y += device.height * TERMINAL_DISTANCE;
+            prerotated_d.y += (prerotated_device.height - 1) * TERMINAL_DISTANCE / 2;
 
-            d = new createjs.Container;
+            d = new createjs.Container();
             d.addChild(prerotated_d);
         } else if (device instanceof WireDevice) {
             d = new createjs.Shape();

@@ -34,7 +34,7 @@ export class CurrentMap {
             colors_cnt[colors[i]]++;
 
         //first add equations about vertices
-        //these are first N - 1 lines
+        //these are first N - k lines
         let j = 0;
         for (let i = 0; i < N; i++) {
             colors_cnt[colors[i]]--;
@@ -56,8 +56,7 @@ export class CurrentMap {
         }
 
         //second add equations about loops
-        //these are next M - (N - 1)
-        let matrix_line = N - 1;
+        //these are next M - (N - k)
         for (let loop of connectors_graph.all_loops()) {
             let sum_emf = 0;
             for (let [edge, is_forward] of loop) {
@@ -67,10 +66,12 @@ export class CurrentMap {
 
                 let dir = is_forward ? 1 : -1;
 
-                matrix[matrix_line][index] = dir * r;
+                matrix[j][index] = dir * r;
                 sum_emf += dir * edge.emf;
             }
-            matrix[matrix_line][M] = sum_emf;
+            matrix[j][M] = sum_emf;
+
+            j++;
         }
 
         let currents = CurrentMap._solve(matrix);

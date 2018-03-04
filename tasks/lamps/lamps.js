@@ -7,6 +7,7 @@ import {LampDevice} from "./model/devices/LampDevice";
 import {WireDevice} from "./model/devices/WireDevice1";
 import {Terminal} from "./model/Terminal";
 import {DeviceWithPosition} from "./model/DeviceWithPosition";
+import {UpDownDevice} from "./model/devices/UpDownDevice";
 
 export class Lamps {
 
@@ -56,16 +57,27 @@ export class Lamps {
 
     initInterface(domNode, preferred_width) {
         let d1 = new BatteryDevice();
-        let d2 = new LampDevice([255, 255, 0]);
+        let d2 = new UpDownDevice(new LampDevice([255, 255, 0]));
         let d3 = new RotatedDevice(new WireDevice(2));
         let d4 = new RotatedDevice(new WireDevice(2));
+        let d5 = new RotatedDevice(new WireDevice(2));
+        let d6 = new RotatedDevice(new WireDevice(2));
+        let d7 = new LampDevice([255, 0, 255]);
+        let d8 = new LampDevice([255, 0, 255]);
+        let d9 = new WireDevice(2);
 
-        let layout = new Layout(2, 2);
+        let layout = new Layout(19, 13);
 
         layout.add_device_with_position(new DeviceWithPosition(d1, new Terminal(0, 1)));
         layout.add_device_with_position(new DeviceWithPosition(d2, new Terminal(0, 0)));
         layout.add_device_with_position(new DeviceWithPosition(d3, new Terminal(0, 0)));
         layout.add_device_with_position(new DeviceWithPosition(d4, new Terminal(1, 0)));
+
+        layout.add_device_with_position(new DeviceWithPosition(d5, new Terminal(0, 1)));
+        layout.add_device_with_position(new DeviceWithPosition(d6, new Terminal(2, 1)));
+        layout.add_device_with_position(new DeviceWithPosition(d7, new Terminal(0, 2)));
+        layout.add_device_with_position(new DeviceWithPosition(d8, new Terminal(1, 2)));
+        layout.add_device_with_position(new DeviceWithPosition(d9, new Terminal(1, 1)));
 
         this._layout_view = new LayoutView(layout, this.kioapi);
 

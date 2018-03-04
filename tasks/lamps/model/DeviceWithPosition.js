@@ -4,6 +4,9 @@ import {EventDispatcherInterface, Event} from "../view/EventDispatcherMixin";
 
 export class DeviceWithPosition extends EventDispatcherInterface {
 
+    // 950-(046)-7373, 980-99-32 Сервис Макс
+    // 111 военный завод. 387-8362, 367-64-28
+
     _device;
     _terminal;
 

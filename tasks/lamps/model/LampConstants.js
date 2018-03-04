@@ -4,7 +4,7 @@ export class LampConstants {
     static _BATTERY_EMF = 9;
     static _LAMP_RESISTANCE = 150;
     static _WIRE_RESISTANCE = 0;
-    static _LAMP_BRIGHTNESS = 1;
+    static _LAMP_BRIGHTNESS = 4;
 
     static get BATTERY_RESISTANCE() {
         return this._BATTERY_RESISTANCE;
