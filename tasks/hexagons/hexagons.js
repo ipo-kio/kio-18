@@ -105,7 +105,10 @@ export class Hexagons {
 
         this.init_time_controls(domNode);
 
-        this._rules_list.add_listener('change', () => this.reset_solution());
+        this._rules_list.add_listener('change', () => {
+            // this.reset_solution();
+            this._board_history = null;
+        });
     }
 
     reset_solution() {
