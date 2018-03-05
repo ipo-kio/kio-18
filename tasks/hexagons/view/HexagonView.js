@@ -86,7 +86,6 @@ export class HexagonView extends EventDispatcherInterface {
     }
 
     __rollover_handler = e => {
-        window._is_ctrl_pressed = e.nativeEvent.ctrlKey;
         this._state = CELL_STATE_HIGHLIGHTED;
         this.redraw();
         this.fire(new Event('rollover', this));

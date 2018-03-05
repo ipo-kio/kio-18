@@ -113,14 +113,15 @@ export const RULE_REGIMES_COUNT = 4;
 export class Rule extends HexBoard {
     _center_cell;
     _result_cell;
-    _regime = RULE_REGIME_EXACT;
+    _regime;
 
-    constructor(values=false) {
+    constructor(values=false, regime=RULE_REGIME_EXACT) {
         let shape = rule_shape(RULE_SIZE);
         super(shape, values);
 
         this._center_cell = new HexagonCell(RULE_SIZE - 1, RULE_SIZE - 1);
         this._result_cell = new HexagonCell(3, 1);
+        this._regime = regime;
 
         if (!values)
             this.set_value(this._result_cell, 1);
@@ -238,9 +239,6 @@ export class Rule extends HexBoard {
         let rule_tc = this.type_counts;
         let tc = new Array(TYPES_COUNT);
         tc.fill(0);
-        if (window._is_ctrl_pressed) {
-            console.log(rule_tc, tc);
-        }
 
         for (let {line: rule_line, index: rule_index} of this.cells()) {
             let dx = rule_line - this._center_cell.line;
