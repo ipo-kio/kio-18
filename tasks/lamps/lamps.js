@@ -82,9 +82,12 @@ export class Lamps {
         layout.add_device_with_position(new DeviceWithPosition(d8, new Terminal(1, 2)));
         layout.add_device_with_position(new DeviceWithPosition(d9, new Terminal(1, 1)));
 
-        layout.add_device_with_position(new DeviceWithPosition(new ControllerDevice(), new Terminal(5, 5)));
+        layout.add_device_with_position(new DeviceWithPosition(
+            new UpDownDevice(new ControllerDevice()),
+            new Terminal(5, 5)
+        ));
 
-        this._layout_view = new LayoutView(layout, this.kioapi);
+        let lv = new LayoutView(layout, this.kioapi);
 
         //init canvas
         this._canvas = document.createElement('canvas');
@@ -95,46 +98,38 @@ export class Lamps {
         this._stage = new createjs.Stage(this._canvas);
         this._canvas.className = 'kio-lamps-canvas';
         this._stage.enableMouseOver(10);
-        this._stage.addChild(this._layout_view.display_object);
+        this._stage.addChild(lv.display_object);
+
+        let st = this._stage;
+        function add_device_selector(device, x, y, count = 100) {
+            let ds = new DeviceSelector(device, lv, count);
+
+            ds.display_object.x = layout_width + x * TERMINAL_DISTANCE;
+            ds.display_object.y = y * TERMINAL_DISTANCE;
+            st.addChild(ds.display_object);
+        }
 
         // create selectors
-        let device_selectors = [
-            new DeviceSelector(new WireDevice(2), this._layout_view, 100),
-            new DeviceSelector(new WireDevice(3), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new WireDevice(2)), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new WireDevice(3)), this._layout_view, 100),
+        add_device_selector(new WireDevice(2), 3, 1);
+        add_device_selector(new WireDevice(3), 2, 0);
+        add_device_selector(new RotatedDevice(new WireDevice(2)), 3, 2);
+        add_device_selector(new RotatedDevice(new WireDevice(3)), 2, 1);
 
-            new DeviceSelector(new ControllerDevice(0), this._layout_view, 100),
-            new DeviceSelector(new UpDownDevice(new ControllerDevice(0)), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new ControllerDevice(0)), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new UpDownDevice(new ControllerDevice(0))), this._layout_view, 100),
+        add_device_selector(new ControllerDevice(0), 0, 0);
+        add_device_selector(new UpDownDevice(new ControllerDevice(0)), 0, 2);
+        add_device_selector(new RotatedDevice(new ControllerDevice(0)), 0, 4);
+        add_device_selector(new RotatedDevice(new UpDownDevice(new ControllerDevice(0))), 0, 6);
 
-            new DeviceSelector(new LampDevice([255, 0, 0]), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new LampDevice([255, 0, 0])), this._layout_view, 100),
+        add_device_selector(new LampDevice([255, 0, 0]), 2, 4);
+        add_device_selector(new RotatedDevice(new LampDevice([255, 0, 0])), 2, 5);
 
-            new DeviceSelector(new LampDevice([255, 255, 0]), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new LampDevice([255, 255, 0])), this._layout_view, 100),
+        add_device_selector(new LampDevice([255, 255, 0]), 3, 4);
+        add_device_selector(new RotatedDevice(new LampDevice([255, 255, 0])), 2, 6);
 
-            new DeviceSelector(new LampDevice([0, 255, 0]), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new LampDevice([0, 255, 0])), this._layout_view, 100)
-        ];
+        add_device_selector(new LampDevice([0, 255, 0]), 4, 4);
+        add_device_selector(new RotatedDevice(new LampDevice([0, 255, 0])), 2, 7);
 
-        let lines = [4, 4, 2, 2, 2];
-
-        let i = 0;
-        let line = 0;
-        for (let ds of device_selectors) {
-            if (i === lines[line]) {
-                line++;
-                i = 0;
-            }
-            ds.display_object.x = layout_width + GAP + i * (2 * TERMINAL_DISTANCE + GAP);
-            ds.display_object.y = line * (GAP + 2 * TERMINAL_DISTANCE);
-
-            this._stage.addChild(ds.display_object);
-
-            i++;
-        }
+        this._layout_view = lv;
 
         domNode.appendChild(this._canvas);
     }

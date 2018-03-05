@@ -68,10 +68,6 @@ export class DeviceView {
             g.moveTo(0, 0).lineTo(8, 0);
             g.moveTo(TERMINAL_DISTANCE - 8, 0).lineTo(TERMINAL_DISTANCE, 0);
         } else if (device instanceof ControllerDevice) {
-            if (!device_info)
-                device_info = {currencies: [0, 0, 0]};
-
-            console.log('drawing controller', device.is_on(), device_info);
             d = new createjs.Bitmap(this._get_resource(device.is_on() ? 'c_on' : 'c_off'));
             d.regX = 4;
             d.regY = 4;
@@ -119,7 +115,7 @@ export class DeviceView {
 
             prerotated_d.scaleY *= -1;
 
-            prerotated_d.y += (prerotated_device.height - 1) * TERMINAL_DISTANCE / 2;
+            prerotated_d.y += (prerotated_device.height - 1) * TERMINAL_DISTANCE;
 
             d = new createjs.Container();
             d.addChild(prerotated_d);

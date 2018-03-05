@@ -16,27 +16,33 @@ export class DeviceSelector {
     constructor(device, layout_view, count) {
         this._device = device;
         this._layout_view = layout_view;
-        this._init_display_object();
         this._count = count;
+        this._init_display_object();
     }
-
 
     _init_display_object() {
         this._display_object = new createjs.Container();
         //top - device view
         //bottom - count
         this._update_device_view();
-        this._count_view = new createjs.Text("", "1.4em Arial", "blue");
+        this._count_view = new createjs.Text("" + this._count, "1em Arial, sans-serif", "blue");
 
         this._display_object.addChild(this._device_view.display_object);
         this._display_object.addChild(this._count_view);
 
-        this._count_view.y = this._device.height * TERMINAL_DISTANCE + 2 * GAP;
-        this._count_view.textBaseline = "top";
-
-        let view = new createjs.Shape();
-        view.graphics.beginStroke("black").rect(0, 0, TERMINAL_DISTANCE, TERMINAL_DISTANCE);
-        this._display_object.addChild(view);
+        if (this._device.width === 1) {
+            //to the right
+            this._count_view.x = 2 * GAP;
+            this._count_view.y = GAP + (this._device.height - 1) * TERMINAL_DISTANCE / 2;
+            this._count_view.textBaseline = "middle";
+            this._count_view.textAlign = "left";
+        } else {
+            //at bottom
+            this._count_view.x = GAP + (this._device.width - 1) * TERMINAL_DISTANCE / 2;
+            this._count_view.y = 2 * GAP + (this._device.height - 1) * TERMINAL_DISTANCE;
+            this._count_view.textBaseline = "top";
+            this._count_view.textAlign = "center";
+        }
     }
 
     _update_device_view() {
