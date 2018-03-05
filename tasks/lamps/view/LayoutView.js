@@ -25,6 +25,7 @@ export class LayoutView {
             this._redraw_all_devices();
         });
         layout.add_listener('change', () => {
+            console.log('changed layout view');
             this._redevice_all_devices();
             this._redraw_all_devices();
         });
@@ -35,7 +36,17 @@ export class LayoutView {
         let dv = new DeviceView(this, device_with_position);
         this._device_views.push(dv);
         this._devices_layer.addChild(dv.display_object);
-        // this._devices_layer.addChild(dv.display_object.hitArea);
+    }
+
+    _remove_device_by_view(device_view) {
+        this._layout.remove_device_with_position(device_view.device_with_position);
+
+        // let ind = this._device_views.indexOf(device_view);
+        // if (ind < 0)
+        //     return;
+        // this._device_views.splice(ind, 1);
+        // this._devices_layer.removeChild(device_view.display_object);
+        // this._redraw_all_devices();
     }
 
     _init_display_object() {

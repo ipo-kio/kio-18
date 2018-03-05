@@ -51,8 +51,8 @@ export class Layout extends EventDispatcherInterface {
         if (ind >= 0) {
             this._devices_with_positions.splice(ind, 1);
             device_with_position.remove_listener('change', this.__device_changed_listener);
-            this.fire(new Event('change', this));
             this._refresh();
+            this.fire(new Event('change', this));
         }
     }
 

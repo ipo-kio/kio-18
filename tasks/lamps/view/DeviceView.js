@@ -7,6 +7,7 @@ import {UpDownDevice} from "../model/devices/UpDownDevice";
 import {WireDevice} from "../model/devices/WireDevice1";
 import {GAP, LayoutView, TERMINAL_DISTANCE} from "./LayoutView";
 import {Terminal} from "../model/Terminal";
+import {DeviceWithPosition} from "../model/DeviceWithPosition";
 
 export class DeviceView {
 
@@ -17,9 +18,13 @@ export class DeviceView {
     _main_do;
     _hit_area;
 
-    constructor(layout_view, device_with_position) {
+    _stable;
+
+    constructor(layout_view, device_with_position, stable=false) {
         this._device_with_position = device_with_position;
         this._device_with_position.add_listener('change', () => this._reposition());
+
+        this._stable = stable;
 
         this._layout_view = layout_view;
 
@@ -187,6 +192,15 @@ export class DeviceView {
             let x = this.display_object.x;
             let y = this.display_object.y;
 
+            if (this._stable) {
+                let device_selector = this.display_object.parent;
+                let dsx = device_selector.x;
+                let dsy = device_selector.y;
+
+                x += dsx;
+                y += dsy;
+            }
+
             x = Math.round((x - GAP) / TERMINAL_DISTANCE);
             y = Math.round((y - GAP) / TERMINAL_DISTANCE);
 
@@ -195,6 +209,8 @@ export class DeviceView {
 
             let dw = this._device_with_position.device.width;
             let dh = this._device_with_position.device.height;
+
+            let xx = x;
 
             if (x > lw - dw)
                 x = lw - dw;
@@ -206,8 +222,19 @@ export class DeviceView {
             if (y < 0)
                 y = 0;
 
-            this._device_with_position.terminal = new Terminal(x, y);
-            // this._reposition();
+            if (this._stable) {
+                if (xx <= lw - dw + 1) {
+                    let dwp = new DeviceWithPosition(this._device_with_position.device, new Terminal(x, y));
+                    this._layout_view._add_device(dwp);
+                    //count--
+                }
+                this._reposition();
+            } else {
+                if (xx >= lw - dw + 1)
+                    this._layout_view._remove_device_by_view(this);
+                else
+                    this._device_with_position.terminal = new Terminal(x, y);
+            }
         });
         this.display_object.addEventListener('rollover', () => this.highlighted = true);
         this.display_object.addEventListener('rollout', () => this.highlighted = false);
@@ -219,5 +246,9 @@ export class DeviceView {
 
     set highlighted(value) {
         this._hit_area.visible = value;
+    }
+
+    get device_with_position() {
+        return this._device_with_position;
     }
 }

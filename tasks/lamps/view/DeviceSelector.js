@@ -47,7 +47,7 @@ export class DeviceSelector {
 
     _update_device_view() {
         let dwp = new DeviceWithPosition(this._device, new Terminal(0, 0));
-        this._device_view = new DeviceView(this._layout_view, dwp);
+        this._device_view = new DeviceView(this._layout_view, dwp, true);
     }
 
     get count() {
