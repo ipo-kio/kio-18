@@ -68,6 +68,10 @@ export class DeviceView {
             g.moveTo(0, 0).lineTo(8, 0);
             g.moveTo(TERMINAL_DISTANCE - 8, 0).lineTo(TERMINAL_DISTANCE, 0);
         } else if (device instanceof ControllerDevice) {
+            if (!device_info)
+                device_info = {currencies: [0, 0, 0]};
+
+            console.log('drawing controller', device.is_on(), device_info);
             d = new createjs.Bitmap(this._get_resource(device.is_on() ? 'c_on' : 'c_off'));
             d.regX = 4;
             d.regY = 4;
@@ -124,7 +128,8 @@ export class DeviceView {
             let g = d.graphics;
             g.setStrokeStyle(1).beginStroke("black");
             g.moveTo(0, 0);
-            g.lineTo(TERMINAL_DISTANCE, 0);
+            let w = (device.width - 1) * TERMINAL_DISTANCE;
+            g.bezierCurveTo(w / 3, TERMINAL_DISTANCE / 5, 2 * w / 3, TERMINAL_DISTANCE / 5, w, 0);
         }
 
         return d;
@@ -137,8 +142,11 @@ export class DeviceView {
     _init_hit_area() {
         let ha = new createjs.Shape();
         let g = ha.graphics;
-        let w = this._device_with_position.device.width - 1;
-        let h = this._device_with_position.device.height - 1;
+        let device = this._device_with_position.device;
+
+        let w = device.width - 1;
+        let h = device.height - 1;
+
         let td = TERMINAL_DISTANCE / 2;
 
         g.beginFill("rgba(227, 172, 20, 0.3)");
@@ -148,12 +156,12 @@ export class DeviceView {
             g.lineTo(td * (2 * i + 2), 0);
         }
         for (let j = 0; j < h; j++) {
-            g.lineTo(w + td, td * (2 * j + 1));
-            g.lineTo(w, td * (2 * j + 2));
+            g.lineTo(w * 2 * td + td, td * (2 * j + 1));
+            g.lineTo(w * 2 * td, td * (2 * j + 2));
         }
         for (let i = w - 1; i >= 0; i--) {
-            g.lineTo(td * (2 * i + 1), td);
-            g.lineTo(td * 2 * i, 0);
+            g.lineTo(td * (2 * i + 1), h * 2 * td + td);
+            g.lineTo(td * 2 * i, h * 2 * td);
         }
         for (let j = h - 1; j >= 0; j--) {
             g.lineTo(-td, td * (2 * j + 1));

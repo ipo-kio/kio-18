@@ -99,10 +99,10 @@ export class Lamps {
 
         // create selectors
         let device_selectors = [
-            new DeviceSelector(new WireDevice(1), this._layout_view, 100),
             new DeviceSelector(new WireDevice(2), this._layout_view, 100),
-            new DeviceSelector(new RotatedDevice(new WireDevice(1)), this._layout_view, 100),
+            new DeviceSelector(new WireDevice(3), this._layout_view, 100),
             new DeviceSelector(new RotatedDevice(new WireDevice(2)), this._layout_view, 100),
+            new DeviceSelector(new RotatedDevice(new WireDevice(3)), this._layout_view, 100),
 
             new DeviceSelector(new ControllerDevice(0), this._layout_view, 100),
             new DeviceSelector(new UpDownDevice(new ControllerDevice(0)), this._layout_view, 100),

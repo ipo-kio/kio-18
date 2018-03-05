@@ -14,7 +14,7 @@ export class ControllerDevice extends Device {
     }
 
     get_next(currencies) {
-        if (currencies[0] > 1e-6)
+        if (Math.abs(currencies[0]) > 1e-6)
             return new ControllerDevice(this._state + 1);
         else
             return new ControllerDevice(0);
@@ -27,8 +27,8 @@ export class ControllerDevice extends Device {
     get_connections() {
         let c = [
             new Connection(
-                new Terminal(0, 0),
-                new Terminal(1, 0),
+                new Terminal(0, 1),
+                new Terminal(1, 1),
                 LampConstants.WIRE_RESISTANCE,
                 0
             )
@@ -36,8 +36,8 @@ export class ControllerDevice extends Device {
 
         if (this.is_on())
             c.push(new Connection(
-                new Terminal(0, 1),
-                new Terminal(1, 1),
+                new Terminal(0, 0),
+                new Terminal(1, 0),
                 LampConstants.WIRE_RESISTANCE,
                 0
             ));
