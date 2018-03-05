@@ -6,6 +6,7 @@ import {RotatedDevice} from "../model/devices/RotatedDevice";
 import {UpDownDevice} from "../model/devices/UpDownDevice";
 import {WireDevice} from "../model/devices/WireDevice1";
 import {GAP, LayoutView, TERMINAL_DISTANCE} from "./LayoutView";
+import {Terminal} from "../model/Terminal";
 
 export class DeviceView {
 
@@ -13,26 +14,44 @@ export class DeviceView {
     _display_object;
     _layout_view;
 
+    _main_do;
+    _hit_area;
+
     constructor(layout_view, device_with_position) {
         this._device_with_position = device_with_position;
         this._device_with_position.add_listener('change', () => this._reposition());
 
         this._layout_view = layout_view;
 
-        this._init_display_object();
+        this._display_object = new createjs.Container();
+        this._redraw();
         this._reposition();
+        this._init_interaction();
     }
 
-    _init_display_object() {
+    _redraw() {
         let device = this._device_with_position.device;
         let info = this._layout_view.layout.get_info(device);
-        this._display_object = this._create_display_object(device, info);
+        let _do = this._create_display_object(device, info);
+
+        this._hit_area = this._init_hit_area();
+        this._display_object.removeAllChildren();
+        this._display_object.addChild(this._hit_area);
+        this._display_object.addChild(_do);
+        _do.mouseEnabled = true;
+        _do.hitArea = this._hit_area;
+        this._hit_area.visible = false;
+
+        this._main_do = _do;
     }
 
     _reposition() {
         let {x, y} = this._device_with_position.terminal;
         this._display_object.x = GAP + x * TERMINAL_DISTANCE;
         this._display_object.y = GAP + y * TERMINAL_DISTANCE;
+
+        // this.display_object.hitArea.x = this._display_object.x;
+        // this.display_object.hitArea.y = this._display_object.y;
     }
 
     _get_resource(id) {
@@ -53,6 +72,9 @@ export class DeviceView {
             d.regX = 4;
             d.regY = 4;
         } else if (device instanceof LampDevice) {
+            if (!device_info)
+                device_info = {power: 0};
+
             d = new createjs.Container();
             let is_on = device_info.power > 1e-4;
 
@@ -69,7 +91,6 @@ export class DeviceView {
                 d.addChild(circle);
 
                 let big = device_info.power;
-                console.log(big);
                 if (big > 1)
                     big = 1;
 
@@ -111,5 +132,88 @@ export class DeviceView {
 
     get display_object() {
         return this._display_object;
+    }
+
+    _init_hit_area() {
+        let ha = new createjs.Shape();
+        let g = ha.graphics;
+        let w = this._device_with_position.device.width - 1;
+        let h = this._device_with_position.device.height - 1;
+        let td = TERMINAL_DISTANCE / 2;
+
+        g.beginFill("rgba(227, 172, 20, 0.3)");
+        g.moveTo(0, 0);
+        for (let i = 0; i < w; i++) {
+            g.lineTo(td * (2 * i + 1), -td);
+            g.lineTo(td * (2 * i + 2), 0);
+        }
+        for (let j = 0; j < h; j++) {
+            g.lineTo(w + td, td * (2 * j + 1));
+            g.lineTo(w, td * (2 * j + 2));
+        }
+        for (let i = w - 1; i >= 0; i--) {
+            g.lineTo(td * (2 * i + 1), td);
+            g.lineTo(td * 2 * i, 0);
+        }
+        for (let j = h - 1; j >= 0; j--) {
+            g.lineTo(-td, td * (2 * j + 1));
+            g.lineTo(0, td * 2 * j);
+        }
+        g.closePath();
+
+        return ha;
+    }
+
+    _press_x;
+    _press_y;
+
+    _init_interaction() {
+        this.display_object.addEventListener('mousedown', e => {
+            this._press_x = e.localX;
+            this._press_y = e.localY;
+        });
+        this.display_object.addEventListener('pressmove', e => {
+            let x = this.display_object.x + e.localX;
+            let y = this.display_object.y + e.localY;
+
+            this.display_object.x = x - this._press_x;
+            this.display_object.y = y - this._press_y;
+        });
+        this.display_object.addEventListener('pressup', e => {
+            let x = this.display_object.x;
+            let y = this.display_object.y;
+
+            x = Math.round((x - GAP) / TERMINAL_DISTANCE);
+            y = Math.round((y - GAP) / TERMINAL_DISTANCE);
+
+            let lw = this._layout_view.layout.width;
+            let lh = this._layout_view.layout.width;
+
+            let dw = this._device_with_position.device.width;
+            let dh = this._device_with_position.device.height;
+
+            if (x > lw - dw)
+                x = lw - dw;
+            if (x < 0)
+                x = 0;
+
+            if (y > lh - dh)
+                y = lh - dh;
+            if (y < 0)
+                y = 0;
+
+            this._device_with_position.terminal = new Terminal(x, y);
+            // this._reposition();
+        });
+        this.display_object.addEventListener('rollover', () => this.highlighted = true);
+        this.display_object.addEventListener('rollout', () => this.highlighted = false);
+    }
+
+    get highlighted() {
+        return this._hit_area.visible;
+    }
+
+    set highlighted(value) {
+        this._hit_area.visible = value;
     }
 }

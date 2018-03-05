@@ -6,9 +6,8 @@ export const GAP = 8;
 export class LayoutView {
 
     _layout;
-    _canvas;
 
-    _stage;
+    _display_object;
     _terminals_layer = new createjs.Shape();
     _devices_layer = new createjs.Container;
     _device_views = [];
@@ -19,14 +18,16 @@ export class LayoutView {
         this._layout = layout;
         this._kioapi = kioapi;
 
-        this._init_canvas();
-
+        this._init_display_object();
         this._redraw();
 
-        // layout.add_listener('element change', () => {
-        //
-        // });
-        layout.add_listener('change', () => this._redevice_all_devices());
+        layout.add_listener('element change', () => {
+            this._redraw_all_devices();
+        });
+        layout.add_listener('change', () => {
+            this._redevice_all_devices();
+            this._redraw_all_devices();
+        });
         this._redevice_all_devices();
     }
 
@@ -34,17 +35,13 @@ export class LayoutView {
         let dv = new DeviceView(this, device_with_position);
         this._device_views.push(dv);
         this._devices_layer.addChild(dv.display_object);
+        // this._devices_layer.addChild(dv.display_object.hitArea);
     }
 
-    _init_canvas() {
-        this._canvas = document.createElement('canvas');
-        this._canvas.width = (this._layout.width - 1) * TERMINAL_DISTANCE + 2 * GAP;
-        this._canvas.height = (this._layout.height - 1) * TERMINAL_DISTANCE + 2 * GAP;
-        this._canvas.className = 'kio-lamps-canvas';
-
-        this._stage = new createjs.Stage(this._canvas);
-        this._stage.addChild(this._terminals_layer);
-        this._stage.addChild(this._devices_layer);
+    _init_display_object() {
+        this._display_object = new createjs.Container();
+        this._display_object.addChild(this._terminals_layer);
+        this._display_object.addChild(this._devices_layer);
     }
 
     _redraw() {
@@ -75,8 +72,8 @@ export class LayoutView {
         return this._layout;
     }
 
-    get canvas() {
-        return this._canvas;
+    get display_object() {
+        return this._display_object;
     }
 
     _redevice_all_devices() {
@@ -85,5 +82,10 @@ export class LayoutView {
         this._device_views = [];
         for (let dwp of this._layout.all_devices())
             this._add_device(dwp);
+    }
+
+    _redraw_all_devices() {
+        for (let dw of this._device_views)
+            dw._redraw();
     }
 }

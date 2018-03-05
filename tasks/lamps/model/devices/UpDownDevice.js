@@ -1,5 +1,4 @@
 import {Device} from "./Device";
-import {RotatedDevice} from "./RotatedDevice";
 import {Connection} from "../Connection";
 import {Terminal} from "../Terminal";
 
@@ -8,12 +7,12 @@ export class UpDownDevice extends Device {
     _device;
 
     constructor(device) {
-        super(device.height, device.width);
+        super(device.width, device.height);
         this._device = device;
     }
 
     get_next(array_of_currencies) {
-        return new RotatedDevice(this._device.get_next(array_of_currencies));
+        return new UpDownDevice(this._device.get_next(array_of_currencies));
     }
 
     get_connections() {

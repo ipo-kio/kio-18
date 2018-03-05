@@ -23,7 +23,9 @@ export class Layout extends EventDispatcherInterface {
 
     __device_changed_listener = e => {
         this._refresh();
-        this.fire(new Event('element change', this));
+        let event = new Event('element change', this);
+        event.element = e.source;
+        this.fire(event);
     };
 
     add_device_with_position(device_with_position) {

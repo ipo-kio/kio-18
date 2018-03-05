@@ -41,6 +41,8 @@ export class ControllerDevice extends Device {
                 LampConstants.WIRE_RESISTANCE,
                 0
             ));
+
+        return c;
     }
 
 }
