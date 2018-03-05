@@ -238,11 +238,14 @@ export class Rule extends HexBoard {
         let rule_tc = this.type_counts;
         let tc = new Array(TYPES_COUNT);
         tc.fill(0);
+        if (window._is_ctrl_pressed) {
+            console.log(rule_tc, tc);
+        }
 
         for (let {line: rule_line, index: rule_index} of this.cells()) {
             let dx = rule_line - this._center_cell.line;
             let dy = rule_index - this._center_cell.index;
-            if (dx === 0 && dy === 0)
+            if (dx === 0 && dy === 0 || dx === this._result_cell.line - this._center_cell.line && dy === this._result_cell.index - this._center_cell.index)
                 continue;
             let v = board.value_by_ints(line + dx, index + dy);
             if (v >= 0)
