@@ -166,7 +166,10 @@ export class Hexagons {
         let {from, to} = board.line_borders(h);
         let w = (from + to) / 2;
 
-        board.set_value(new HexagonCell(h, w), 1);
+        for (let cell of board.cells())
+            board.set_value(cell, 1);
+        board.set_value(new HexagonCell(h, w), 2);
+
         this._standard_initial_board_values = board.values;
 
         let sizing = new Sizing(16);

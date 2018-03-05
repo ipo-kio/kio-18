@@ -8,7 +8,7 @@
 //          *
 
 export const RULE_SIZE = 2;
-export const TYPES_COUNT = 3; //0 and 1,2,3
+export const TYPES_COUNT = 4; //0 and 1,2,3,4
 
 export class HexBoard {
 
@@ -112,6 +112,7 @@ export const RULE_REGIMES_COUNT = 4;
 
 export class Rule extends HexBoard {
     _center_cell;
+    _result_cell;
     _regime = RULE_REGIME_EXACT;
 
     constructor(values=false) {
@@ -119,13 +120,18 @@ export class Rule extends HexBoard {
         super(shape, values);
 
         this._center_cell = new HexagonCell(RULE_SIZE - 1, RULE_SIZE - 1);
+        this._result_cell = new HexagonCell(3, 1);
 
         if (!values)
-            this.set_value(this._center_cell, 1);
+            this.set_value(this._result_cell, 1);
     }
 
     get center_cell() {
         return this._center_cell;
+    }
+
+    get result_cell() {
+        return this._result_cell;
     }
 
     get regime() {
@@ -143,7 +149,7 @@ export class Rule extends HexBoard {
     }
 
     get value_to_set() {
-        return this.value(this.center_cell);
+        return this.value(this.result_cell);
     }
 
     get rule_size() {
@@ -187,6 +193,14 @@ export class Rule extends HexBoard {
     }
 
     conforms(board, {line, index}) {
+        //test center cell in any situation
+        let rule_center_value = this.value(this.center_cell);
+        if (rule_center_value !== 0) {
+            let board_center_value = board.value_by_ints(line, index);
+            if (rule_center_value !== board_center_value)
+                return false;
+        }
+
         if (this._regime === RULE_REGIME_EXACT) {
             let rule_vals = this.values_list;
             let board_vals = [
@@ -320,6 +334,8 @@ export function rule_shape(r) {
         _shape[i] = {from: 0, to: r - 1 + i};
     for (let i = r; i < 2 * r - 1; i++)
         _shape[i] = {from: i - r + 1, to: 2 * r - 2};
+
+    _shape.push({from: 1, to: 1});
 
     return _shape;
 }

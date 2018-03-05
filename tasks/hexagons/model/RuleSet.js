@@ -32,7 +32,7 @@ export class RuleSet {
             return first_rule;
         });
 
-        this._root_rule = new Rule([[0, 0], [0, 0, 0], [0, 0]]); //TODO generate
+        this._root_rule = new Rule([[0, 0], [0, 0, 0], [0, 0], [0]]);
         factored_graph.add_vertex(this._root_rule);
         for (let v of factored_graph.vertices())
             if (v !== this._root_rule)
@@ -90,6 +90,11 @@ export class RuleSet {
     }
 
     static implies(rule1, rule2) {
+        let rule1_center_value = rule1.value(rule1.center_cell);
+        let rule2_center_value = rule2.value(rule2.center_cell);
+        if (rule2_center_value !== 0 && rule1_center_value !== rule2_center_value)
+            return false;
+
         let tc1 = rule1.type_counts;
         let tc2 = rule2.type_counts;
 

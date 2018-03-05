@@ -158,6 +158,10 @@ let S = 6;
 let types = [
     new TypeDrawer("#FFFFFF", (g, x0, y0) => {
         //draw nothing
+        g.beginStroke("black").drawCircle(x0, y0, 5);
+    }),
+    new TypeDrawer("#FFFFFF", (g, x0, y0) => {
+        //draw nothing
     }),
     new TypeDrawer("#e3e41e", (g, x0, y0) => {
         g.beginFill('black').drawCircle(x0, y0, S);

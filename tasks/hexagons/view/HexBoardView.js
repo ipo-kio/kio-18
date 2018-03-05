@@ -47,7 +47,7 @@ export class HexBoardView extends EventDispatcherInterface {
 
         let rule_cell = null;
         if (this.board instanceof Rule)
-            rule_cell = this.board.center_cell;
+            rule_cell = this.board.result_cell;
 
         this._cell_views = [];
         for (let cell of this._board.cells()) {
@@ -57,7 +57,7 @@ export class HexBoardView extends EventDispatcherInterface {
             cell_view._display_object.y = cell_y;
             this._cell_views.push(cell_view);
 
-            if (cell.equals(rule_cell))
+            if (cell.equals(rule_cell) || rule_cell === null)
                 cell_view.allow_zero = false;
 
             cell_view.add_listener('change', () => this.fire(new Event('change', this)));
