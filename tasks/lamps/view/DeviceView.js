@@ -225,7 +225,7 @@ export class DeviceView {
             if (this._stable) {
                 if (xx <= lw - dw + 1) {
                     let dwp = new DeviceWithPosition(this._device_with_position.device, new Terminal(x, y));
-                    this._layout_view._add_device(dwp);
+                    this._layout_view.layout.add_device_with_position(dwp);
                     //count--
                 }
                 this._reposition();
@@ -246,6 +246,10 @@ export class DeviceView {
 
     set highlighted(value) {
         this._hit_area.visible = value;
+
+        /*let device = this._device_with_position.device;
+        let info = this._layout_view.layout.get_info(device);
+        console.log('info', info);*/
     }
 
     get device_with_position() {

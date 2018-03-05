@@ -25,7 +25,6 @@ export class LayoutView {
             this._redraw_all_devices();
         });
         layout.add_listener('change', () => {
-            console.log('changed layout view');
             this._redevice_all_devices();
             this._redraw_all_devices();
         });
@@ -89,7 +88,7 @@ export class LayoutView {
 
     _redevice_all_devices() {
         for (let dv of this._device_views)
-            this._devices_layer.removeChild(dv);
+            this._devices_layer.removeChild(dv.display_object);
         this._device_views = [];
         for (let dwp of this._layout.all_devices())
             this._add_device(dwp);
