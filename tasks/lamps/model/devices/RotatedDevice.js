@@ -1,6 +1,7 @@
 import {Device} from "./Device";
 import {Connection} from "../Connection";
 import {Terminal} from "../Terminal";
+import {DeviceFactory} from "./device_factory";
 
 export class RotatedDevice extends Device {
 
@@ -27,5 +28,9 @@ export class RotatedDevice extends Device {
 
     get_info(array_of_currencies) {
         return this._device.get_info(array_of_currencies);
+    }
+
+    get copy_and_clear() {
+        return DeviceFactory.create_rotated(this._device.copy_and_clear);
     }
 }

@@ -2,6 +2,8 @@ import {Graph} from "./Graph";
 import {CurrentMap} from "./CurrentMap";
 import {DeviceWithPosition} from "./DeviceWithPosition";
 import {Event, EventDispatcherInterface} from "../view/EventDispatcherMixin";
+import {DeviceFactory} from "./devices/device_factory";
+import {Terminal} from "./Terminal";
 
 export class Layout extends EventDispatcherInterface {
     _width;
@@ -177,5 +179,24 @@ export class Layout extends EventDispatcherInterface {
 
     get height() {
         return this._height;
+    }
+
+    get serializer() {
+        let d = [];
+        for (let dwp of this._devices_with_positions)
+            d.push(dwp.serializer);
+        return {d};
+    }
+
+    set serializer(value) {
+        if (!value)
+            return;
+
+        let dwps = [];
+        for (let [id, x, y] of value.d)
+            dwps.push(new DeviceWithPosition(DeviceFactory.deserialize(id), new Terminal(x, y)));
+
+        this.clear_all_devices_with_position();
+        this.add_devices_with_position(dwps);
     }
 }

@@ -2,6 +2,7 @@ import {Device} from "./Device";
 import {Terminal} from "../Terminal";
 import {Connection} from "../Connection";
 import {LampConstants} from "../LampConstants";
+import {DeviceFactory} from "./device_factory";
 
 export class ControllerDevice extends Device {
 
@@ -14,14 +15,17 @@ export class ControllerDevice extends Device {
     }
 
     get_next(currencies) {
-        if (Math.abs(currencies[0]) > 1e-6)
-            return new ControllerDevice(this._state + 1);
-        else
-            return new ControllerDevice(0);
+        if (Math.abs(currencies[0]) > 1e-6 || this._state > 0) {
+            let new_state = this._state + 1;
+            if (new_state === LampConstants.C_ON + LampConstants.C_WAIT)
+                new_state = 0;
+            return DeviceFactory.create_controller(new_state);
+        } else
+            return DeviceFactory.create_controller();
     }
 
     is_on() {
-        return this._state % 3 > 0;
+        return this._state % (LampConstants.C_ON + LampConstants.C_WAIT) >= LampConstants.C_WAIT;
     }
 
     get_connections() {
@@ -29,7 +33,7 @@ export class ControllerDevice extends Device {
             new Connection(
                 new Terminal(0, 1),
                 new Terminal(1, 1),
-                LampConstants.WIRE_RESISTANCE,
+                LampConstants.CONTROLLER_RESISTANCE,
                 0
             )
         ];
@@ -45,11 +49,10 @@ export class ControllerDevice extends Device {
         return c;
     }
 
-
     get copy_and_clear() {
         if (this._state === 0)
             return this;
         else
-            return new ControllerDevice();
+            return DeviceFactory.create_controller();
     }
 }

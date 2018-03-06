@@ -1,4 +1,4 @@
-export const STEPS = 20;
+export const STEPS = 80;
 
 export class LayoutHistory {
 

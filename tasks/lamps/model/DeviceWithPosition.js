@@ -1,6 +1,7 @@
 import {Connection} from "./Connection";
 import {Terminal} from "./Terminal";
 import {EventDispatcherInterface, Event} from "../view/EventDispatcherMixin";
+import {DeviceFactory} from "./devices/device_factory";
 
 export class DeviceWithPosition extends EventDispatcherInterface {
 
@@ -43,5 +44,9 @@ export class DeviceWithPosition extends EventDispatcherInterface {
 
         this._terminal = t;
         this.fire(new Event('change', this));
+    }
+
+    get serializer() {
+        return [DeviceFactory.serialize(this._device), this._terminal.x, this._terminal.y];
     }
 }

@@ -1,6 +1,7 @@
 import {Device} from "./Device";
 import {Connection} from "../Connection";
 import {Terminal} from "../Terminal";
+import {DeviceFactory} from "./device_factory";
 
 export class UpDownDevice extends Device {
 
@@ -29,5 +30,9 @@ export class UpDownDevice extends Device {
 
     get_info(array_of_currencies) {
         return this._device.get_info(array_of_currencies);
+    }
+
+    get copy_and_clear() {
+        return DeviceFactory.create_updown(this._device.copy_and_clear);
     }
 }

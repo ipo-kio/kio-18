@@ -21,4 +21,6 @@ export class LampDevice extends ResistanceDevice {
         let [r, g, b] = this._color;
         return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha.toFixed(2) + ')';
     }
+
+
 }

@@ -127,7 +127,7 @@ export class DeviceView {
         } else if (device instanceof WireDevice) {
             d = new createjs.Shape();
             let g = d.graphics;
-            g.setStrokeStyle(1).beginStroke("black");
+            g.setStrokeStyle(2).beginStroke("#8888ff");
             g.moveTo(0, 0);
             let w = (device.width - 1) * TERMINAL_DISTANCE;
             g.bezierCurveTo(w / 3, TERMINAL_DISTANCE / 5, 2 * w / 3, TERMINAL_DISTANCE / 5, w, 0);
@@ -232,8 +232,11 @@ export class DeviceView {
             } else {
                 if (xx >= lw - dw + 1)
                     this._layout_view._remove_device_by_view(this);
-                else
+                else {
                     this._device_with_position.terminal = new Terminal(x, y);
+                    this._reposition();
+                }
+
             }
         });
         this.display_object.addEventListener('rollover', () => this.highlighted = true);

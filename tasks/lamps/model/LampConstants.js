@@ -5,6 +5,10 @@ export class LampConstants {
     static _LAMP_RESISTANCE = 150;
     static _WIRE_RESISTANCE = 0;
     static _LAMP_BRIGHTNESS = 4;
+    static _CONTROLLER_RESISTANCE = 100;
+
+    static _C_WAIT = 1;
+    static _C_ON = 2;
 
     static get BATTERY_RESISTANCE() {
         return this._BATTERY_RESISTANCE;
@@ -40,6 +44,30 @@ export class LampConstants {
 
     static get LAMP_BRIGHTNESS() {
         return this._LAMP_BRIGHTNESS;
+    }
+
+    static get CONTROLLER_RESISTANCE() {
+        return this._CONTROLLER_RESISTANCE;
+    }
+
+    static set CONTROLLER_RESISTANCE(value) {
+        this._CONTROLLER_RESISTANCE = value;
+    }
+
+    static get C_WAIT() {
+        return this._C_WAIT;
+    }
+
+    static set C_WAIT(value) {
+        this._C_WAIT = value;
+    }
+
+    static get C_ON() {
+        return this._C_ON;
+    }
+
+    static set C_ON(value) {
+        this._C_ON = value;
     }
 }
 

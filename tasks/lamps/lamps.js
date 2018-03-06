@@ -12,6 +12,7 @@ import {DeviceSelector} from "./view/DeviceSelector";
 import {ControllerDevice} from "./model/devices/ControllerDevice";
 import {Slider} from "../hexagons/slider";
 import {STEPS, LayoutHistory} from "./model/LayoutHistory";
+import {DeviceFactory} from "./model/devices/device_factory";
 
 export class Lamps {
 
@@ -59,25 +60,27 @@ export class Lamps {
     }
 
     solution() {
-        return {};
+        return this._initial_layout.serializer;
     }
 
 
     loadSolution(solution) {
         if (!solution)
             return;
+
+        this._initial_layout.serializer = solution;
     }
 
     initInterface(domNode, preferred_width) {
-        let d1 = new BatteryDevice();
-        let d2 = new UpDownDevice(new LampDevice([255, 255, 0]));
-        let d3 = new RotatedDevice(new WireDevice(2));
-        let d4 = new RotatedDevice(new WireDevice(2));
-        let d5 = new RotatedDevice(new WireDevice(2));
-        let d6 = new RotatedDevice(new WireDevice(2));
-        let d7 = new LampDevice([255, 0, 255]);
-        let d8 = new LampDevice([255, 0, 255]);
-        let d9 = new WireDevice(2);
+        let d1 = DeviceFactory.create_battery();
+        let d2 = DeviceFactory.create_updown(DeviceFactory.create_yellow_lamp());
+        let d3 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
+        let d4 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
+        let d5 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
+        let d6 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
+        let d7 = DeviceFactory.create_blue_lamp();
+        let d8 = DeviceFactory.create_blue_lamp();
+        let d9 = DeviceFactory.create_wire(2);
 
         let layout = new Layout(19, 13);
 
@@ -93,7 +96,7 @@ export class Lamps {
         layout.add_device_with_position(new DeviceWithPosition(d9, new Terminal(1, 1)));
 
         layout.add_device_with_position(new DeviceWithPosition(
-            new UpDownDevice(new ControllerDevice()),
+            DeviceFactory.create_updown(DeviceFactory.create_controller()),
             new Terminal(5, 5)
         ));
 
@@ -124,24 +127,30 @@ export class Lamps {
         }
 
         // create selectors
-        add_device_selector(new WireDevice(2), 3, 1);
-        add_device_selector(new WireDevice(3), 2, 0);
-        add_device_selector(new RotatedDevice(new WireDevice(2)), 3, 2);
-        add_device_selector(new RotatedDevice(new WireDevice(3)), 2, 1);
+        add_device_selector(DeviceFactory.create_wire(2), 3, 1);
+        add_device_selector(DeviceFactory.create_wire(3), 2, 0);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_wire(2)), 3, 2);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_wire(3)), 2, 1);
 
-        add_device_selector(new ControllerDevice(0), 0, 0);
-        add_device_selector(new UpDownDevice(new ControllerDevice(0)), 0, 2);
-        add_device_selector(new RotatedDevice(new ControllerDevice(0)), 0, 4);
-        add_device_selector(new RotatedDevice(new UpDownDevice(new ControllerDevice(0))), 0, 6);
+        add_device_selector(DeviceFactory.create_controller(0), 0, 0);
+        add_device_selector(DeviceFactory.create_updown(DeviceFactory.create_controller(0)), 0, 2);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_controller()), 0, 4);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_updown(DeviceFactory.create_controller())), 0, 6);
 
-        add_device_selector(new LampDevice([255, 0, 0]), 2, 4);
-        add_device_selector(new RotatedDevice(new LampDevice([255, 0, 0])), 2, 5);
+        add_device_selector(DeviceFactory.create_red_lamp(), 2, 4);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_red_lamp()), 2, 5);
 
-        add_device_selector(new LampDevice([255, 255, 0]), 3, 4);
-        add_device_selector(new RotatedDevice(new LampDevice([255, 255, 0])), 2, 6);
+        add_device_selector(DeviceFactory.create_yellow_lamp(), 3, 4);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_yellow_lamp()), 2, 6);
 
-        add_device_selector(new LampDevice([0, 255, 0]), 4, 4);
-        add_device_selector(new RotatedDevice(new LampDevice([0, 255, 0])), 2, 7);
+        add_device_selector(DeviceFactory.create_green_lamp(), 4, 4);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_green_lamp()), 2, 7);
+
+        add_device_selector(DeviceFactory.create_blue_lamp(), 5, 4);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_blue_lamp()), 2, 8);
+
+        add_device_selector(DeviceFactory.create_battery(), 6, 4);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_battery()), 2, 9);
 
         this._layout_view = lv;
         this._layout_view.add_listener('change', this.__view_changed_listener);
