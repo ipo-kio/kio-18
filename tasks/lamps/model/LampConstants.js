@@ -3,7 +3,7 @@ export class LampConstants {
     static _BATTERY_RESISTANCE = 34;
     static _BATTERY_EMF = 9;
     static _LAMP_RESISTANCE = 150;
-    static _WIRE_RESISTANCE = 0;
+    static _WIRE_RESISTANCE = 1;
     static _LAMP_BRIGHTNESS = 4;
     static _CONTROLLER_RESISTANCE = 100;
 

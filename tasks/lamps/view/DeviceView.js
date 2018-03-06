@@ -78,7 +78,7 @@ export class DeviceView {
             d.regY = 4;
         } else if (device instanceof LampDevice) {
             if (!device_info)
-                device_info = {power: 0};
+                device_info = {power: 0.8};
 
             d = new createjs.Container();
             let is_on = device_info.power > 1e-4;
@@ -252,7 +252,8 @@ export class DeviceView {
 
         /*let device = this._device_with_position.device;
         let info = this._layout_view.layout.get_info(device);
-        console.log('info', info);*/
+        if (info !== undefined)
+            console.log('info', info);*/
     }
 
     get device_with_position() {

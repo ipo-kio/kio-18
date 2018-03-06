@@ -15,29 +15,21 @@ export class Graph {
         this._invalidate();
     }
 
+    static _add_edge(object1, object2, value, _data) {
+        let map1 = _data.get(object1);
+        if (map1 !== undefined) {
+            let values_list = map1.get(object2);
+            if (values_list === undefined)
+                map1.set(object2, [value]);
+            else
+                values_list.push(value);
+        }
+    }
+
     add_edge(object1, object2, value) {
-        let map1 = this._data.get(object1);
-        if (map1 !== undefined)
-            map1.set(object2, value);
-
-        let map2 = this._back_data.get(object2);
-        if (map2 !== undefined)
-            map2.set(object1, value);
+        Graph._add_edge(object1, object2, value, this._data);
+        Graph._add_edge(object2, object1, value, this._back_data);
         this._invalidate();
-    }
-
-    has_edge(object1, object2) {
-        let map1 = this._data.get(object1);
-        if (map1 === undefined)
-            return undefined;
-        return map1.has(object2);
-    }
-
-    get_edge(object1, object2) {
-        let map1 = this._data.get(object1);
-        if (map1 === undefined)
-            return undefined;
-        return map1.get(object2);
     }
 
     *vertices() {
@@ -50,7 +42,9 @@ export class Graph {
 
         let e = data.get(vertex);
         if (e !== undefined)
-            yield* e;
+            for (let [v2, list_values] of e)//e = Map: vertex -> [values]
+                for (let value of list_values)
+                    yield [v2, value];
     }
 
     toString() {
@@ -85,7 +79,7 @@ export class Graph {
                         if (!visited.has(v)) {
                             let val = inner_dfs(v, fun);
                             if (val !== null)
-                                list.push({value: val, edge: [edge_value, is_forward]});
+                                list.push({value: val, edge: [edge_value[0], is_forward]});
                         }
             }
 
@@ -117,7 +111,7 @@ export class Graph {
 
         for (let v1 of vertices) {
             let i1 = v2index.get(v1);
-            for (let [v2, edge_value] of this._data.get(v1)) {
+            for (let [v2, edge_value] of this.edges(v1)) {
                 //edge v1 -> v2
                 let i2 = v2index.get(v2);
                 let c1 = colors[i1];

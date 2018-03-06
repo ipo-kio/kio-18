@@ -17,7 +17,7 @@ export class ControllerDevice extends Device {
     get_next(currencies) {
         if (Math.abs(currencies[0]) > 1e-6 || this._state > 0) {
             let new_state = this._state + 1;
-            if (new_state === LampConstants.C_ON + LampConstants.C_WAIT)
+            if (new_state >= LampConstants.C_ON + LampConstants.C_WAIT)
                 new_state = 0;
             return DeviceFactory.create_controller(new_state);
         } else
