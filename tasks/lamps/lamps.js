@@ -10,11 +10,18 @@ import {DeviceWithPosition} from "./model/DeviceWithPosition";
 import {UpDownDevice} from "./model/devices/UpDownDevice";
 import {DeviceSelector} from "./view/DeviceSelector";
 import {ControllerDevice} from "./model/devices/ControllerDevice";
+import {STEPS} from "../hexagons/model/BoardHistory";
+import {Slider} from "../hexagons/slider";
+import {LayoutHistory} from "../hexagons/LayoutHistory";
 
 export class Lamps {
 
+    _initial_layout;
+    _standard_initial_layout;
     _layout_view;
     _stage;
+
+    _layout_history;
 
     constructor(settings) {
         this.settings = settings;
@@ -33,10 +40,14 @@ export class Lamps {
         createjs.Ticker.framerate = 20;
         createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
         createjs.Ticker.addEventListener("tick", this._stage);
+
+        this.init_time_controls(domNode);
     }
 
     static preloadManifest() {
         return [
+            {id: "fly1", src: "lamps-resources/fly1.png"},
+            {id: "fly1-hover", src: "lamps-resources/fly1_hover.png"},
             {id: "c_on", src: "lamps-resources/c_on.png"},
             {id: "c_off", src: "lamps-resources/c_off.png"},
             {id: "lamp_off", src: "lamps-resources/lamp_off.png"},
@@ -87,6 +98,10 @@ export class Lamps {
             new Terminal(5, 5)
         ));
 
+        this._initial_layout = layout;
+
+        this._standard_initial_layout = layout.copy();
+
         let lv = new LayoutView(layout, this.kioapi);
 
         //init canvas
@@ -132,5 +147,48 @@ export class Lamps {
         this._layout_view = lv;
 
         domNode.appendChild(this._canvas);
+    }
+
+    init_time_controls(domNode) {
+        this._slider = new Slider(domNode, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
+        this._slider.domNode.className = 'lamps-slider';
+        domNode.appendChild(this._slider.domNode);
+
+        function add_button(title, action) {
+            let button = document.createElement('button');
+            button.innerText = title;
+            $(button).click(action);
+            domNode.appendChild(button);
+        }
+
+        add_button('0', () => this._slider.value = 0);
+        add_button('-1', () => this._slider.value--);
+        add_button('+1', () => this._slider.value++);
+        add_button('max', () => this._slider.value = STEPS);
+
+        this._time_shower = document.createElement('span');
+        this._time_shower.className = 'slider-time-shower';
+        domNode.appendChild(this._time_shower);
+
+        this._slider.onvaluechange = () => this.move_time_to(this.board_time());
+    }
+
+    move_time_to(time) {
+        if (time < 0)
+            time = 0;
+
+        if (!this._layout_history && time > 0)
+            this.new_history();
+
+        this._layout_view.layout = time === 0 ? this._layout_view : this._layout_history.get(time);
+        this._time_shower.innerHTML = 'Шаг: <b>' + this.board_time() + '</b>';
+    }
+
+    board_time() {
+        return Math.round(this._slider.value);
+    }
+
+    new_history() {
+        this._layout_history = new LayoutHistory(this._initial_layout);
     }
 }

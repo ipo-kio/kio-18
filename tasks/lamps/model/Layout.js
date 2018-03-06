@@ -142,6 +142,12 @@ export class Layout extends EventDispatcherInterface {
         return this._device_2_info.get(device);
     }
 
+    copy() {
+        let layout = new Layout(this._width, this._height);
+        layout.add_devices_with_position(this._devices_with_positions);
+        return layout;
+    }
+
     get width() {
         return this._width;
     }

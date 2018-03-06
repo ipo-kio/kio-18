@@ -28,7 +28,7 @@ export class DeviceSelector {
         this._count_view = new createjs.Text("" + this._count, "1em Arial, sans-serif", "blue");
 
         this._display_object.addChild(this._device_view.display_object);
-        this._display_object.addChild(this._count_view);
+        // this._display_object.addChild(this._count_view);
 
         if (this._device.width === 1) {
             //to the right

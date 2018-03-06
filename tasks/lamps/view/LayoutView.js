@@ -21,15 +21,19 @@ export class LayoutView {
         this._init_display_object();
         this._redraw();
 
-        layout.add_listener('element change', () => {
-            this._redraw_all_devices();
-        });
-        layout.add_listener('change', () => {
-            this._redevice_all_devices();
-            this._redraw_all_devices();
-        });
+        layout.add_listener('element change', this.__element_change_listener);
+        layout.add_listener('change', this.__change_listener);
         this._redevice_all_devices();
     }
+
+    __element_change_listener = () => {
+        this._redraw_all_devices();
+    };
+
+    __change_listener = () => {
+        this._redevice_all_devices();
+        this._redraw_all_devices();
+    };
 
     _add_device(device_with_position) {
         let dv = new DeviceView(this, device_with_position);
@@ -80,6 +84,22 @@ export class LayoutView {
 
     get layout() {
         return this._layout;
+    }
+
+    set layout(value) {
+        if (value === this._layout)
+            return;
+
+        this._layout.remove_listener('change', this.__change_listener);
+        this._layout.remove_listener('element change', this.__element_change_listener);
+
+        this._layout = value;
+
+        this._layout.add_listener('change', this.__change_listener);
+        this._layout.add_listener('element change', this.__element_change_listener);
+
+        this._redevice_all_devices();
+        this._redraw_all_devices();
     }
 
     get display_object() {
