@@ -19,6 +19,8 @@ export class Layout extends EventDispatcherInterface {
         this._height = height;
 
         this._refresh();
+
+        this.hash = Math.round(Math.random() * 1000);
     }
 
     __device_changed_listener = e => {
@@ -140,8 +142,8 @@ export class Layout extends EventDispatcherInterface {
             let connections = this._devices_connections[i];
 
             let currencies = new Array(connections.length);
-            for (let j = 0; j < currencies; j++)
-                currencies[j] = this._current_map.get(connections[j]);
+            for (let j = 0; j < currencies.length; j++)
+                currencies[j] = this._current_map.get_current(connections[j]);
 
             let next_device = device.get_next(currencies);
 

@@ -197,6 +197,7 @@ export class Lamps {
             this._initial_layout = this._layout_view.layout.copy_and_clear();
             this._layout_history = null;
             this._slider.value = 0;
-        }
+        } else
+            this._layout_history = null;
     }
 }
