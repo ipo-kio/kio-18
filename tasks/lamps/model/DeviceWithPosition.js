@@ -38,6 +38,9 @@ export class DeviceWithPosition extends EventDispatcherInterface {
     }
 
     set terminal(t) {
+        if (this._terminal.x === t.x && this._terminal.y === t.y)
+            return;
+
         this._terminal = t;
         this.fire(new Event('change', this));
     }

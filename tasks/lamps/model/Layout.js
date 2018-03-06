@@ -46,6 +46,19 @@ export class Layout extends EventDispatcherInterface {
         this.fire(new Event('change', this));
     }
 
+    add_devices_with_position_but_clear_them_first(devices_with_position) {
+        let dwps = new Array(devices_with_position.length);
+
+        for (let i = 0; i < devices_with_position.length; i++) {
+            let dwp = devices_with_position[i];
+
+            let device = dwp.device;
+            dwps[i] = new DeviceWithPosition(device.copy_and_clear, dwp.terminal);
+        }
+
+        this.add_devices_with_position(dwps);
+    }
+
     remove_device_with_position(device_with_position) {
         let ind = this._devices_with_positions.indexOf(device_with_position);
         if (ind >= 0) {
@@ -119,9 +132,9 @@ export class Layout extends EventDispatcherInterface {
     }
 
     next_layout() {
-        let new_devices_with_positions = new Array(this._devices_with_positions.length);
-
         let d = this._devices_with_positions.length;
+        let new_devices_with_positions = new Array(d);
+
         for (let i = 0; i < d; i++) {
             let {device, terminal} = this._devices_with_positions[i];
             let connections = this._devices_connections[i];
@@ -132,10 +145,12 @@ export class Layout extends EventDispatcherInterface {
 
             let next_device = device.get_next(currencies);
 
-            new_devices_with_positions.push(new DeviceWithPosition(next_device, terminal));
+            new_devices_with_positions[i] = new DeviceWithPosition(next_device, terminal);
         }
 
-        return new Layout(this._width, this._height, new_devices_with_positions);
+        let layout = new Layout(this._width, this._height);
+        layout.add_devices_with_position(new_devices_with_positions);
+        return layout;
     }
 
     get_info(device) {
@@ -145,6 +160,12 @@ export class Layout extends EventDispatcherInterface {
     copy() {
         let layout = new Layout(this._width, this._height);
         layout.add_devices_with_position(this._devices_with_positions);
+        return layout;
+    }
+
+    copy_and_clear() {
+        let layout = new Layout(this._width, this._height);
+        layout.add_devices_with_position_but_clear_them_first(this._devices_with_positions);
         return layout;
     }
 

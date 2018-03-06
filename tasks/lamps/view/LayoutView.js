@@ -1,9 +1,10 @@
 import {DeviceView} from "./DeviceView";
+import {Event, EventDispatcherInterface} from "../view/EventDispatcherMixin";
 
 export const TERMINAL_DISTANCE = 34;
 export const GAP = 8;
 
-export class LayoutView {
+export class LayoutView extends EventDispatcherInterface {
 
     _layout;
 
@@ -15,6 +16,7 @@ export class LayoutView {
     _kioapi;
 
     constructor(layout, kioapi) {
+        super();
         this._layout = layout;
         this._kioapi = kioapi;
 
@@ -28,17 +30,23 @@ export class LayoutView {
 
     __element_change_listener = () => {
         this._redraw_all_devices();
+        this._fire();
     };
 
     __change_listener = () => {
         this._redevice_all_devices();
         this._redraw_all_devices();
+        this._fire();
     };
 
     _add_device(device_with_position) {
         let dv = new DeviceView(this, device_with_position);
         this._device_views.push(dv);
         this._devices_layer.addChild(dv.display_object);
+    }
+
+    _fire() {
+        this.fire(new Event('change', this));
     }
 
     _remove_device_by_view(device_view) {

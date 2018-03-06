@@ -6,7 +6,7 @@ export class LayoutHistory {
 
     constructor(initial_layout) {
         this._layouts.push(initial_layout);
-        for (let i = 1; i < STEPS; i++) {
+        for (let i = 1; i <= STEPS; i++) {
             let prev_layout = this._layouts[i - 1];
             let next_layout = prev_layout.next_layout();
 

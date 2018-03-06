@@ -10,9 +10,8 @@ import {DeviceWithPosition} from "./model/DeviceWithPosition";
 import {UpDownDevice} from "./model/devices/UpDownDevice";
 import {DeviceSelector} from "./view/DeviceSelector";
 import {ControllerDevice} from "./model/devices/ControllerDevice";
-import {STEPS} from "../hexagons/model/BoardHistory";
 import {Slider} from "../hexagons/slider";
-import {LayoutHistory} from "../hexagons/LayoutHistory";
+import {STEPS, LayoutHistory} from "./model/LayoutHistory";
 
 export class Lamps {
 
@@ -21,7 +20,7 @@ export class Lamps {
     _layout_view;
     _stage;
 
-    _layout_history;
+    _layout_history = null;
 
     constructor(settings) {
         this.settings = settings;
@@ -145,12 +144,13 @@ export class Lamps {
         add_device_selector(new RotatedDevice(new LampDevice([0, 255, 0])), 2, 7);
 
         this._layout_view = lv;
+        this._layout_view.add_listener('change', this.__view_changed_listener);
 
         domNode.appendChild(this._canvas);
     }
 
     init_time_controls(domNode) {
-        this._slider = new Slider(domNode, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
+        this._slider = new Slider(domNode, 0, STEPS, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
         this._slider.domNode.className = 'lamps-slider';
         domNode.appendChild(this._slider.domNode);
 
@@ -180,7 +180,7 @@ export class Lamps {
         if (!this._layout_history && time > 0)
             this.new_history();
 
-        this._layout_view.layout = time === 0 ? this._layout_view : this._layout_history.get(time);
+        this._layout_view.layout = time === 0 ? this._initial_layout : this._layout_history.get(time);
         this._time_shower.innerHTML = 'Шаг: <b>' + this.board_time() + '</b>';
     }
 
@@ -190,5 +190,13 @@ export class Lamps {
 
     new_history() {
         this._layout_history = new LayoutHistory(this._initial_layout);
+    }
+
+    __view_changed_listener = () => {
+        if (this.board_time() > 0) {
+            this._initial_layout = this._layout_view.layout.copy_and_clear();
+            this._layout_history = null;
+            this._slider.value = 0;
+        }
     }
 }

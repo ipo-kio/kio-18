@@ -45,4 +45,11 @@ export class ControllerDevice extends Device {
         return c;
     }
 
+
+    get copy_and_clear() {
+        if (this._state === 0)
+            return this;
+        else
+            return new ControllerDevice();
+    }
 }

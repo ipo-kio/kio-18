@@ -26,4 +26,8 @@ export class Device {
     get height() {
         return this._height;
     }
+
+    get copy_and_clear() {
+        return this;
+    }
 }
