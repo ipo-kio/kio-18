@@ -53,11 +53,42 @@ export class Hexagons {
     }
 
     parameters() {
+        /*
+        Первый критерий: длина периода
+        Второй критерий: количество компонент связности (чем меньше, тем лучше) (целостность организма)
+        Третий критерий: количество цветных клеток (чем больше, тем лучше) (величина организма, точнее его сформированность)
+         */
+        function view(x) {
+            if (x === 0)
+                return '-';
+            else
+                return x;
+        }
+
         return [
             {
-                name: 'height',
-                title: 'Высота',
-                ordering: 'maximize'
+                name: 'period',
+                title: 'Период',
+                ordering: 'maximize',
+                view
+            },
+            {
+                name: 'connect',
+                title: 'Частей',
+                ordering: "minimize",
+                view
+            },
+            {
+                name: 'size',
+                title: 'Размер',
+                ordering: 'maximize',
+                view
+            },
+            {
+                name: 'rules',
+                title: 'Правил',
+                ordering: 'minimize',
+                view
             }
         ];
     }
@@ -147,6 +178,8 @@ export class Hexagons {
 
     new_history() {
         this._board_history = new BoardHistory(Array.from(this._rules_list.raw_rules()), this._initial_board);
+
+        this._eval_parameters();
     }
 
     move_time_to(time) {
@@ -211,4 +244,26 @@ export class Hexagons {
         domNode.appendChild(this._grid_view.canvas);
         this._initial_board = board;
     }
+
+    _eval_parameters() {
+        let period = this._board_history.period();
+        if (period === null)
+            this.kioapi.submitResult({
+                period: 0,
+                connect: 0,
+                size: 0,
+                rules: 0
+            });
+
+        let {from, to} = period;
+        let period_size = to - from + 1;
+
+
+        this.kioapi.submitResult({
+            'period': period_size,
+            'connect': ,
+            'size':
+        });
+    }
+
 }

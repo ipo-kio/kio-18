@@ -171,4 +171,8 @@ export class RulesList extends EventDispatcherInterface {
 
         return null;
     }
+
+    get length() {
+        return this._rule_editors.length;
+    }
 }

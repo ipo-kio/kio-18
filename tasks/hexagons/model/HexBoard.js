@@ -7,6 +7,8 @@
 //           *
 //          *
 
+import {Graph} from "../../lamps/model/Graph";
+
 export const RULE_SIZE = 2;
 export const TYPES_COUNT = 4; //0 and 1,2,3,4
 
@@ -101,6 +103,84 @@ export class HexBoard {
     set values(value) {
         this._values = HexBoard._deep_copy_array(value);
     }
+
+    hash_code() {
+        let h = 0;
+        let i = 0;
+        for (let i = 0; i < this._values.length; i++) {
+            let line = this._values[i];
+            for (let j = 0; j < line.length; j++)
+                h = (h << 5) - h + line[j] | 0; // "| 0" means -> to int32
+        }
+
+        return h;
+    }
+
+    equals(that) {
+        for (let i = 0; i < this._values.length; i++) {
+            let line = this._values[i];
+            let that_line = that._values[i];
+            for (let j = 0; j < line.length; j++)
+                if (line[j] !== that_line[j])
+                    return false;
+        }
+        return true;
+    }
+
+    colored_cells() {
+        let cnt = 0;
+        for (let i = 0; i < this._values.length; i++) {
+            let line = this._values[i];
+            for (let j = 0; j < line.length; j++)
+                if (line[j] >= 1)
+                    cnt++;
+        }
+        return cnt;
+    }
+
+    parts() { //returns {parts, n} number of parts and number of vertices
+        function tag(line, index) {
+            return line + ':' + index;
+        }
+
+        let g = new Graph(); //TODO this is a graph from another task
+        // add vertices
+        let n = 0;
+        for (let {line, index} of this.cells())
+            if (this.value_by_ints(line, index) > 1) {
+                n++;
+                g.add_vertex(tag(line, index));
+            }
+
+        //add edges
+        let test = (l1, i1, l2, i2) => {
+            let b = this.value_by_ints(l2, i2);
+            if (b > 1)
+                g.add_edge(tag(l1, i1), tag(l2, i2), 42);
+        };
+
+        for (let {line, index} of this.cells()) {
+            let a = this.value_by_ints(line, index);
+            if (a > 1) {
+                test(line, index, line, index + 1);
+                test(line, index + 1, line, index + 1);
+                test(line, index + 1, line, index);
+            }
+        }
+
+        let {colors} = g.kraskal();
+        let colors_counts = new Array(colors.length);
+        colors_counts.fill(0);
+        for (let i = 0; i < colors.length; i++)
+            colors_counts[colors[i]]++;
+        let parts = 0;
+        for (let i = 0; i < colors_counts.length; i++)
+            if (colors_counts[i] > 0)
+                parts++;
+
+        return {parts, n};
+    }
+
 }
 
 export const RULE_REGIME_EXACT = 0;

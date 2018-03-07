@@ -37,4 +37,22 @@ export class BoardHistory {
         return this._boards[index];
     }
 
+    period() { //returns null of {from, to}
+        let hashes = new Array(STEPS + 1);
+        for (let i = 0; i <= STEPS; i++)
+            hashes[i] = this._boards[i].hash_code();
+
+        function eq(i, j) {
+            if (hashes[i] !== hashes[j])
+                return false;
+            return this._board[i].equals(this._board[j]);
+        }
+
+        for (let i = 0; i <= STEPS; i++)
+            for (let j = i + 1; j <= STEPS; j++)
+                if (eq(i, j))
+                    return {from: i, to: j - 1};
+
+        return null;
+    }
 }
