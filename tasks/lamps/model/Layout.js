@@ -131,7 +131,7 @@ export class Layout extends EventDispatcherInterface {
 
             let info = device.get_info(currencies);
 
-            this._device_2_info.set(device, info);
+            this._device_2_info.set(this._devices_with_positions[i], info);
         }
     }
 

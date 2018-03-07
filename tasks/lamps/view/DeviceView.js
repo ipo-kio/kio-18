@@ -36,7 +36,7 @@ export class DeviceView {
 
     _redraw() {
         let device = this._device_with_position.device;
-        let info = this._layout_view.layout.get_info(device);
+        let info = this._layout_view.layout.get_info(this._device_with_position);
         let _do = this._create_display_object(device, info);
 
         this._hit_area = this._init_hit_area();
