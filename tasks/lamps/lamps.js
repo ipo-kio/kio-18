@@ -1,18 +1,14 @@
 import './lamps.scss';
 import {GAP, LayoutView, TERMINAL_DISTANCE} from "./view/LayoutView";
 import {Layout} from "./model/Layout";
-import {RotatedDevice} from "./model/devices/RotatedDevice";
-import {BatteryDevice} from "./model/devices/BatteryDevice";
-import {LampDevice} from "./model/devices/LampDevice";
-import {WireDevice} from "./model/devices/WireDevice1";
 import {Terminal} from "./model/Terminal";
 import {DeviceWithPosition} from "./model/DeviceWithPosition";
-import {UpDownDevice} from "./model/devices/UpDownDevice";
 import {DeviceSelector} from "./view/DeviceSelector";
-import {ControllerDevice} from "./model/devices/ControllerDevice";
 import {Slider} from "../hexagons/slider";
 import {STEPS, LayoutHistory} from "./model/LayoutHistory";
 import {DeviceFactory} from "./model/devices/device_factory";
+
+const INITIAL_SOLUTION = "{\"d\":[[\"b\",9,9],[\"_rgl\",9,8],[\"_u_rw2\",10,8],[\"_u_ryl\",11,7],[\"_rw3\",9,7],[\"_uw2\",10,7],[\"_u_rw2\",11,8],[\"rl\",9,11],[\"yl\",10,11],[\"gl\",11,11],[\"bl\",12,11],[\"_rw3\",9,9],[\"w3\",11,9],[\"_u_rw3\",13,9],[\"c12\",9,7],[\"b\",10,9]]}";
 
 export class Lamps {
 
@@ -42,6 +38,8 @@ export class Lamps {
         createjs.Ticker.addEventListener("tick", this._stage);
 
         this.init_time_controls(domNode);
+
+        this.loadSolution(JSON.parse(INITIAL_SOLUTION));
     }
 
     static preloadManifest() {
@@ -68,38 +66,13 @@ export class Lamps {
         if (!solution)
             return;
 
+        //uncomment to store initial_solution
+        // console.log('loading', JSON.stringify(solution));
         this._initial_layout.serializer = solution;
     }
 
     initInterface(domNode, preferred_width) {
-        let d1 = DeviceFactory.create_battery();
-        let d2 = DeviceFactory.create_updown(DeviceFactory.create_yellow_lamp());
-        let d3 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
-        let d4 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
-        let d5 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
-        let d6 = DeviceFactory.create_rotated(DeviceFactory.create_wire(2));
-        let d7 = DeviceFactory.create_blue_lamp();
-        let d8 = DeviceFactory.create_blue_lamp();
-        let d9 = DeviceFactory.create_wire(2);
-
         let layout = new Layout(19, 13);
-
-        layout.add_device_with_position(new DeviceWithPosition(d1, new Terminal(0, 1)));
-        layout.add_device_with_position(new DeviceWithPosition(d2, new Terminal(0, 0)));
-        layout.add_device_with_position(new DeviceWithPosition(d3, new Terminal(0, 0)));
-        layout.add_device_with_position(new DeviceWithPosition(d4, new Terminal(1, 0)));
-
-        layout.add_device_with_position(new DeviceWithPosition(d5, new Terminal(0, 1)));
-        layout.add_device_with_position(new DeviceWithPosition(d6, new Terminal(2, 1)));
-        layout.add_device_with_position(new DeviceWithPosition(d7, new Terminal(0, 2)));
-        layout.add_device_with_position(new DeviceWithPosition(d8, new Terminal(1, 2)));
-        layout.add_device_with_position(new DeviceWithPosition(d9, new Terminal(1, 1)));
-
-        layout.add_device_with_position(new DeviceWithPosition(
-            // DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2)),
-            DeviceFactory.create_controller(4, 3),
-            new Terminal(5, 5)
-        ));
 
         this._initial_layout = layout;
 

@@ -148,6 +148,8 @@ export class DeviceView {
                 let big = device_info.power;
                 if (big > 1)
                     big = 1;
+                if (big < 0.2)
+                    big = 0.2;
 
                 circle.graphics
                     .beginRadialGradientFill([device.color(big), device.color(0)], [0, 1], 0, 0, 0, 0, 0, TERMINAL_DISTANCE)
