@@ -46,6 +46,13 @@ export class DeviceWithPosition extends EventDispatcherInterface {
         this.fire(new Event('change', this));
     }
 
+    set device(d) {
+        if (this._device === d)
+            return;
+        this._device = d;
+        this.fire(new Event('change'), this);
+    }
+
     get serializer() {
         return [DeviceFactory.serialize(this._device), this._terminal.x, this._terminal.y];
     }

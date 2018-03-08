@@ -8,6 +8,7 @@ import {WireDevice} from "../model/devices/WireDevice1";
 import {GAP, LayoutView, TERMINAL_DISTANCE} from "./LayoutView";
 import {Terminal} from "../model/Terminal";
 import {DeviceWithPosition} from "../model/DeviceWithPosition";
+import {DeviceFactory} from "../model/devices/device_factory";
 
 export class DeviceView {
 
@@ -109,8 +110,8 @@ export class DeviceView {
             let prerotated_device = device._device;
             let prerotated_d = this._create_display_object(prerotated_device, device_info);
 
-            prerotated_d.scaleY *= -1;
             prerotated_d.rotation += 90;
+            prerotated_d.x += (prerotated_device.height - 1) * TERMINAL_DISTANCE;
 
             d = new createjs.Container();
             d.addChild(prerotated_d);
@@ -119,7 +120,9 @@ export class DeviceView {
             let prerotated_d = this._create_display_object(prerotated_device, device_info);
 
             prerotated_d.scaleY *= -1;
+            prerotated_d.scaleX *= -1;
 
+            prerotated_d.x += (prerotated_device.width - 1) * TERMINAL_DISTANCE;
             prerotated_d.y += (prerotated_device.height - 1) * TERMINAL_DISTANCE;
 
             d = new createjs.Container();
@@ -241,6 +244,27 @@ export class DeviceView {
         });
         this.display_object.addEventListener('rollover', () => this.highlighted = true);
         this.display_object.addEventListener('rollout', () => this.highlighted = false);
+        this.display_object.addEventListener('dblclick', () => {
+            // d -> rot(d) -> ud(d) -> ud(rot(d)),
+            let dwp = this._device_with_position;
+            let device = dwp.device;
+            let new_device;
+
+            if (device instanceof RotatedDevice) {
+                let inner_device = device._device;
+                new_device = DeviceFactory.create_updown(inner_device);
+            } else if (device instanceof UpDownDevice) {
+                let inner_device = device._device;
+                if (inner_device instanceof RotatedDevice) {
+                    inner_device = inner_device._device;
+                    new_device = inner_device;
+                } else
+                    new_device = DeviceFactory.create_updown(DeviceFactory.create_rotated(inner_device));
+            } else
+                new_device = DeviceFactory.create_rotated(device);
+
+            this.device_with_position.device = new_device;
+        });
     }
 
     get highlighted() {
