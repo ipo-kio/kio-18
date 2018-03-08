@@ -10,6 +10,8 @@ import {Terminal} from "../model/Terminal";
 import {DeviceWithPosition} from "../model/DeviceWithPosition";
 import {DeviceFactory} from "../model/devices/device_factory";
 
+const WIRE_COLOR = "#70747a";
+
 export class DeviceView {
 
     _device_with_position;
@@ -90,7 +92,7 @@ export class DeviceView {
                 .rect(0, -dy, bg_img.width, bg_img.height);
 
             for (let i = 0; i < device.c_wait + device.c_on; i++) {
-                let color = i <= device.state ? '#aaa' : '#dd073f';
+                let color = i <= device.state ? '#ccc' : '#dd073f';
                 let is_empty = i < device.c_wait;
                 let xx = i % 3;
                 let yy = (i - xx) / 3;
@@ -117,15 +119,24 @@ export class DeviceView {
             d = new createjs.Container();
             let is_on = device_info.power > 1e-4;
 
+            let wire = new createjs.Shape();
+            let g_wire = wire.graphics;
+            g_wire.setStrokeStyle(2).beginStroke(WIRE_COLOR);
+            g_wire.moveTo(0, 0);
+            let w_wire = (device.width - 1) * TERMINAL_DISTANCE;
+            g_wire.bezierCurveTo(w_wire / 3, TERMINAL_DISTANCE / 5, 2 * w_wire / 3, TERMINAL_DISTANCE / 5, w_wire, 0);
+            d.addChild(wire);
+
             let res = this._get_resource(is_on ? 'lamp_on' : 'lamp_off');
             let img = new createjs.Bitmap(res);
-            img.regX = 4;
-            img.regY = res.height / 2;
-            d.addChild(img);
+            img.regX = res.width / 2;
+            img.regY = res.height / 2 + 4;
+            img.x = TERMINAL_DISTANCE / 2;
+            img.y = 0;
 
             if (is_on) {
                 let circle = new createjs.Shape();
-                circle.x = res.width / 2 - img.regX;
+                circle.x = TERMINAL_DISTANCE / 2;
                 circle.y = 0;
                 d.addChild(circle);
 
@@ -138,6 +149,9 @@ export class DeviceView {
                     .drawCircle(0, 0, TERMINAL_DISTANCE);
                 circle.compositeOperation = 'luminosity';
             }
+
+            d.addChild(img);
+
         } else if (device instanceof ResistanceDevice) {
             d = new createjs.Shape();
         } else if (device instanceof RotatedDevice) {
@@ -164,7 +178,7 @@ export class DeviceView {
         } else if (device instanceof WireDevice) {
             d = new createjs.Shape();
             let g = d.graphics;
-            g.setStrokeStyle(2).beginStroke("#8888ff");
+            g.setStrokeStyle(2).beginStroke(WIRE_COLOR);
             g.moveTo(0, 0);
             let w = (device.width - 1) * TERMINAL_DISTANCE;
             g.bezierCurveTo(w / 3, TERMINAL_DISTANCE / 5, 2 * w / 3, TERMINAL_DISTANCE / 5, w, 0);
