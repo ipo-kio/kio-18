@@ -4,6 +4,9 @@ import {DeviceWithPosition} from "./DeviceWithPosition";
 import {Event, EventDispatcherInterface} from "../view/EventDispatcherMixin";
 import {DeviceFactory} from "./devices/device_factory";
 import {Terminal} from "./Terminal";
+import {RotatedDevice} from "./devices/RotatedDevice";
+import {UpDownDevice} from "./devices/UpDownDevice";
+import {LampDevice} from "./devices/LampDevice";
 
 export class Layout extends EventDispatcherInterface {
     _width;
@@ -198,5 +201,45 @@ export class Layout extends EventDispatcherInterface {
 
         this.clear_all_devices_with_position();
         this.add_devices_with_position(dwps);
+    }
+
+    get sequence_element() {
+        //        -------  =======
+        //        0  1  2  0  1  2
+        let se = [0, 0, 0, 0, 0, 0];
+
+        for (let dwp of this._devices_with_positions) {
+            let info = this.get_info(dwp);
+            let is_on = info.power > 1e-4;
+
+            let device = dwp.device;
+            let cnt = 0;
+            while (true) {
+                let rot = device instanceof RotatedDevice;
+                let ud = device instanceof UpDownDevice;
+                if (rot)
+                    cnt += 1;
+                if (ud)
+                    cnt += 2;
+                if (rot || ud)
+                    device = device._device;
+                else
+                    break;
+            }
+
+            cnt %= 4;
+            let add = cnt === 0 || cnt === 3 ? 0 : 3;
+
+            if (device instanceof LampDevice) {
+                if (device.SERIALIZE_TAG === 'rl')
+                    se[add] = 1;
+                else if (device.SERIALIZE_TAG === 'yl')
+                    se[add + 1] = 1;
+                else if (device.SERIALIZE_TAG === 'gl')
+                    se[add + 2] = 1;
+            }
+        }
+
+        return se;
     }
 }
