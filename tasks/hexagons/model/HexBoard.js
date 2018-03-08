@@ -163,8 +163,8 @@ export class HexBoard {
             let a = this.value_by_ints(line, index);
             if (a > 1) {
                 test(line, index, line, index + 1);
-                test(line, index + 1, line, index + 1);
-                test(line, index + 1, line, index);
+                test(line, index, line + 1, index + 1);
+                test(line, index, line + 1, index);
             }
         }
 

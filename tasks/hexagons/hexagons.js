@@ -139,12 +139,14 @@ export class Hexagons {
         this._rules_list.add_listener('change', () => {
             // this.reset_solution();
             this._board_history = null;
+            this._eval_parameters();
         });
     }
 
     reset_solution() {
         this._board_history = null;
         this._slider.value = 0;
+        this._eval_parameters();
     }
 
     init_time_controls(domNode) {
@@ -245,15 +247,17 @@ export class Hexagons {
         this._initial_board = board;
     }
 
+    __null_result = {period: 0, connect: 0, size: 0, rules: 0};
+
     _eval_parameters() {
+        if (this._board_history === null) {
+            this.kioapi.submitResult(this.__null_result);
+            return;
+        }
+
         let period = this._board_history.period();
         if (period === null)
-            this.kioapi.submitResult({
-                period: 0,
-                connect: 0,
-                size: 0,
-                rules: 0
-            });
+            this.kioapi.submitResult(this.__null_result);
 
         let {from, to} = period;
         let max_parts = 0;
@@ -274,5 +278,4 @@ export class Hexagons {
             rules: this._rules_list.length
         });
     }
-
 }
