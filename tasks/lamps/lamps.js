@@ -96,7 +96,7 @@ export class Lamps {
         layout.add_device_with_position(new DeviceWithPosition(d9, new Terminal(1, 1)));
 
         layout.add_device_with_position(new DeviceWithPosition(
-            DeviceFactory.create_updown(DeviceFactory.create_controller()),
+            DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2)),
             new Terminal(5, 5)
         ));
 
@@ -132,10 +132,10 @@ export class Lamps {
         add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_wire(2)), 3, 2);
         add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_wire(3)), 2, 1);
 
-        add_device_selector(DeviceFactory.create_controller(0), 0, 0);
-        add_device_selector(DeviceFactory.create_updown(DeviceFactory.create_controller(0)), 0, 2);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_controller()), 0, 4);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_updown(DeviceFactory.create_controller())), 0, 6);
+        add_device_selector(DeviceFactory.create_controller(1, 2), 0, 0);
+        add_device_selector(DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2)), 0, 2);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_controller(1, 2)), 0, 4);
+        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2))), 0, 6);
 
         add_device_selector(DeviceFactory.create_red_lamp(), 2, 4);
         add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_red_lamp()), 2, 5);

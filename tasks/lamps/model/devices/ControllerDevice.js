@@ -25,9 +25,9 @@ export class ControllerDevice extends Device {
             let new_state = this._state + 1;
             if (new_state >= this._c_on + this._c_wait)
                 new_state = 0;
-            return DeviceFactory.create_controller(new_state);
+            return DeviceFactory.create_controller(this.c_wait, this.c_on, new_state);
         } else
-            return DeviceFactory.create_controller();
+            return DeviceFactory.create_controller(this.c_wait, this.c_on);
     }
 
     is_on() {
@@ -59,7 +59,7 @@ export class ControllerDevice extends Device {
         if (this._state === 0)
             return this;
         else
-            return DeviceFactory.create_controller();
+            return DeviceFactory.create_controller(this.c_wait, this.c_on);
     }
 
     get c_wait() {
