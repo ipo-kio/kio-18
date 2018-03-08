@@ -21,7 +21,7 @@ export class DeviceView {
 
     _stable;
 
-    constructor(layout_view, device_with_position, stable=false) {
+    constructor(layout_view, device_with_position, stable = false) {
         this._device_with_position = device_with_position;
         this._device_with_position.add_listener('change', () => this._reposition());
 
@@ -69,14 +69,47 @@ export class DeviceView {
         if (device instanceof BatteryDevice) {
             d = new createjs.Shape();
             let g = d.graphics;
-            g.beginStroke('blue').setStrokeStyle(1).beginFill('blue');
-            g.rect(8, -4, TERMINAL_DISTANCE - 16, 8);
+            g.beginStroke('#000080').setStrokeStyle(1).beginFill('blue');
+            g.rect(8.5, -3.5, (TERMINAL_DISTANCE - 16) / 2, 8);
+            g.beginFill('red');
+            g.rect(8.5 + (TERMINAL_DISTANCE - 16) / 2, -3.5, (TERMINAL_DISTANCE - 16) / 2, 8);
             g.moveTo(0, 0).lineTo(8, 0);
             g.moveTo(TERMINAL_DISTANCE - 8, 0).lineTo(TERMINAL_DISTANCE, 0);
         } else if (device instanceof ControllerDevice) {
-            d = new createjs.Bitmap(this._get_resource(device.is_on() ? 'c_on' : 'c_off'));
+            d = new createjs.Shape();
+
+            let dy = 4;
+            let bg_img = this._get_resource(device.is_on() ? 'c_on' : 'c_off');
+            let g = d.graphics;
+            g
+                .beginBitmapFill(
+                    bg_img,
+                    'no-repeat',
+                    new createjs.Matrix2D(1, 0, 0, 1, 0, -dy)
+                )
+                .rect(0, -dy, bg_img.width, bg_img.height);
+
+            for (let i = 0; i < device.c_wait + device.c_on; i++) {
+                let color = i <= device.state ? '#aaa' : '#dd073f';
+                let is_empty = i < device.c_wait;
+                let xx = i % 3;
+                let yy = (i - xx) / 3;
+                if (yy === 2)
+                    xx = 1;
+                let xxx = 10 + xx * 7;
+                let yyy = 4 + yy * 11;
+                if (is_empty)
+                    g.beginStroke(color).beginFill(null);
+                else
+                    g.beginFill(color).beginStroke(null);
+                let d = is_empty ? 0.5 : 0;
+                g.rect(xxx + 0.5, yyy + 0.5, 4, 8);
+            }
+
+
+            // d = new createjs.Bitmap(this._get_resource(device.is_on() ? 'c_on' : 'c_off'));
             // d.regX = 0;
-            d.regY = 4;
+            // d.regY = 4;
         } else if (device instanceof LampDevice) {
             if (!device_info)
                 device_info = {power: 0.8};

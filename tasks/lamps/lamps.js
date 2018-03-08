@@ -96,7 +96,8 @@ export class Lamps {
         layout.add_device_with_position(new DeviceWithPosition(d9, new Terminal(1, 1)));
 
         layout.add_device_with_position(new DeviceWithPosition(
-            DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2)),
+            // DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2)),
+            DeviceFactory.create_controller(4, 3),
             new Terminal(5, 5)
         ));
 

@@ -62,6 +62,10 @@ export class ControllerDevice extends Device {
             return DeviceFactory.create_controller(this.c_wait, this.c_on);
     }
 
+    get state() {
+        return this._state;
+    }
+
     get c_wait() {
         return this._c_wait;
     }
