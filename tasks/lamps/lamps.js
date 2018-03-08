@@ -118,45 +118,41 @@ export class Lamps {
         this._stage.enableMouseOver(10);
         this._stage.addChild(lv.display_object);
 
+        this._layout_view = lv;
+        this._layout_view.add_listener('change', this.__view_changed_listener);
+
+        this._init_selectors(layout_width);
+
+        domNode.appendChild(this._canvas);
+    }
+
+    _init_selectors(layout_width) {
         let st = this._stage;
+        let lv = this._layout_view;
         function add_device_selector(device, x, y, count = 100) {
             let ds = new DeviceSelector(device, lv, count);
 
-            ds.display_object.x = layout_width + x * TERMINAL_DISTANCE;
-            ds.display_object.y = y * TERMINAL_DISTANCE;
+            ds.display_object.x = Math.round(layout_width + 6 + x * (TERMINAL_DISTANCE + 2));
+            ds.display_object.y = Math.round(y * (TERMINAL_DISTANCE + 16));
             st.addChild(ds.display_object);
         }
 
         // create selectors
-        add_device_selector(DeviceFactory.create_wire(2), 3, 1);
-        add_device_selector(DeviceFactory.create_wire(3), 2, 0);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_wire(2)), 3, 2);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_wire(3)), 2, 1);
 
-        add_device_selector(DeviceFactory.create_controller(1, 2), 0, 0);
-        add_device_selector(DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2)), 0, 2);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_controller(1, 2)), 0, 4);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_updown(DeviceFactory.create_controller(1, 2))), 0, 6);
+        for (let c_wait = 1; c_wait <= 6; c_wait++)
+            for (let c_on = 1; c_wait + c_on <= 7; c_on++)
+                add_device_selector(DeviceFactory.create_controller(c_wait, c_on), c_wait - 1, c_on - 1);
 
-        add_device_selector(DeviceFactory.create_red_lamp(), 2, 4);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_red_lamp()), 2, 5);
+        add_device_selector(DeviceFactory.create_wire(4), 3, 5);
+        add_device_selector(DeviceFactory.create_wire(3), 4, 4);
+        add_device_selector(DeviceFactory.create_wire(2), 5, 3);
 
-        add_device_selector(DeviceFactory.create_yellow_lamp(), 3, 4);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_yellow_lamp()), 2, 6);
+        add_device_selector(DeviceFactory.create_red_lamp(), 1, 7);
+        add_device_selector(DeviceFactory.create_yellow_lamp(), 2, 7);
+        add_device_selector(DeviceFactory.create_green_lamp(), 3, 7);
+        add_device_selector(DeviceFactory.create_blue_lamp(), 4, 7);
 
-        add_device_selector(DeviceFactory.create_green_lamp(), 4, 4);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_green_lamp()), 2, 7);
-
-        add_device_selector(DeviceFactory.create_blue_lamp(), 5, 4);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_blue_lamp()), 2, 8);
-
-        add_device_selector(DeviceFactory.create_battery(), 6, 4);
-        add_device_selector(DeviceFactory.create_rotated(DeviceFactory.create_battery()), 2, 9);
-
-        this._layout_view = lv;
-        this._layout_view.add_listener('change', this.__view_changed_listener);
-
-        domNode.appendChild(this._canvas);
+        add_device_selector(DeviceFactory.create_battery(), 2.4, 8.2);
     }
 
     init_time_controls(domNode) {

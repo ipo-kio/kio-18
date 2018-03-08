@@ -78,6 +78,9 @@ export class DeviceView {
             g.moveTo(0, 0).lineTo(8, 0);
             g.moveTo(TERMINAL_DISTANCE - 8, 0).lineTo(TERMINAL_DISTANCE, 0);
         } else if (device instanceof ControllerDevice) {
+            if (!device_info)
+                device_info = {currencies: [0]};
+
             d = new createjs.Shape();
 
             let dy = 4;
@@ -91,8 +94,10 @@ export class DeviceView {
                 )
                 .rect(0, -dy, bg_img.width, bg_img.height);
 
+            let is_powered = Math.abs(device_info.currencies[0]) > 1e-6;
+
             for (let i = 0; i < device.c_wait + device.c_on; i++) {
-                let color = i <= device.state ? '#ccc' : '#dd073f';
+                let color = i > device.state || !is_powered && device.state === 0 ? '#dd073f' : '#ccc';
                 let is_empty = i < device.c_wait;
                 let xx = i % 3;
                 let yy = (i - xx) / 3;
@@ -104,8 +109,8 @@ export class DeviceView {
                     g.beginStroke(color).beginFill(null);
                 else
                     g.beginFill(color).beginStroke(null);
-                let d = is_empty ? 0.5 : 0;
-                g.rect(xxx + 0.5, yyy + 0.5, 4, 8);
+                let d_pixel = is_empty ? 0.5 : 0;
+                g.rect(xxx + d_pixel, yyy + d_pixel, 4 + (0.5 - d_pixel) * 2, 8 + (0.5 - d_pixel) * 2);
             }
 
 
@@ -180,8 +185,10 @@ export class DeviceView {
             let g = d.graphics;
             g.setStrokeStyle(2).beginStroke(WIRE_COLOR);
             g.moveTo(0, 0);
-            let w = (device.width - 1) * TERMINAL_DISTANCE;
-            g.bezierCurveTo(w / 3, TERMINAL_DISTANCE / 5, 2 * w / 3, TERMINAL_DISTANCE / 5, w, 0);
+            let dw = device.width;
+            let w = (dw - 1) * TERMINAL_DISTANCE;
+            let shift = TERMINAL_DISTANCE / 5 + (dw - 2) * 2;
+            g.bezierCurveTo(w / 3, shift, 2 * w / 3, shift, w, 0);
         }
 
         return d;
