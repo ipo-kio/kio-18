@@ -40,15 +40,18 @@ export class HexagonView extends EventDispatcherInterface {
         let {x, y} = this._hex_cell.coordinates(this.sizing);
         let val = this._board_view.board.value(this._hex_cell);
 
-        let go_around = () => {
-            g.moveTo(x - dx1, y - dy1)
-                .lineTo(x, y - dy2)
-                .lineTo(x + dx1, y - dy1)
-                .lineTo(x + dx1, y + dy1)
-                .lineTo(x, y + dy2)
-                .lineTo(x - dx1, y + dy1)
+        let go_around = (delta=1) => {
+            g.moveTo(x - dx1 * delta, y - dy1 * delta)
+                .lineTo(x, y - dy2 * delta)
+                .lineTo(x + dx1 * delta, y - dy1 * delta)
+                .lineTo(x + dx1 * delta, y + dy1 * delta)
+                .lineTo(x, y + dy2 * delta)
+                .lineTo(x - dx1 * delta, y + dy1 * delta)
                 .closePath();
         };
+
+        let very_highlighted = CELL_STATE_HIGHLIGHTED && this._board_view.changeable;
+        let fill_color = very_highlighted ? 'rgba(255,255,128,0.7)' : 'rgba(255,255,0,0.7)';
 
         g
             .clear()
@@ -57,8 +60,8 @@ export class HexagonView extends EventDispatcherInterface {
             .beginFill(types[val].bg_color);
         go_around();
         if (this._state === CELL_STATE_HIGHLIGHTED) {
-            g.beginFill('rgba(255,255,128,0.7)').setStrokeStyle(0);
-            go_around();
+            g.beginStroke(null).beginFill(fill_color);
+            go_around(very_highlighted ? 1 : 0.5);
         }
 
         types[val].drawer(g, x, y);
