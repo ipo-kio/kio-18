@@ -32,8 +32,8 @@ export class DeviceFactory {
         return tag(new LampDevice([0, 0, 255]), 'bl');
     }
 
-    static create_controller(state = 0) {
-        return tag(new ControllerDevice(state), 'c');
+    static create_controller(c_wait, c_on, state = 0) {
+        return tag(new ControllerDevice(c_wait, c_on, state), 'c' + c_wait + c_on);
     }
 
     static create_wire(size) {
@@ -66,8 +66,8 @@ export class DeviceFactory {
         if (id === 'bl')
             return DeviceFactory.create_blue_lamp();
         
-        if (id === 'c')
-            return DeviceFactory.create_controller();
+        if (id.substr(0, 1) === 'c')
+            return DeviceFactory.create_controller(+id.substr(1, 1), +id.substr(2, 1));
 
         if (id === 'b')
             return DeviceFactory.create_battery();

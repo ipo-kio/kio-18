@@ -1,7 +1,7 @@
 import {DeviceView} from "./DeviceView";
 import {Event, EventDispatcherInterface} from "../view/EventDispatcherMixin";
 
-export const TERMINAL_DISTANCE = 34;
+export const TERMINAL_DISTANCE = 38;
 export const GAP = 8;
 
 export class LayoutView extends EventDispatcherInterface {

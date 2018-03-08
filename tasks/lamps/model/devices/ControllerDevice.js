@@ -9,15 +9,21 @@ export class ControllerDevice extends Device {
     _state; //0, 1, 2, 3, 4, 5
             //.  +  +  .
 
-    constructor(state = 0) {
+    _c_wait;
+    _c_on;
+
+    constructor(c_wait, c_on, state = 0) {
         super(2, 2);
         this._state = state;
+
+        this._c_wait = c_wait;
+        this._c_on = c_on;
     }
 
     get_next(currencies) {
         if (Math.abs(currencies[0]) > 1e-6 || this._state > 0) {
             let new_state = this._state + 1;
-            if (new_state >= LampConstants.C_ON + LampConstants.C_WAIT)
+            if (new_state >= this._c_on + this._c_wait)
                 new_state = 0;
             return DeviceFactory.create_controller(new_state);
         } else
@@ -25,7 +31,7 @@ export class ControllerDevice extends Device {
     }
 
     is_on() {
-        return this._state % (LampConstants.C_ON + LampConstants.C_WAIT) >= LampConstants.C_WAIT;
+        return this._state % (this._c_on + this._c_wait) >= this._c_wait;
     }
 
     get_connections() {
@@ -54,5 +60,13 @@ export class ControllerDevice extends Device {
             return this;
         else
             return DeviceFactory.create_controller();
+    }
+
+    get c_wait() {
+        return this._c_wait;
+    }
+
+    get c_on() {
+        return this._c_on;
     }
 }

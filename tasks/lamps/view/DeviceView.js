@@ -75,7 +75,7 @@ export class DeviceView {
             g.moveTo(TERMINAL_DISTANCE - 8, 0).lineTo(TERMINAL_DISTANCE, 0);
         } else if (device instanceof ControllerDevice) {
             d = new createjs.Bitmap(this._get_resource(device.is_on() ? 'c_on' : 'c_off'));
-            d.regX = 4;
+            // d.regX = 0;
             d.regY = 4;
         } else if (device instanceof LampDevice) {
             if (!device_info)
@@ -103,6 +103,7 @@ export class DeviceView {
                 circle.graphics
                     .beginRadialGradientFill([device.color(big), device.color(0)], [0, 1], 0, 0, 0, 0, 0, TERMINAL_DISTANCE)
                     .drawCircle(0, 0, TERMINAL_DISTANCE);
+                circle.compositeOperation = 'luminosity';
             }
         } else if (device instanceof ResistanceDevice) {
             d = new createjs.Shape();
