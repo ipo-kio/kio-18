@@ -32,7 +32,7 @@ export class RuleSet {
             return first_rule;
         });
 
-        this._root_rule = new Rule([[0, 0], [0, 0, 0], [0, 0], [0]]);
+        this._root_rule = new Rule([[0, 0], [0, 0, 0, 0], [0, 0]]);
         factored_graph.add_vertex(this._root_rule);
         for (let v of factored_graph.vertices())
             if (v !== this._root_rule)

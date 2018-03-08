@@ -111,11 +111,8 @@ export class Hexagons {
         this._rules_list.clear_rules();
 
         let rules = [];
-        for (let values_regime of solution.r)
-            if (values_regime.length === 2) //TODO remove later
-                rules.push(new Rule(values_regime[0], values_regime[1]));
-            else
-                rules.push(new Rule(values_regime));
+        for (let [values, regime] of solution.r)
+            rules.push(new Rule(values, regime));
         this._rules_list.add_rules(rules);
 
         //load initial field

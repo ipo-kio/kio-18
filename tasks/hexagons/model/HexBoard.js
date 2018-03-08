@@ -31,7 +31,7 @@ export class HexBoard {
         for (let i = 0; i < this._shape.length; i++) {
             let {from, to} = this._shape[i];
             this._values[i] = new Array(to - from + 1);
-            this._values[i].fill(0); //TODO test this works in IE
+            this._values[i].fill(0);
         }
     }
 
@@ -200,11 +200,11 @@ export class Rule extends HexBoard {
         super(shape, values);
 
         this._center_cell = new HexagonCell(RULE_SIZE - 1, RULE_SIZE - 1);
-        this._result_cell = new HexagonCell(3, 1);
+        this._result_cell = new HexagonCell(1, 3);
         this._regime = regime;
 
         if (!values)
-            this.set_value(this._result_cell, 1);
+            this.set_value(this._result_cell, 2);
     }
 
     get center_cell() {
@@ -416,7 +416,7 @@ export function rule_shape(r) {
     for (let i = r; i < 2 * r - 1; i++)
         _shape[i] = {from: i - r + 1, to: 2 * r - 2};
 
-    _shape.push({from: 1, to: 1});
+    _shape[1].to++;
 
     return _shape;
 }
