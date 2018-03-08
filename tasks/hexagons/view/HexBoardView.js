@@ -2,6 +2,8 @@ import {HexagonView} from "./HexagonView";
 import {Rule} from "../model/HexBoard";
 import {Event, EventDispatcherInterface} from "../EventDispatcherMixin";
 
+const RULE_RESULT_SHIFT = 12;
+
 export class HexBoardView extends EventDispatcherInterface {
 
     _board;
@@ -45,6 +47,8 @@ export class HexBoardView extends EventDispatcherInterface {
         let cell_x = -left + this._sizing.H;
         let cell_y = this._sizing.R;
 
+        let is_rule = this._board instanceof Rule;
+
         let rule_cell = null;
         if (this.board instanceof Rule)
             rule_cell = this.board.result_cell;
@@ -61,6 +65,9 @@ export class HexBoardView extends EventDispatcherInterface {
                 cell_view.allow_zero = false;
 
             cell_view.add_listener('change', () => this.fire(new Event('change', this)));
+
+            if (is_rule && cell.equals(this.board.result_cell))
+                cell_view._display_object.x += RULE_RESULT_SHIFT;
         }
     }
 
@@ -74,9 +81,10 @@ export class HexBoardView extends EventDispatcherInterface {
 
     get preferred_size() {
         let {left, right} = this._board.coordinate_diapason(this._sizing);
+        let additional_width = this._board instanceof Rule ? RULE_RESULT_SHIFT : 0;
 
         return {
-            width: Math.ceil(right - left + 2 * this._sizing.H),
+            width: Math.ceil(right - left + 2 * this._sizing.H) + additional_width,
             height: (this._board.lines - 1) * this._sizing.R * 3 / 2 + 2 * this._sizing.R
         };
     }
