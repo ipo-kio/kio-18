@@ -39,13 +39,15 @@ export class BoardHistory {
 
     period() { //returns null of {from, to}
         let hashes = new Array(STEPS + 1);
+        let this_boards = this._boards;
+
         for (let i = 0; i <= STEPS; i++)
-            hashes[i] = this._boards[i].hash_code();
+            hashes[i] = this_boards[i].hash_code();
 
         function eq(i, j) {
             if (hashes[i] !== hashes[j])
                 return false;
-            return this._board[i].equals(this._board[j]);
+            return this_boards[i].equals(this_boards[j]);
         }
 
         for (let i = 0; i <= STEPS; i++)

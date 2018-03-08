@@ -80,4 +80,5 @@ export class Constants {
     }
 }
 
-window.Constants = Constants;
+if (window)
+    window.Constants = Constants;

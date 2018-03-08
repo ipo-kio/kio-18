@@ -71,4 +71,5 @@ export class LampConstants {
     }
 }
 
-window.LampConstants = LampConstants;
+if (window)
+    window.LampConstants = LampConstants;

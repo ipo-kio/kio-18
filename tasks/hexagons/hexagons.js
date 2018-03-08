@@ -256,13 +256,22 @@ export class Hexagons {
             });
 
         let {from, to} = period;
-        let period_size = to - from + 1;
-
+        let max_parts = 0;
+        let max_n = 0;
+        for (let i = from; i <= to; i++) {
+            let board = this._board_history.get(i);
+            let {parts, n} = board.parts();
+            if (parts > max_parts)
+                max_parts = parts;
+            if (n > max_n)
+                max_n = n;
+        }
 
         this.kioapi.submitResult({
-            'period': period_size,
-            'connect': ,
-            'size':
+            period: to - from + 1,
+            connect: max_parts,
+            size: max_n,
+            rules: this._rules_list.length
         });
     }
 

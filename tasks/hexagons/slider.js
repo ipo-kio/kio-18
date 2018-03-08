@@ -1,3 +1,6 @@
+if (!window)
+    window = {};
+
 export class Slider {
     constructor(outer, min_value, max_value, height, img, hover_img/*, ticks, big_ticks*/) { //TODO draw ticks
         this.min_value = min_value;
