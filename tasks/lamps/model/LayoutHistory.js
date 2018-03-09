@@ -40,17 +40,12 @@ export class LayoutHistory {
         return this._layouts[index];
     }
 
-    get_sequence() {
-        let seq_both = new Sequence();
-        let seq_both = new Sequence(([a, b, c, d, e, f]) => {
-            return 32 * a + 16 * b + 8 * c + 4 * d + 2 * e + f;
-        });
-        let
+    get_sequence(o2num) {
+        let seq = new Sequence(o2num);
 
+        for (let i = 0; i <= STEPS; i++)
+            seq.add_next(this.get(i).sequence_element);
 
-        for (let i = 0; i <= STEPS; i++) {
-
-        }
+        return seq;
     }
-
 }

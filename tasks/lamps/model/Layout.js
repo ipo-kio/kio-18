@@ -242,4 +242,8 @@ export class Layout extends EventDispatcherInterface {
 
         return se;
     }
+
+    get size() {
+        return this._devices_with_positions.length;
+    }
 }

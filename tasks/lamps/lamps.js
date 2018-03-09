@@ -7,6 +7,7 @@ import {DeviceSelector} from "./view/DeviceSelector";
 import {Slider} from "../hexagons/slider";
 import {STEPS, LayoutHistory} from "./model/LayoutHistory";
 import {DeviceFactory} from "./model/devices/device_factory";
+import {Sequence} from "./model/devices/Sequence";
 
 const INITIAL_SOLUTION = "{\"d\":[[\"b\",9,9],[\"_rgl\",9,8],[\"_u_rw2\",10,8],[\"_u_ryl\",11,7],[\"_rw3\",9,7],[\"_uw2\",10,7],[\"_u_rw2\",11,8],[\"rl\",9,11],[\"yl\",10,11],[\"gl\",11,11],[\"bl\",12,11],[\"_rw3\",9,9],[\"w3\",11,9],[\"_u_rw3\",13,9],[\"c12\",9,7],[\"b\",10,9]]}";
 
@@ -19,6 +20,10 @@ export class Lamps {
 
     _layout_history = null;
 
+    _1st_traffic_light_sequence = new Sequence();
+    _2nd_traffic_light_sequence = new Sequence();
+    _both_traffic_lights_sequence = new Sequence();
+
     constructor(settings) {
         this.settings = settings;
     }
@@ -30,6 +35,8 @@ export class Lamps {
     initialize(domNode, kioapi, preferred_width) {
         this.kioapi = kioapi;
         this.domNode = domNode;
+
+        this._init_correct_sequences();
 
         this.initInterface(domNode, preferred_width);
 
@@ -178,5 +185,45 @@ export class Lamps {
             this._slider.value = 0;
         } else
             this._layout_history = null;
+    };
+
+    __null_result = {period: 0, connect: 0, size: 0, rules: 0};
+
+    _eval_parameters() {
+        if (this._board_history === null) {
+            this.kioapi.submitResult(this.__null_result);
+            return;
+        }
+
+
+    }
+
+    _init_correct_sequences() {
+        let seq_length = 0;
+        while (seq_length < STEPS + 1) {
+            this._1st_traffic_light_sequence.add_next([1, 0, 0, 0, 0, 0]);
+            this._1st_traffic_light_sequence.add_next([1, 1, 0, 0, 0, 0]);
+            this._1st_traffic_light_sequence.add_next([0, 0, 1, 0, 0, 0]);
+            this._1st_traffic_light_sequence.add_next([0, 1, 0, 0, 0, 0]);
+            seq_length += 4;
+        }
+
+        seq_length = 0;
+        while (seq_length < STEPS + 1) {
+            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 0, 0, 1]);
+            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 0, 1, 0]);
+            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 1, 0, 0]);
+            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 1, 1, 0]);
+            seq_length += 4;
+        }
+
+        seq_length = 0;
+        while (seq_length < STEPS + 1) {
+            this._both_traffic_lights_sequence.add_next([1, 0, 0, 0, 0, 1]);
+            this._both_traffic_lights_sequence.add_next([1, 1, 0, 0, 1, 0]);
+            this._both_traffic_lights_sequence.add_next([0, 0, 1, 1, 0, 0]);
+            this._both_traffic_lights_sequence.add_next([0, 1, 0, 1, 1, 0]);
+            seq_length += 4;
+        }
     }
 }
