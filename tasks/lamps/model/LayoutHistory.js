@@ -48,4 +48,8 @@ export class LayoutHistory {
 
         return seq;
     }
+
+    get size() {
+        return this._layouts.length;
+    }
 }

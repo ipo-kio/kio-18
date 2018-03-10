@@ -91,7 +91,7 @@ export class Layout extends EventDispatcherInterface {
         this._eval_devices_info();
     }
 
-    *all_devices() {
+    * all_devices() {
         yield* this._devices_with_positions;
     }
 
@@ -196,8 +196,14 @@ export class Layout extends EventDispatcherInterface {
             return;
 
         let dwps = [];
-        for (let [id, x, y] of value.d)
-            dwps.push(new DeviceWithPosition(DeviceFactory.deserialize(id), new Terminal(x, y)));
+        for (let [id, x, y] of value.d) {
+            let device = DeviceFactory.deserialize(id);
+            if (device === null) {
+                console.log('rrrrrrr');
+                continue;
+            }
+            dwps.push(new DeviceWithPosition(device, new Terminal(x, y)));
+        }
 
         this.clear_all_devices_with_position();
         this.add_devices_with_position(dwps);
@@ -209,35 +215,24 @@ export class Layout extends EventDispatcherInterface {
         let se = [0, 0, 0, 0, 0, 0];
 
         for (let dwp of this._devices_with_positions) {
+            let device = dwp.device;
+            if (!device instanceof LampDevice)
+                continue;
+
             let info = this.get_info(dwp);
             let is_on = info.power > 1e-4;
+            if (!is_on)
+                continue;
 
-            let device = dwp.device;
-            let cnt = 0;
-            while (true) {
-                let rot = device instanceof RotatedDevice;
-                let ud = device instanceof UpDownDevice;
-                if (rot)
-                    cnt += 1;
-                if (ud)
-                    cnt += 2;
-                if (rot || ud)
-                    device = device._device;
-                else
-                    break;
-            }
+            let add = device.SERIALIZE_TAG[2] === '1' ? 3 : 0;
+            let st = device.SERIALIZE_TAG.substr(0, 2);
 
-            cnt %= 4;
-            let add = cnt === 0 || cnt === 3 ? 0 : 3;
-
-            if (device instanceof LampDevice) {
-                if (device.SERIALIZE_TAG === 'rl')
-                    se[add] = 1;
-                else if (device.SERIALIZE_TAG === 'yl')
-                    se[add + 1] = 1;
-                else if (device.SERIALIZE_TAG === 'gl')
-                    se[add + 2] = 1;
-            }
+            if (st === 'rl')
+                se[add] = 1;
+            else if (st === 'yl')
+                se[add + 1] = 1;
+            else if (st === 'gl')
+                se[add + 2] = 1;
         }
 
         return se;

@@ -35,10 +35,13 @@ export class Sequence {
         let s1 = this._elements;
         let s2 = other._elements;
 
-        let result_i = [];
-        let result_i_1 = [];
+        let result_i_1;
+
+        let max = 0;
 
         for (let i = 0; i <= s1.length; i++) {
+            let result_i = [];
+
             for (let j = 0; j <= s2.length; j++) {
                 let currValue = 0;
                 if (i === 0 || j === 0)
@@ -46,13 +49,17 @@ export class Sequence {
                 else if (s1[i - 1] === s2[j - 1])
                     currValue = result_i_1[j - 1] + 1;
                 else
-                    currValue = Math.max(result_i[j - 1], result_i_1[j]);
+                    currValue = 0; //Math.max(result_i[j - 1], result_i_1[j]);
+
+                if (currValue > max)
+                    max = currValue;
+
                 result_i.push(currValue);
             }
 
             result_i_1 = result_i;
         }
 
-        return result_i[s2.length];
+        return max;//result_i[s2.length];
     }
 }

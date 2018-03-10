@@ -57,6 +57,9 @@ export class DeviceFactory {
     }
     
     static deserialize(id) {
+        if (id === null || id === undefined)
+            return null;
+
         if (id.substr(0, 2) === 'rl')
             return DeviceFactory.create_red_lamp(+id.substr(3));
         if (id.substr(0, 2) === 'yl')

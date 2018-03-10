@@ -133,7 +133,7 @@ export class DeviceView {
             d.addChild(wire);
 
             let res_name = is_on ? 'lamp_on' : 'lamp_off';
-            if (device.type === 2)
+            if (device.type === 1)
                 res_name += '_2';
             let res = this._get_resource(res_name);
             let img = new createjs.Bitmap(res);

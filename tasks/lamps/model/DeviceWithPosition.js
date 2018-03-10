@@ -54,6 +54,9 @@ export class DeviceWithPosition extends EventDispatcherInterface {
     }
 
     get serializer() {
+        // if (!this._device.SERIALIZE_TAG) {
+        //     console.log('??', this);
+        // }
         return [DeviceFactory.serialize(this._device), this._terminal.x, this._terminal.y];
     }
 }
