@@ -36,7 +36,7 @@ export class Lamps {
         this.kioapi = kioapi;
         this.domNode = domNode;
 
-        this._init_correct_sequences();
+        // this._init_correct_sequences();
 
         this.initInterface(domNode, preferred_width);
 
@@ -56,7 +56,9 @@ export class Lamps {
             {id: "c_on", src: "lamps-resources/c_on.png"},
             {id: "c_off", src: "lamps-resources/c_off.png"},
             {id: "lamp_off", src: "lamps-resources/lamp_off.png"},
-            {id: "lamp_on", src: "lamps-resources/lamp_on.png"}
+            {id: "lamp_on", src: "lamps-resources/lamp_on.png"},
+            {id: "lamp_off_2", src: "lamps-resources/lamp_off_2.png"},
+            {id: "lamp_on_2", src: "lamps-resources/lamp_on_2.png"}
         ];
     }
 
@@ -127,10 +129,14 @@ export class Lamps {
         add_device_selector(DeviceFactory.create_wire(3), 4, 4);
         add_device_selector(DeviceFactory.create_wire(2), 5, 3);
 
-        add_device_selector(DeviceFactory.create_red_lamp(), 1, 7);
-        add_device_selector(DeviceFactory.create_yellow_lamp(), 2, 7);
-        add_device_selector(DeviceFactory.create_green_lamp(), 3, 7);
-        add_device_selector(DeviceFactory.create_blue_lamp(), 4, 7);
+        add_device_selector(DeviceFactory.create_red_lamp(), 1.5, 6.5);
+        add_device_selector(DeviceFactory.create_yellow_lamp(), 2.5, 6.5);
+        add_device_selector(DeviceFactory.create_green_lamp(), 3.5, 6.5);
+
+        add_device_selector(DeviceFactory.create_red_lamp(2), 1.5, 7.5);
+        add_device_selector(DeviceFactory.create_yellow_lamp(2), 2.5, 7.5);
+        add_device_selector(DeviceFactory.create_green_lamp(2), 3.5, 7.5);
+        // add_device_selector(DeviceFactory.create_blue_lamp(), 4, 7);
 
         add_device_selector(DeviceFactory.create_battery(), 2.4, 8.2);
     }
@@ -195,7 +201,7 @@ export class Lamps {
             return;
         }
 
-
+        // let both_difference
     }
 
     _init_correct_sequences() {

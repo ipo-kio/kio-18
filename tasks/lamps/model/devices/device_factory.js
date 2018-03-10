@@ -16,20 +16,20 @@ function tag(d, t) {
 
 export class DeviceFactory {
 
-    static create_red_lamp() {
-        return tag(new LampDevice([255, 0, 0]), 'rl');
+    static create_red_lamp(type=0) {
+        return tag(new LampDevice([255, 0, 0], type), 'rl' + type);
     }
 
-    static create_yellow_lamp() {
-        return tag(new LampDevice([255, 255, 0]), 'yl');
+    static create_yellow_lamp(type=0) {
+        return tag(new LampDevice([255, 255, 0], type), 'yl' + type);
     }
 
-    static create_green_lamp() {
-        return tag(new LampDevice([0, 255, 0]), 'gl');
+    static create_green_lamp(type=0) {
+        return tag(new LampDevice([0, 255, 0], type), 'gl' + type);
     }
 
-    static create_blue_lamp() {
-        return tag(new LampDevice([0, 0, 255]), 'bl');
+    static create_blue_lamp(type=0) {
+        return tag(new LampDevice([0, 0, 255], type), 'bl' + type);
     }
 
     static create_controller(c_wait, c_on, state = 0) {
@@ -57,14 +57,14 @@ export class DeviceFactory {
     }
     
     static deserialize(id) {
-        if (id === 'rl')
-            return DeviceFactory.create_red_lamp();
-        if (id === 'yl')
-            return DeviceFactory.create_yellow_lamp();
-        if (id === 'gl')
-            return DeviceFactory.create_green_lamp();
-        if (id === 'bl')
-            return DeviceFactory.create_blue_lamp();
+        if (id.substr(0, 2) === 'rl')
+            return DeviceFactory.create_red_lamp(+id.substr(3));
+        if (id.substr(0, 2) === 'yl')
+            return DeviceFactory.create_yellow_lamp(+id.substr(3));
+        if (id.substr(0, 2) === 'gl')
+            return DeviceFactory.create_green_lamp(+id.substr(3));
+        if (id.substr(0, 2) === 'bl')
+            return DeviceFactory.create_blue_lamp(+id.substr(3));
         
         if (id.substr(0, 1) === 'c')
             return DeviceFactory.create_controller(+id.substr(1, 1), +id.substr(2, 1));

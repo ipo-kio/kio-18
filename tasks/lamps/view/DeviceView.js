@@ -132,7 +132,10 @@ export class DeviceView {
             g_wire.bezierCurveTo(w_wire / 3, TERMINAL_DISTANCE / 5, 2 * w_wire / 3, TERMINAL_DISTANCE / 5, w_wire, 0);
             d.addChild(wire);
 
-            let res = this._get_resource(is_on ? 'lamp_on' : 'lamp_off');
+            let res_name = is_on ? 'lamp_on' : 'lamp_off';
+            if (device.type === 2)
+                res_name += '_2';
+            let res = this._get_resource(res_name);
             let img = new createjs.Bitmap(res);
             img.regX = res.width / 2;
             img.regY = res.height / 2 + 4;
