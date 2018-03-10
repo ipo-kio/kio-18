@@ -29,7 +29,7 @@ export class Lamps {
     }
 
     id() {
-        return 'lamps';
+        return 'lamps' + this.settings.level;
     }
 
     initialize(domNode, kioapi, preferred_width) {

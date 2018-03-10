@@ -25,7 +25,7 @@ export class Hexagons {
     }
 
     id() {
-        return 'hexagons';
+        return 'hexagons' + this.settings.level;
     }
 
     initialize(domNode, kioapi, preferred_width) {

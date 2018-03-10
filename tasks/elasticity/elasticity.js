@@ -37,7 +37,7 @@ export class Elasticity {
     }
 
     id() {
-        return 'elasticity';
+        return 'elasticity' + this.settings.level;
     }
 
     initialize(domNode, kioapi, preferred_width) {
