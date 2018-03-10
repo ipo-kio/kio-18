@@ -9,8 +9,6 @@ import {STEPS, LayoutHistory, SEQ_1st_o2num, SEQ_2nd_o2num, SEQ_BOTH_o2num} from
 import {DeviceFactory} from "./model/devices/device_factory";
 import {Sequence} from "./model/devices/Sequence";
 
-// const INITIAL_SOLUTION = //"{\"d\":[[\"b\",9,9],[\"_rgl0\",9,8],[\"_u_rw2\",10,8],[\"_u_ryl0\",11,7],[\"_rw3\",9,7],[\"_uw2\",10,7],[\"_u_rw2\",11,8],[\"rl0\",9,11],[\"yl0\",10,11],[\"gl0\",11,11],[\"bl0\",12,11],[\"_rw3\",9,9],[\"w3\",11,9],[\"_u_rw3\",13,9],[\"c12\",9,7],[\"b\",10,9]]}";
-// const INITIAL_SOLUTION = "{\"d\":[]}";
 const INITIAL_SOLUTION = "{\"d\":[[\"rl0\",10,7],[\"b\",10,8],[\"_uc12\",10,9],[\"_rw2\",11,8],[\"_u_rw2\",10,8],[\"_rw3\",10,8],[\"_rw3\",14,8],[\"rl0\",11,8],[\"yl0\",12,8],[\"gl0\",13,8],[\"w4\",11,10],[\"_rw2\",10,7],[\"_rw2\",11,7]]}";
 
 export class Lamps {

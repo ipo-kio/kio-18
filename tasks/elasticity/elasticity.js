@@ -61,7 +61,7 @@ export class Elasticity {
             }
         } else if (this.settings.level === 1) {
             for (let i = -1; i <= 1; i++) {
-                let pwp = new PointWithPosition(2 * i, 0, POINT_TYPE_FIXED);
+                let pwp = new PointWithPosition(5 * i, 0, POINT_TYPE_FIXED);
                 this._point_set.add_object(pwp);
             }
         } else if (this.settings.level === 2) {
@@ -78,23 +78,6 @@ export class Elasticity {
 
     parameters() {
         return [
-            {
-                name: 'points',
-                title: 'Блоков',
-                ordering: 'maximize',
-                normalize(v) {
-                    if (v > 30 || v < 0)
-                        return -1;
-                    else
-                        return 0;
-                },
-                view(v) {
-                    if (v > 30)
-                        return v + ' (слишком много)';
-                    else
-                        return v;
-                }
-            },
             {
                 name: 'height',
                 title: 'Высота',
@@ -128,6 +111,23 @@ export class Elasticity {
                     if (v <= 0)
                         return "-";
                     return v.toFixed(1);
+                }
+            },
+            {
+                name: 'points',
+                title: 'Блоков',
+                ordering: 'maximize',
+                normalize(v) {
+                    if (v > 30 || v < 0)
+                        return -1;
+                    else
+                        return 0;
+                },
+                view(v) {
+                    if (v > 30)
+                        return v + ' (слишком много)';
+                    else
+                        return v;
                 }
             }
         ];
