@@ -4,6 +4,7 @@ import {WireDevice} from "./WireDevice1";
 import {RotatedDevice} from "./RotatedDevice";
 import {UpDownDevice} from "./UpDownDevice";
 import {BatteryDevice} from "./BatteryDevice";
+import {Device} from "./Device";
 
 function tag(d, t) {
     if (t === undefined)
@@ -79,9 +80,9 @@ export class DeviceFactory {
             return DeviceFactory.create_wire(id.substr(1, 1));
 
         if (id.substr(0, 2) === '_r')
-            return new RotatedDevice(DeviceFactory.deserialize(id.substr(2)));
+            return DeviceFactory.create_rotated(DeviceFactory.deserialize(id.substr(2)));
         if (id.substr(0, 2) === '_u')
-            return new UpDownDevice(DeviceFactory.deserialize(id.substr(2)));
+            return DeviceFactory.create_updown(DeviceFactory.deserialize(id.substr(2)));
 
         return null;
     }
