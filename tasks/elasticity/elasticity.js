@@ -258,7 +258,7 @@ export class Elasticity {
     set_global_regime_fixed() {
         this._grid_view.mouse_actions_mode = MODE_DO_NOTHING;
         this.copy_points_and_springs_set();
-        this._$go_button.html("Расположить точки");
+        this._$go_button.html("Расположить узлы");
 
         this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
 
