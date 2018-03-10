@@ -10,7 +10,7 @@ export class RulesList extends EventDispatcherInterface {
     _rules_list;
     _rule_set = new RuleSet([]);
     _$add_rule_button;
-    _$remove_rules_button
+    _$remove_rules_button;
 
     constructor() {
         super();

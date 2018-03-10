@@ -15,7 +15,7 @@ export class Hexagons {
 
     _canvas;
     _grid_view;
-    _rules_list = new RulesList();
+    _rules_list;
 
     _slider;
     _time_shower;
@@ -124,6 +124,8 @@ export class Hexagons {
     // private methods
 
     initInterface(domNode, preferred_width) {
+        this._rules_list = new RulesList();
+
         let canvas_container = document.createElement('div');
         canvas_container.className = 'main-board-container';
 

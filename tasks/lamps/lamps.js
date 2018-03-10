@@ -134,7 +134,7 @@ export class Lamps {
             return;
 
         // uncomment to store initial_solution
-        console.log('loading', JSON.stringify(solution));
+        // console.log('loading', JSON.stringify(solution));
         this._initial_layout.serializer = solution;
 
         this.new_history();
