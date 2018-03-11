@@ -9,7 +9,7 @@ export default class ModeSelector {
     _html_object;
     _ed = new EventDispatcher();
 
-    _current_mode = MODE_CREATE_VERTEX;
+    _current_mode = MODE_CREATE_EDGE;
 
     constructor() { //array of {type: Point, title: String}
         this.init_html_object();

@@ -153,7 +153,7 @@ export class Elasticity {
     }
 
 
-    loadSolution_point_set(solution) {
+    loadSolution(solution) {
         if (!solution)
             return;
 
