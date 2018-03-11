@@ -234,7 +234,12 @@ export class Hexagons {
 
         for (let cell of board.cells())
             board.set_value(cell, 1);
-        board.set_value(new HexagonCell(h, w), 2);
+        board.set_value(new HexagonCell(h, w - 1), 2);
+        if (this.settings.level > 0)
+            board.set_value(new HexagonCell(h, w), 3);
+        else
+            board.set_value(new HexagonCell(h, w), 2);
+        board.set_value(new HexagonCell(h, w + 1), 2);
 
         this._standard_initial_board_values = board.values;
 
@@ -324,7 +329,7 @@ export class Hexagons {
             case 2:
                 rules_list = [
                     new Rule([[1, 1], [2, 1, 1, 2], [2, 1]], RULE_REGIME_EXACT_ANY_POSITION),
-                    new Rule([[3, 1], [2, 2, 1, 1], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
+                    new Rule([[3, 1], [2, 1, 1, 2], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
 
                     new Rule([[2, 2], [2, 2, 1, 2], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
                     new Rule([[2, 3], [2, 2, 1, 2], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
