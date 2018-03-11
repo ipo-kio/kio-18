@@ -171,6 +171,7 @@ export class Hexagons {
     reset_solution() {
         this._board_history = null;
         this._slider.value = 0;
+        this._stop_play();
         this._eval_parameters();
     }
 
@@ -179,17 +180,40 @@ export class Hexagons {
         this._slider.domNode.className = 'hexagons-slider';
         domNode.appendChild(this._slider.domNode);
 
-        function add_button(title, action) {
+        function add_button(title, id, action) {
             let button = document.createElement('button');
-            button.innerText = title;
+            button.id = id;
+            button.innerHTML = title;
             $(button).click(action);
             domNode.appendChild(button);
         }
 
-        add_button('0', () => this._slider.value = 0);
-        add_button('-1', () => this._slider.value--);
-        add_button('+1', () => this._slider.value++);
-        add_button('max', () => this._slider.value = STEPS);
+        this._start_play = () => {
+            this._set_interval_id = setInterval(() => {
+                if (this._slider.value >= this._slider.max_value)
+                    this._stop_play();
+                else
+                    this._slider.value++;
+            }, 600);
+            $('#slider-control-play').text('Остановить');
+        };
+
+        this._stop_play = () => {
+            clearInterval(this._set_interval_id);
+            this._set_interval_id = null;
+            $('#slider-control-play').text('Запустить');
+        };
+
+        add_button('В начало', 'slider-control-0', () => this._slider.value = 0);
+        add_button('-1', 'slider-control-p1', () => this._slider.value--);
+        add_button('+1', 'slider-control-m1', () => this._slider.value++);
+        add_button('В конец', 'slider-control-max', () => this._slider.value = STEPS);
+        add_button('Запустить', 'slider-control-play', () => {
+            if (this._set_interval_id === null)
+                this._start_play();
+            else
+                this._stop_play();
+        });
 
         this._time_shower = document.createElement('span');
         this._time_shower.className = 'hexagons-time-shower';
