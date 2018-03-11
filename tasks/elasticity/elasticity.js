@@ -82,6 +82,23 @@ export class Elasticity {
     parameters() {
         return [
             {
+                name: 'points',
+                title: 'Узлов',
+                ordering: 'maximize',
+                normalize(v) {
+                    if (v > 30 || v < 0)
+                        return -1;
+                    else
+                        return 0;
+                },
+                view(v) {
+                    if (v > 30)
+                        return v + ' (много)';
+                    else
+                        return v + ' (норма)';
+                }
+            },
+            {
                 name: 'height',
                 title: 'Высота',
                 ordering: 'maximize',
@@ -114,23 +131,6 @@ export class Elasticity {
                     if (v <= 0)
                         return "-";
                     return v.toFixed(1);
-                }
-            },
-            {
-                name: 'points',
-                title: 'Узлов',
-                ordering: 'maximize',
-                normalize(v) {
-                    if (v > 30 || v < 0)
-                        return -1;
-                    else
-                        return 0;
-                },
-                view(v) {
-                    if (v > 30)
-                        return v + ' (слишком много)';
-                    else
-                        return v;
                 }
             }
         ];

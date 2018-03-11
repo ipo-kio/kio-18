@@ -67,6 +67,23 @@ export class Hexagons {
 
         return [
             {
+                name: 'ini_size',
+                title: 'Начальный размер',
+                ordering: 'maximize',
+                normalize(v) {
+                    if (v > 20 || v < 0)
+                        return -1;
+                    else
+                        return 0;
+                },
+                view(v) {
+                    if (v > 20)
+                        return v + ' (много)';
+                    else
+                        return v + ' (норма)';
+                }
+            },
+            {
                 name: 'period',
                 title: 'Период',
                 ordering: 'maximize',
@@ -118,7 +135,9 @@ export class Hexagons {
         //load initial field
         this._initial_board.values = solution.f;
 
-        this.reset_solution();
+        this._slider.value = 0;
+        this.new_history();
+        this._eval_parameters();
     }
 
     // private methods
@@ -249,8 +268,10 @@ export class Hexagons {
     __null_result = {period: 0, connect: 0, size: 0, rules: 0};
 
     _eval_parameters() {
+        let {n:ini_size} = this._initial_board.parts();
+
         if (this._board_history === null) {
-            this.kioapi.submitResult(this.__null_result);
+            this.kioapi.submitResult({...this.__null_result, ini_size});
             return;
         }
 
@@ -271,6 +292,7 @@ export class Hexagons {
         }
 
         this.kioapi.submitResult({
+            ini_size,
             period: to - from + 1,
             connect: max_parts,
             size: max_n,
