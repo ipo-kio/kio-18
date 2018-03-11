@@ -12,6 +12,8 @@ export class RuleEditor extends EventDispatcherInterface {
     _html_element;
     _rule_view;
     _extra_class = '';
+    _fixed = false;
+    _remove_button;
 
     constructor(rule) {
         super();
@@ -37,28 +39,23 @@ export class RuleEditor extends EventDispatcherInterface {
         controls_container.className = 'rule-controls-container';
         this._html_element.appendChild(controls_container);
 
-        this._up_button = document.createElement('button');
-        this._up_button.innerHTML = '&uarr;';
-
         let remove_button = document.createElement('button');
         remove_button.innerHTML = '-'; //'&#x274C;';
-
-        this._down_button = document.createElement('button');
-        this._down_button.innerHTML = '&darr;';
+        this._remove_button = remove_button;
 
         let state = document.createElement('a');
         state.href = '#';
         state.innerText = regime_to_title(this.rule.regime);
         state.className = 'rule-regime';
 
-        controls_container.appendChild(this._up_button);
         controls_container.appendChild(remove_button);
-        controls_container.appendChild(this._down_button);
         controls_container.appendChild(state);
 
         // add listeners
 
         $(state).click(e => {
+            if (this.fixed)
+                return;
             this.rule.next_regime();
             state.innerText = regime_to_title(this.rule.regime);
             this.fire_change();
@@ -69,14 +66,6 @@ export class RuleEditor extends EventDispatcherInterface {
         $(remove_button).dblclick(e => {
             this.fire(new Event('remove', this));
         });
-
-        $(this._down_button).click(e => {
-            this.fire(new Event('down', this));
-        });
-
-        $(this._up_button).click(e => {
-            this.fire(new Event('up', this));
-        });
     }
 
     get html_element() {
@@ -85,14 +74,6 @@ export class RuleEditor extends EventDispatcherInterface {
 
     get rule() {
         return this._rule_view.board;
-    }
-
-    set show_up(value) {
-        this._up_button.style.visibility = value ? 'visible' : 'hidden';
-    }
-
-    set show_down(value) {
-        this._down_button.style.visibility = value ? 'visible' : 'hidden';
     }
 
     get extra_class() {
@@ -106,6 +87,17 @@ export class RuleEditor extends EventDispatcherInterface {
 
     update_class_name() {
         this._html_element.className = ('rule-editor-container ' + this._extra_class).trim();
+    }
+
+    get fixed() {
+        return this._fixed;
+    }
+
+    set fixed(value) {
+        this._fixed = value;
+
+        this._remove_button.style.display = value ? "none" : "inline-block";
+        this._rule_view.changeable = !value;
     }
 }
 

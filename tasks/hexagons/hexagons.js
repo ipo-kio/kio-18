@@ -1,7 +1,10 @@
 import './hexagons.scss';
 import {HexBoardView} from "./view/HexBoardView";
 import {Sizing} from "./model/sizing";
-import {HexagonCell, HexBoard, rectangular_shape, Rule} from "./model/HexBoard";
+import {
+    HexagonCell, HexBoard, rectangular_shape, Rule, RULE_REGIME_EXACT_ANY_POSITION,
+    TYPES_COUNT, set_types_count
+} from "./model/HexBoard";
 import {RulesList} from "./model/RulesList";
 import {Slider} from "./slider";
 import {BoardHistory, STEPS} from "./model/BoardHistory";
@@ -22,6 +25,7 @@ export class Hexagons {
 
     constructor(settings) {
         this.settings = settings;
+        set_types_count(2 + settings.level);
     }
 
     id() {
@@ -144,6 +148,9 @@ export class Hexagons {
 
     initInterface(domNode, preferred_width) {
         this._rules_list = new RulesList();
+        this.init_rules_list();
+        this._rules_list.fixed = this.settings.level <= 1;
+
 
         let canvas_container = document.createElement('div');
         canvas_container.className = 'main-board-container';
@@ -298,5 +305,26 @@ export class Hexagons {
             size: max_n,
             rules: this._rules_list.length
         });
+    }
+
+    init_rules_list() {
+        let rules_list = [];
+        switch (this.settings.level) {
+            case 0:
+                rules_list = [
+                    new Rule([[1, 2], [1, 1, 2, 2], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
+                    new Rule([[1, 1], [1, 2, 1, 1], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
+                    new Rule([[2, 1], [1, 2, 1, 1], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
+                    new Rule([[1, 2], [1, 2, 2, 1], [1, 1]], RULE_REGIME_EXACT_ANY_POSITION),
+                    new Rule([[2, 2], [2, 2, 2, 1], [1, 2]], RULE_REGIME_EXACT_ANY_POSITION),
+                    new Rule([[2, 2], [2, 2, 2, 1], [2, 2]], RULE_REGIME_EXACT_ANY_POSITION)
+                ];
+                break;
+            case 1:
+            case 2:
+                break;
+        }
+
+        this._rules_list.add_rules(rules_list)
     }
 }

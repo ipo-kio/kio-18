@@ -132,7 +132,7 @@ export class RuleSet {
         //let first rule be also not 'exact places'.
         let regime1 = rule1.regime;
         if (regime1 === RULE_REGIME_EXACT)
-            regime1 = RULE_REGIME_EXACT_ANY_POSITION;
+            regime1 = RULE_REGIME_AT_LEAST_ANY_POSITION;
         let regime2 = rule2.regime;
 
         function allowed_values(t, regime, rule) {

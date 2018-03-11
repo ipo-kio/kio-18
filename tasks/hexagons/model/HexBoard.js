@@ -10,7 +10,11 @@
 import {Graph} from "../../lamps/model/Graph";
 
 export const RULE_SIZE = 2;
-export const TYPES_COUNT = 4; //0 and 1,2,3,4
+export let TYPES_COUNT = 4; //0 and 1,2,3,4
+
+export function set_types_count(value) {
+    TYPES_COUNT = value;
+}
 
 export class HexBoard {
 

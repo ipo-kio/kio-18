@@ -1,6 +1,6 @@
 import {Sequence} from "./devices/Sequence";
 
-export const STEPS = 60;
+export const STEPS = 200;
 
 export class LayoutHistory {
 
