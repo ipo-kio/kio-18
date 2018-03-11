@@ -71,6 +71,13 @@ export class LayoutView extends EventDispatcherInterface {
 
         g.clear();
 
+        g.beginFill("#bdbdbd").rect(
+            0,
+            0,
+            GAP * 2 + TERMINAL_DISTANCE * (this._layout.width - 1),
+            GAP * 2 + TERMINAL_DISTANCE * (this._layout.height - 1)
+        ).beginFill(null);
+
         for (let x = 0; x < this._layout.width; x++)
             for (let y = 0; y < this._layout.height; y++) {
                 let x_pos = GAP + x * TERMINAL_DISTANCE;
