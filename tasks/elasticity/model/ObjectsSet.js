@@ -16,6 +16,16 @@ export default class ObjectsSet {
         object.ed.add_listener('change', this._element_change_handler);
     }
 
+    add_objects(objects, converter) {
+        for (let object of objects) {
+            if (converter)
+                object = converter(object);
+            this._objects.push(object);
+            object.ed.add_listener('change', this._element_change_handler);
+        }
+        this.fire_change();
+    }
+
     remove_object(object) {
         let io = this._objects.indexOf(object);
         if (io < 0)

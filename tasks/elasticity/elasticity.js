@@ -54,22 +54,25 @@ export class Elasticity {
     }
 
     setup_initial_points() {
+        let pwps = [];
         if (this.settings.level === 0) {
             for (let i = -3; i <= 3; i++) {
                 let pwp = new PointWithPosition(2 * i, 0, POINT_TYPE_FIXED);
-                this._point_set.add_object(pwp);
+                pwps.push(pwp);
             }
         } else if (this.settings.level === 1) {
             for (let i = -1; i <= 1; i++) {
                 let pwp = new PointWithPosition(5 * i, 0, POINT_TYPE_FIXED);
-                this._point_set.add_object(pwp);
+                pwps.push(pwp);
             }
         } else if (this.settings.level === 2) {
             for (let i = 0; i <= 1; i++) {
                 let pwp = new PointWithPosition(10 * i - 5, 0, POINT_TYPE_FIXED);
-                this._point_set.add_object(pwp);
+                pwps.push(pwp);
             }
         }
+
+        this._point_set.add_objects(pwps);
     }
 
     static preloadManifest___________________1() {
@@ -115,7 +118,7 @@ export class Elasticity {
             },
             {
                 name: 'points',
-                title: 'Блоков',
+                title: 'Узлов',
                 ordering: 'maximize',
                 normalize(v) {
                     if (v > 30 || v < 0)
@@ -150,7 +153,7 @@ export class Elasticity {
     }
 
 
-    loadSolution(solution) {
+    loadSolution_point_set(solution) {
         if (!solution)
             return;
 
@@ -159,13 +162,11 @@ export class Elasticity {
         this._springs_set.clear();
         this._point_set.clear();
 
-        for (let {x, y, t} of solution.p) //TODO add many objects by once
-            this._point_set.add_object(new PointWithPosition(x, y, t));
-
-        for (let [i1, i2] of solution.s)
-            this._springs_set.add_object(
-                new Spring(this._point_set.get(i1), this._point_set.get(i2))
-            )
+        this._point_set.add_objects(solution.p, ({x, y, t}) => new PointWithPosition(x, y, t));
+        this._springs_set.add_objects(
+            solution.s,
+            ([i1, i2]) => new Spring(this._point_set.get(i1), this._point_set.get(i2))
+        );
 
         //evaluate history and submit result
         this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
