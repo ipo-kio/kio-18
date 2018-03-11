@@ -165,22 +165,47 @@ export class Lamps {
         add_device_selector(DeviceFactory.create_battery(), 1.4, 8.3);
     }
 
+    _set_interval_id = null;
+
     init_time_controls(domNode) {
         this._slider = new Slider(domNode, 0, STEPS, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
         this._slider.domNode.className = 'lamps-slider';
         domNode.appendChild(this._slider.domNode);
 
-        function add_button(title, action) {
+        function add_button(title, id, action) {
             let button = document.createElement('button');
-            button.innerText = title;
+            button.id = id;
+            button.innerHTML = title;
             $(button).click(action);
             domNode.appendChild(button);
         }
 
-        add_button('0', () => this._slider.value = 0);
-        add_button('-1', () => this._slider.value--);
-        add_button('+1', () => this._slider.value++);
-        add_button('max', () => this._slider.value = STEPS);
+        let start_play = () => {
+            this._set_interval_id = setInterval(() => {
+                if (this._slider.value >= this._slider.max_value)
+                    stop_play();
+                else
+                    this._slider.value++;
+            }, 600);
+            $('#slider-control-play').text('Остановить');
+        };
+
+        let stop_play = () => {
+            clearInterval(this._set_interval_id);
+            this._set_interval_id = null;
+            $('#slider-control-play').text('Запустить');
+        };
+
+        add_button('В начало', 'slider-control-0', () => this._slider.value = 0);
+        add_button('-1', 'slider-control-p1', () => this._slider.value--);
+        add_button('+1', 'slider-control-m1', () => this._slider.value++);
+        add_button('В конец', 'slider-control-max', () => this._slider.value = STEPS);
+        add_button('Запустить', 'slider-control-play', () => {
+            if (this._set_interval_id === null)
+                start_play();
+            else
+                stop_play();
+        });
 
         this._time_shower = document.createElement('span');
         this._time_shower.className = 'slider-time-shower';
