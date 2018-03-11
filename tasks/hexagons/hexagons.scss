@@ -28,7 +28,8 @@
 
 .rule-editor-container {
   display: inline-block;
-  margin: 0.4em 0;
+  margin: 0.4em;
+  position: relative;
 }
 
 .rules-list {
@@ -58,4 +59,10 @@
 
 .kio-hexagons-canvas {
   margin-right: 0.4em;
+}
+
+.hex-rule-remove-button {
+  position: absolute;
+  top: 0;
+  right: 0;
 }

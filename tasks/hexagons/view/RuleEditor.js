@@ -42,13 +42,18 @@ export class RuleEditor extends EventDispatcherInterface {
         let remove_button = document.createElement('button');
         remove_button.innerHTML = '-'; //'&#x274C;';
         this._remove_button = remove_button;
+        remove_button.className = "hex-rule-remove-button";
 
         let state = document.createElement('a');
         state.href = '#';
         state.innerText = regime_to_title(this.rule.regime);
         state.className = 'rule-regime';
 
-        controls_container.appendChild(remove_button);
+        //TODO unhide state changer
+        state.style.display = "none";
+
+        // controls_container.appendChild(remove_button);
+        this.html_element.appendChild(remove_button);
         controls_container.appendChild(state);
 
         // add listeners

@@ -33,7 +33,7 @@ export class RulesList extends EventDispatcherInterface {
         $container.append(this._$add_rule_button);
 
         let $remove_rules_button = $('<button>');
-        $remove_rules_button.text('Очистить');
+        $remove_rules_button.text('Очистить (двойной щелчок)');
         this._$remove_rules_button = $remove_rules_button;
         $container.append(this._$remove_rules_button);
 
