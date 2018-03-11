@@ -5,9 +5,12 @@ import {Terminal} from "./model/Terminal";
 import {DeviceWithPosition} from "./model/DeviceWithPosition";
 import {DeviceSelector} from "./view/DeviceSelector";
 import {Slider} from "../hexagons/slider";
-import {STEPS, LayoutHistory, SEQ_1st_o2num, SEQ_2nd_o2num, SEQ_BOTH_o2num} from "./model/LayoutHistory";
+import {STEPS, LayoutHistory} from "./model/LayoutHistory";
 import {DeviceFactory} from "./model/devices/device_factory";
 import {Sequence} from "./model/devices/Sequence";
+import {LampDevice} from "./model/devices/LampDevice";
+import {UpDownDevice} from "./model/devices/UpDownDevice";
+import {RotatedDevice} from "./model/devices/RotatedDevice";
 
 const INITIAL_SOLUTION = "{\"d\":[[\"rl0\",10,7],[\"b\",10,8],[\"_uc12\",10,9],[\"_rw2\",11,8],[\"_u_rw2\",10,8],[\"_rw3\",10,8],[\"_rw3\",14,8],[\"rl0\",11,8],[\"yl0\",12,8],[\"gl0\",13,8],[\"w4\",11,10],[\"_rw2\",10,7],[\"_rw2\",11,7]]}";
 
@@ -20,10 +23,6 @@ export class Lamps {
 
     _layout_history = null;
 
-    _1st_traffic_light_sequence = new Sequence(SEQ_1st_o2num);
-    _2nd_traffic_light_sequence = new Sequence(SEQ_2nd_o2num);
-    _both_traffic_light_sequence = new Sequence(SEQ_BOTH_o2num);
-
     constructor(settings) {
         this.settings = settings;
     }
@@ -35,8 +34,6 @@ export class Lamps {
     initialize(domNode, kioapi, preferred_width) {
         this.kioapi = kioapi;
         this.domNode = domNode;
-
-        this._init_correct_sequences();
 
         this.initInterface(domNode, preferred_width);
 
@@ -63,61 +60,18 @@ export class Lamps {
     }
 
     parameters() {
-        /*function parse(str) {
-            let colon = str.indexOf(':');
-            if (colon < 0)
-                return null;
-            let i1 = +str.substring(0, colon);
-            let i2 = +str.substring(colon + 1);
-            return [i1, i2];
-        }*/
-
-        function view_wrongs([a, b]) {
-            return (a + b) + ' = ' + a + 'л. + ' + b + 'нх.';
-        }
-
-        function normalize_wrongs([a, b]) {
-            return a + b;
-        }
-
         return [{
-            name: 'wrongs',
-            title: 'Неправильных сигналов',
-            ordering: 'minimize',
-            view: view_wrongs,
-            normalize: normalize_wrongs
-        }, {
-            name: 'seq',
-            title: 'Длина совпадения',
+            name: 'count',
+            title: 'Разных лампочек по порядку',
             ordering: 'maximize'
+        }, {
+            name: 'time',
+            title: 'Время',
+            ordering: 'minimize'
         }, {
             name: 'size',
             title: 'Элементов',
             ordering: 'minimize'
-        },
-
-        {
-            name: 'wrongs1',
-            title: 'Неправильных сигналов №1',
-            ordering: 'minimize',
-            view: view_wrongs,
-            normalize: normalize_wrongs
-        }, {
-            name: 'seq1',
-            title: 'Длина совпадения №1',
-            ordering: 'maximize'
-        },
-
-        {
-            name: 'wrongs2',
-            title: 'Неправильных сигналов №2',
-            ordering: 'minimize',
-            view: view_wrongs,
-            normalize: normalize_wrongs
-        }, {
-            name: 'seq2',
-            title: 'Длина совпадения №2',
-            ordering: 'maximize'
         }];
     }
 
@@ -187,14 +141,15 @@ export class Lamps {
         add_device_selector(DeviceFactory.create_wire(3), 4, 4);
         add_device_selector(DeviceFactory.create_wire(2), 5, 3);
 
-        add_device_selector(DeviceFactory.create_red_lamp(0), 1.5, 6.5);
-        add_device_selector(DeviceFactory.create_yellow_lamp(0), 2.5, 6.5);
-        add_device_selector(DeviceFactory.create_green_lamp(0), 3.5, 6.5);
+        add_device_selector(DeviceFactory.create_red_lamp(0), 1, 6.5);
+        add_device_selector(DeviceFactory.create_yellow_lamp(0), 2, 6.5);
+        add_device_selector(DeviceFactory.create_green_lamp(0), 3, 6.5);
+        add_device_selector(DeviceFactory.create_blue_lamp(0), 4, 6.5);
 
-        add_device_selector(DeviceFactory.create_red_lamp(1), 1.5, 7.5);
-        add_device_selector(DeviceFactory.create_yellow_lamp(1), 2.5, 7.5);
-        add_device_selector(DeviceFactory.create_green_lamp(1), 3.5, 7.5);
-        // add_device_selector(DeviceFactory.create_blue_lamp(), 4, 7);
+        add_device_selector(DeviceFactory.create_red_lamp(1), 1, 7.5);
+        add_device_selector(DeviceFactory.create_yellow_lamp(1), 2, 7.5);
+        add_device_selector(DeviceFactory.create_green_lamp(1), 3, 7.5);
+        add_device_selector(DeviceFactory.create_blue_lamp(1), 4, 7.5);
 
         add_device_selector(DeviceFactory.create_battery(), 2.4, 8.2);
     }
@@ -254,67 +209,34 @@ export class Lamps {
     };
 
     _eval_parameters() {
-        let both_seq;
-        let _1st_seq;
-        let _2nd_seq;
+        let seq;
+        if (this._layout_history === null)
+            seq = new Sequence();
+        else
+            seq = this._layout_history.get_sequence();
 
-        if (this._layout_history === null) {
-            both_seq = new Sequence(); //the function is not needed because we will not add elements
-            _1st_seq = new Sequence();
-            _2nd_seq = new Sequence();
-        } else {
-            both_seq = this._layout_history.get_sequence(SEQ_BOTH_o2num);
-            _1st_seq = this._layout_history.get_sequence(SEQ_1st_o2num);
-            _2nd_seq = this._layout_history.get_sequence(SEQ_2nd_o2num);
-        }
+        let {count, time} = seq.eval_result((dwp1, dwp2) => {
+            let same_position = dwp1.terminal.x === dwp2.terminal.x && dwp1.terminal.y === dwp2.terminal.y;
+            if (!same_position)
+                return false;
 
-        this.kioapi.submitResult({
-            wrongs: [
-                this._both_traffic_light_sequence.extra_elements_count(both_seq),
-                both_seq.extra_elements_count(this._both_traffic_light_sequence),
-            ],
-            seq: this._both_traffic_light_sequence.greatest_common_subsequence(both_seq),
-            size: this._initial_layout.size,
+            let d1 = dwp1.device;
+            let d2 = dwp2.device;
 
-            wrongs1: [
-                this._1st_traffic_light_sequence.extra_elements_count(_1st_seq),
-                _1st_seq.extra_elements_count(this._1st_traffic_light_sequence),
-            ],
-            seq1: this._1st_traffic_light_sequence.greatest_common_subsequence(_1st_seq),
-            wrongs2: [
-                this._2nd_traffic_light_sequence.extra_elements_count(_2nd_seq),
-                _2nd_seq.extra_elements_count(this._2nd_traffic_light_sequence),
-            ],
-            seq2: this._2nd_traffic_light_sequence.greatest_common_subsequence(_2nd_seq)
+            while (!(d1 instanceof LampDevice) || !(d2 instanceof LampDevice)) {
+                if (d1 instanceof UpDownDevice && d2 instanceof UpDownDevice) {
+                    d1 = d1._device;
+                    d2 = d2._device;
+                } else if (d1 instanceof RotatedDevice && d2 instanceof RotatedDevice) {
+                    d1 = d1._device;
+                    d2 = d2._device;
+                } else
+                    return false;
+            }
+
+            return same_position;
         });
-    }
 
-    _init_correct_sequences() {
-        let seq_length = 0;
-        while (seq_length < STEPS + 1) {
-            this._1st_traffic_light_sequence.add_next([1, 0, 0, 0, 0, 0]);
-            this._1st_traffic_light_sequence.add_next([1, 1, 0, 0, 0, 0]);
-            this._1st_traffic_light_sequence.add_next([0, 0, 1, 0, 0, 0]);
-            this._1st_traffic_light_sequence.add_next([0, 1, 0, 0, 0, 0]);
-            seq_length += 4;
-        }
-
-        seq_length = 0;
-        while (seq_length < STEPS + 1) {
-            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 0, 0, 1]);
-            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 0, 1, 0]);
-            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 1, 0, 0]);
-            this._2nd_traffic_light_sequence.add_next([0, 0, 0, 1, 1, 0]);
-            seq_length += 4;
-        }
-
-        seq_length = 0;
-        while (seq_length < STEPS + 1) {
-            this._both_traffic_light_sequence.add_next([1, 0, 0, 0, 0, 1]);
-            this._both_traffic_light_sequence.add_next([1, 1, 0, 0, 1, 0]);
-            this._both_traffic_light_sequence.add_next([0, 0, 1, 1, 0, 0]);
-            this._both_traffic_light_sequence.add_next([0, 1, 0, 1, 1, 0]);
-            seq_length += 4;
-        }
+        this.kioapi.submitResult({count, time, size: this._initial_layout.size});
     }
 }

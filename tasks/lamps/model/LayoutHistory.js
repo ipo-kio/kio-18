@@ -1,22 +1,6 @@
 import {Sequence} from "./devices/Sequence";
 
-export const STEPS = 80;
-
-export const SEQ_BOTH_o2num = ([a, b, c, d, e, f]) => {
-    return 32 * a + 16 * b + 8 * c + 4 * d + 2 * e + f;
-};
-
-export const SEQ_UNION_o2num = ([a, b, c, d, e, f]) => {
-    return 4 * (a | d) + 2 * (b | e) + (c | f);
-};
-
-export const SEQ_1st_o2num = ([a, b, c, d, e, f]) => {
-    return 4 * a + 2 * b + c;
-};
-
-export const SEQ_2nd_o2num = ([a, b, c, d, e, f]) => {
-    return 4 * d + 2 * e + f;
-};
+export const STEPS = 60;
 
 export class LayoutHistory {
 
@@ -40,11 +24,19 @@ export class LayoutHistory {
         return this._layouts[index];
     }
 
-    get_sequence(o2num) {
-        let seq = new Sequence(o2num);
+    get_sequence() {
+        let seq = new Sequence();
 
-        for (let i = 0; i <= STEPS; i++)
-            seq.add_next(this.get(i).sequence_element);
+        for (let i = 0; i <= STEPS; i++) {
+            let se = this.get(i).sequence_element;
+
+            if (se === 'no lamps')
+                seq.add_next(0);
+            else if (se === 'many lamps')
+                seq.add_next(-1);
+            else
+                seq.add_next(se);
+        }
 
         return seq;
     }

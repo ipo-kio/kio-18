@@ -152,7 +152,6 @@ export class Elasticity {
         return {p, s};
     }
 
-
     loadSolution(solution) {
         if (!solution)
             return;

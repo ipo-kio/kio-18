@@ -5,7 +5,7 @@ export class LampConstants {
     static _LAMP_RESISTANCE = 150;
     static _WIRE_RESISTANCE = 1;
     static _LAMP_BRIGHTNESS = 4;
-    static _CONTROLLER_RESISTANCE = 100;
+    static _CONTROLLER_RESISTANCE = 20;
 
     static _C_WAIT = 1;
     static _C_ON = 2;

@@ -198,10 +198,8 @@ export class Layout extends EventDispatcherInterface {
         let dwps = [];
         for (let [id, x, y] of value.d) {
             let device = DeviceFactory.deserialize(id);
-            if (device === null) {
-                console.log('rrrrrrr');
+            if (device === null)
                 continue;
-            }
             dwps.push(new DeviceWithPosition(device, new Terminal(x, y)));
         }
 
@@ -209,14 +207,21 @@ export class Layout extends EventDispatcherInterface {
         this.add_devices_with_position(dwps);
     }
 
+    /**
+     * returns a device with position, if it is the only lamp,
+     * returns 'no lamps' if there are no lamps
+     * returns 'many lamps', if there are more than one
+     */
     get sequence_element() {
-        //        -------  =======
-        //        0  1  2  0  1  2
-        let se = [0, 0, 0, 0, 0, 0];
+        let result_dwp = null;
 
         for (let dwp of this._devices_with_positions) {
             let device = dwp.device;
-            if (!device instanceof LampDevice)
+
+            while (device instanceof RotatedDevice || device instanceof UpDownDevice)
+                device = device._device;
+
+            if (!(device instanceof LampDevice))
                 continue;
 
             let info = this.get_info(dwp);
@@ -224,18 +229,13 @@ export class Layout extends EventDispatcherInterface {
             if (!is_on)
                 continue;
 
-            let add = device.SERIALIZE_TAG[2] === '1' ? 3 : 0;
-            let st = device.SERIALIZE_TAG.substr(0, 2);
-
-            if (st === 'rl')
-                se[add] = 1;
-            else if (st === 'yl')
-                se[add + 1] = 1;
-            else if (st === 'gl')
-                se[add + 2] = 1;
+            if (result_dwp === null)
+                result_dwp = dwp;
+            else
+                return 'many lamps';
         }
 
-        return se;
+        return result_dwp === null ? 'no lamps' : result_dwp;
     }
 
     get size() {
