@@ -238,7 +238,18 @@ export class Layout extends EventDispatcherInterface {
         return result_dwp === null ? 'no lamps' : result_dwp;
     }
 
+    eval_size(unwinded_device_2_num) {
+        let sum = 0;
+        for (let dwp of this._devices_with_positions) {
+            let device = dwp.device;
+            while (device instanceof RotatedDevice || device instanceof UpDownDevice)
+                device = device._device;
+            sum += unwinded_device_2_num(device);
+        }
+        return sum;
+    }
+
     get size() {
-        return this._devices_with_positions.length;
+        return this.eval_size(() => 1);
     }
 }

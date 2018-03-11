@@ -11,6 +11,9 @@ import {Sequence} from "./model/devices/Sequence";
 import {LampDevice} from "./model/devices/LampDevice";
 import {UpDownDevice} from "./model/devices/UpDownDevice";
 import {RotatedDevice} from "./model/devices/RotatedDevice";
+import {WireDevice} from "./model/devices/WireDevice1";
+import {ControllerDevice} from "./model/devices/ControllerDevice";
+import {BatteryDevice} from "./model/devices/BatteryDevice";
 
 const INITIAL_SOLUTION = "{\"d\":[[\"rl0\",10,7],[\"b\",10,8],[\"_uc12\",10,9],[\"_rw2\",11,8],[\"_u_rw2\",10,8],[\"_rw3\",10,8],[\"_rw3\",14,8],[\"rl0\",11,8],[\"yl0\",12,8],[\"gl0\",13,8],[\"w4\",11,10],[\"_rw2\",10,7],[\"_rw2\",11,7]]}";
 
@@ -69,8 +72,16 @@ export class Lamps {
             title: 'Время',
             ordering: 'minimize'
         }, {
-            name: 'size',
-            title: 'Элементов',
+            name: 'mk',
+            title: 'Микросхем',
+            ordering: 'minimize'
+        }, {
+            name: 'batteries',
+            title: 'Батарей',
+            ordering: 'minimize'
+        }, {
+            name: 'wires',
+            title: 'Длина проводов',
             ordering: 'minimize'
         }];
     }
@@ -242,6 +253,27 @@ export class Lamps {
             return true; //do not test color. Two same rotated lamps in one place?!
         });
 
-        this.kioapi.submitResult({count, time, size: this._initial_layout.size});
+        this.kioapi.submitResult({
+            count,
+            time,
+            mk: this._initial_layout.eval_size(d => {
+                if (d instanceof ControllerDevice)
+                    return 1;
+                else
+                    return 0;
+            }),
+            batteries: this._initial_layout.eval_size(d => {
+                if (d instanceof BatteryDevice)
+                    return 1;
+                else
+                    return 0;
+            }),
+            wires: this._initial_layout.eval_size(d => {
+                if (d instanceof WireDevice)
+                    return d._size;
+                else
+                    return 0;
+            })
+        });
     }
 }

@@ -5,7 +5,7 @@ import {LampConstants} from "../LampConstants";
 
 export class WireDevice extends Device {
 
-    _size; //vertical
+    _size; //horizontal
 
     constructor(size) {
         super(size, 1);

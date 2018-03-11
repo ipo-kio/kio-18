@@ -77,7 +77,7 @@ export class DeviceFactory {
             return DeviceFactory.create_battery();
 
         if (id.substr(0, 1) === 'w')
-            return DeviceFactory.create_wire(id.substr(1, 1));
+            return DeviceFactory.create_wire(+id.substr(1, 1));
 
         if (id.substr(0, 2) === '_r')
             return DeviceFactory.create_rotated(DeviceFactory.deserialize(id.substr(2)));
