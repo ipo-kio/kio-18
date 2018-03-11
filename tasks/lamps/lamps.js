@@ -15,6 +15,7 @@ import {WireDevice} from "./model/devices/WireDevice1";
 import {ControllerDevice} from "./model/devices/ControllerDevice";
 import {BatteryDevice} from "./model/devices/BatteryDevice";
 
+const INITIAL_SOLUTION_0 = "{\"d\":[[\"_rw2\",4,4],[\"b\",4,5],[\"_rw2\",5,4],[\"rl0\",4,4],[\"c21\",11,4],[\"b\",11,6],[\"_rw2\",11,5],[\"_rw2\",12,5],[\"_u_rw3\",12,4],[\"w2\",10,6],[\"_rgl0\",10,5],[\"_rw2\",10,4],[\"_uw2\",10,4]]}";
 const INITIAL_SOLUTION = "{\"d\":[[\"rl0\",10,7],[\"b\",10,8],[\"_uc12\",10,9],[\"_rw2\",11,8],[\"_u_rw2\",10,8],[\"_rw3\",10,8],[\"_rw3\",14,8],[\"rl0\",11,8],[\"yl0\",12,8],[\"gl0\",13,8],[\"w4\",11,10],[\"_rw2\",10,7],[\"_rw2\",11,7]]}";
 
 export class Lamps {
@@ -46,7 +47,10 @@ export class Lamps {
 
         this.init_time_controls(domNode);
 
-        this.loadSolution(JSON.parse(INITIAL_SOLUTION));
+        if (this.settings.level > 0)
+            this.loadSolution(JSON.parse(INITIAL_SOLUTION));
+        else
+            this.loadSolution(JSON.parse(INITIAL_SOLUTION_0));
     }
 
     static preloadManifest() {
@@ -180,17 +184,17 @@ export class Lamps {
             domNode.appendChild(button);
         }
 
-        let start_play = () => {
+        this._start_play = () => {
             this._set_interval_id = setInterval(() => {
                 if (this._slider.value >= this._slider.max_value)
-                    stop_play();
+                    this._stop_play();
                 else
                     this._slider.value++;
             }, 600);
             $('#slider-control-play').text('Остановить');
         };
 
-        let stop_play = () => {
+        this._stop_play = () => {
             clearInterval(this._set_interval_id);
             this._set_interval_id = null;
             $('#slider-control-play').text('Запустить');
@@ -202,9 +206,9 @@ export class Lamps {
         add_button('В конец', 'slider-control-max', () => this._slider.value = STEPS);
         add_button('Запустить', 'slider-control-play', () => {
             if (this._set_interval_id === null)
-                start_play();
+                this._start_play();
             else
-                stop_play();
+                this._stop_play();
         });
 
         this._time_shower = document.createElement('span');
@@ -240,6 +244,7 @@ export class Lamps {
             this._initial_layout = this._layout_view.layout.copy_and_clear();
             this._layout_history = null;
             this._slider.value = 0;
+            this._stop_play();
         } else
             this._layout_history = null;
     };
