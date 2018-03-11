@@ -1,5 +1,5 @@
 import {RuleEditor} from "../view/RuleEditor";
-import {Rule} from "./HexBoard";
+import {Rule, RULE_REGIME_EXACT_ANY_POSITION} from "./HexBoard";
 import {Event,EventDispatcherInterface} from "../EventDispatcherMixin";
 import {RuleSet} from "./RuleSet";
 
@@ -55,7 +55,7 @@ export class RulesList extends EventDispatcherInterface {
     add_new_rule() {
         if (this.fixed)
             return;
-        this.add_rules([new Rule()]);
+        this.add_rules([new Rule(false, RULE_REGIME_EXACT_ANY_POSITION)]);
     }
 
     add_rules(rules) {
