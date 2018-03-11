@@ -15,8 +15,7 @@ import {WireDevice} from "./model/devices/WireDevice1";
 import {ControllerDevice} from "./model/devices/ControllerDevice";
 import {BatteryDevice} from "./model/devices/BatteryDevice";
 
-const INITIAL_SOLUTION_0 = "{\"d\":[[\"_rw2\",4,4],[\"b\",4,5],[\"_rw2\",5,4],[\"rl0\",4,4],[\"c21\",11,4],[\"b\",11,6],[\"_rw2\",11,5],[\"_rw2\",12,5],[\"_u_rw3\",12,4],[\"w2\",10,6],[\"_rgl0\",10,5],[\"_rw2\",10,4],[\"_uw2\",10,4]]}";
-const INITIAL_SOLUTION = "{\"d\":[[\"rl0\",10,7],[\"b\",10,8],[\"_uc12\",10,9],[\"_rw2\",11,8],[\"_u_rw2\",10,8],[\"_rw3\",10,8],[\"_rw3\",14,8],[\"rl0\",11,8],[\"yl0\",12,8],[\"gl0\",13,8],[\"w4\",11,10],[\"_rw2\",10,7],[\"_rw2\",11,7]]}";
+const INITIAL_SOLUTION = "{\"d\":[[\"_rw2\",4,4],[\"b\",4,5],[\"_rw2\",5,4],[\"c21\",11,4],[\"b\",11,6],[\"_rw2\",11,5],[\"_rw2\",12,5],[\"_rgl0\",12,3],[\"_uw2\",11,3],[\"gl0\",4,4],[\"_rb\",11,3]]}";
 
 export class Lamps {
 
@@ -47,10 +46,7 @@ export class Lamps {
 
         this.init_time_controls(domNode);
 
-        if (this.settings.level > 0)
-            this.loadSolution(JSON.parse(INITIAL_SOLUTION));
-        else
-            this.loadSolution(JSON.parse(INITIAL_SOLUTION_0));
+        this.loadSolution(JSON.parse(INITIAL_SOLUTION));
     }
 
     static preloadManifest() {
@@ -101,7 +97,7 @@ export class Lamps {
             return;
 
         // uncomment to store initial_solution
-        // console.log('loading', JSON.stringify(solution));
+        console.log('loading', JSON.stringify(solution));
         this._initial_layout.serializer = solution;
 
         this.new_history();
