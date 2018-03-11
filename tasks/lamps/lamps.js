@@ -133,25 +133,25 @@ export class Lamps {
 
         // create selectors
 
-        for (let c_wait = 1; c_wait <= 6; c_wait++)
-            for (let c_on = 1; c_wait + c_on <= 7; c_on++)
+        for (let c_wait = 1; c_wait <= 4; c_wait++)
+            for (let c_on = 1; c_wait + c_on <= 5; c_on++)
                 add_device_selector(DeviceFactory.create_controller(c_wait, c_on), c_wait - 1, c_on - 1);
 
-        add_device_selector(DeviceFactory.create_wire(4), 3, 5);
-        add_device_selector(DeviceFactory.create_wire(3), 4, 4);
-        add_device_selector(DeviceFactory.create_wire(2), 5, 3);
+        add_device_selector(DeviceFactory.create_wire(4), 1, 5);
+        add_device_selector(DeviceFactory.create_wire(3), 2, 4);
+        add_device_selector(DeviceFactory.create_wire(2), 3, 3);
 
-        add_device_selector(DeviceFactory.create_red_lamp(0), 1, 6.5);
-        add_device_selector(DeviceFactory.create_yellow_lamp(0), 2, 6.5);
-        add_device_selector(DeviceFactory.create_green_lamp(0), 3, 6.5);
-        add_device_selector(DeviceFactory.create_blue_lamp(0), 4, 6.5);
+        add_device_selector(DeviceFactory.create_red_lamp(0), 0, 6.2);
+        add_device_selector(DeviceFactory.create_yellow_lamp(0), 1, 6.2);
+        add_device_selector(DeviceFactory.create_green_lamp(0), 2, 6.2);
+        add_device_selector(DeviceFactory.create_blue_lamp(0), 3, 6.2);
 
-        add_device_selector(DeviceFactory.create_red_lamp(1), 1, 7.5);
-        add_device_selector(DeviceFactory.create_yellow_lamp(1), 2, 7.5);
-        add_device_selector(DeviceFactory.create_green_lamp(1), 3, 7.5);
-        add_device_selector(DeviceFactory.create_blue_lamp(1), 4, 7.5);
+        add_device_selector(DeviceFactory.create_red_lamp(1), 0, 7.2);
+        add_device_selector(DeviceFactory.create_yellow_lamp(1), 1, 7.2);
+        add_device_selector(DeviceFactory.create_green_lamp(1), 2, 7.2);
+        add_device_selector(DeviceFactory.create_blue_lamp(1), 3, 7.2);
 
-        add_device_selector(DeviceFactory.create_battery(), 2.4, 8.2);
+        add_device_selector(DeviceFactory.create_battery(), 1.4, 8.3);
     }
 
     init_time_controls(domNode) {
@@ -216,6 +216,11 @@ export class Lamps {
             seq = this._layout_history.get_sequence();
 
         let {count, time} = seq.eval_result((dwp1, dwp2) => {
+            if ((dwp1 === null) !== (dwp2 === null))
+                return false;
+            if (dwp1 === null && dwp2 === null)
+                return true;
+
             let same_position = dwp1.terminal.x === dwp2.terminal.x && dwp1.terminal.y === dwp2.terminal.y;
             if (!same_position)
                 return false;
@@ -234,7 +239,7 @@ export class Lamps {
                     return false;
             }
 
-            return same_position;
+            return true; //do not test color. Two same rotated lamps in one place?!
         });
 
         this.kioapi.submitResult({count, time, size: this._initial_layout.size});

@@ -23,11 +23,19 @@ export class Sequence {
         return ans;
          */
         let n = this._elements.length;
+
+        function array_has_element(a, e, comparator) {
+            for (let x of a)
+                if (comparator(x, e))
+                    return true;
+            return false;
+        }
+
         for (let from = 0; from < n; from++) {
             if (this._elements[from] < 0)
                 continue;
 
-            let set = new Set();
+            let set = [];
             let curr_count = 0;
             let last_added = null;
             for (let to = from; to < n; to++) {
@@ -35,19 +43,21 @@ export class Sequence {
 
                 if (e === -1)
                     break;
-                if (e === 0)
+                if (e === 0) {
+                    last_added = null;
                     continue;
+                }
 
-                if (set.has(e))
-                    break;
-
-                if (comparator(last_added, e)) {
+                if (!comparator(last_added, e)) {
+                    if (array_has_element(set, e, comparator))
+                        break;
                     curr_count++;
                     last_added = e;
                 }
-                let curr_time = to - from;
 
-                set.add(e);
+                let curr_time = to - from + 1;
+
+                set.push(e);
 
                 if (curr_count > count) {
                     count = curr_count;
