@@ -6,13 +6,14 @@
   text-align: center;
 }
 
-$mode-img-size: 42px;
+$mode-img-size: 96px;
 
 .elasticity-mode-selector {
 
+  padding-top: 2em;
+
   input[type=radio] {
     width   : $mode-img-size;
-    margin  : 0;
     padding : 0;
     opacity : 0;
   }
@@ -30,22 +31,29 @@ $mode-img-size: 42px;
     margin-right: 1em;
   }
 
-  input[type=radio]:checked + label.mode-move {
-    //background   : url('elasticity-resources/bt_move.png') no-repeat 0 0;
-  }
-
   input[type=radio] + label.mode-stick {
     background   : url('elasticity-resources/bt_stick.png') no-repeat 0 0;
   }
 
-  input[type=radio]:checked + label/*.mode-stick*/ {
-    //background   : url('elasticity-resources/bt_stick.png') no-repeat 0 0, rgba(255,255,0,0.5);
-    border: 2px solid yellow;
+  input[type=radio]:checked + label.mode-move {
+    background   : url('elasticity-resources/bt_move_hover.png') no-repeat 0 0;
+  }
+
+  input[type=radio]:checked + label.mode-stick {
+    background   : url('elasticity-resources/bt_stick_hover.png') no-repeat 0 0;
   }
 }
 
 .elasticity-go {
-  background-color: #ffb60f;
+  background-color: #e3e3e3;
   font-size: 1.2em;
   margin-top: 1em;
+}
+
+.elasticity-go:hover {
+  background-color: #ffffc8;
+}
+
+.kio-base-box {
+  background: #a6ccd6 url('elasticity-resources/fon-lev-povtor.png') repeat 0 0 /*url('elasticity-resources/tatlin-tower.png') repeat 700px 0*/;
 }

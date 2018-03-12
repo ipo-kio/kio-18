@@ -75,8 +75,14 @@ export class Elasticity {
         this._point_set.add_objects(pwps);
     }
 
-    static preloadManifest___________________1() {
-        return [];
+    static preloadManifest() {
+        return [
+            {id: "bg", src: "elasticity-resources/fon.png"},
+            {id: "block", src: "elasticity-resources/block.png"},
+            {id: "block_hover", src: "elasticity-resources/block_hover.png"},
+            {id: "base", src: "elasticity-resources/base.png"},
+            {id: "base_hover", src: "elasticity-resources/base_hover.png"},
+        ];
     }
 
     parameters() {
@@ -230,7 +236,7 @@ export class Elasticity {
         this._canvas.height = GRID_HEIGHT;
         this._stage = new createjs.Stage(this._canvas);
 
-        this._grid_view = new GridView();
+        this._grid_view = new GridView(this.kioapi);
         this._grid_view.ed.add_listener('change', () => {
             this._tower_history = null;
             this.submitResult();

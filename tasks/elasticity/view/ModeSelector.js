@@ -34,7 +34,7 @@ export default class ModeSelector {
 
         let modes = [MODE_CREATE_VERTEX, MODE_CREATE_EDGE];
         let mode_titles = ['Двигать крепление', 'Устанавливать стержень'];
-        $container.append($('<div class="title">При нажатии на крепление:</div>'));
+        // $container.append($('<div class="title">При нажатии на крепление:</div>'));
         for (let i = 0; i < modes.length; i++) {
             let mode = modes[i];
             let title = mode_titles[i];

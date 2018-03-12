@@ -1,11 +1,12 @@
-import {n2s, s2n} from "./GridView";
+import {n2s} from "./GridView";
 
 export class PointView {
 
     _display_object;
     _point_with_position;
 
-    constructor(point_with_position) {
+    constructor(kioapi, point_with_position) {
+        this._kioapi = kioapi;
         this._point_with_position = point_with_position;
 
         this.init_display_object();
@@ -51,6 +52,6 @@ export class PointView {
     draw_point(over) {
         let g = this._display_object.graphics;
         g.clear();
-        this._point_with_position.point_type.draw(g, over);
+        this._point_with_position.point_type.draw(this._kioapi, g, over);
     }
 }

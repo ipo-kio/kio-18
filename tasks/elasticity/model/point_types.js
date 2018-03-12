@@ -29,16 +29,16 @@ export class PointType {
         return this._view;
     }
 
-    draw(g, over) {
-        this.view(g, over);
+    draw(kioapi, g, over) {
+        this.view(kioapi, g, over);
     }
 }
 
 export let point_types = [
-    new PointType(new Point(1), "Обычная", just_color_point_drawer(color_from_type(1), color_from_type(2))),
+    new PointType(new Point(1), "Обычная", bmp_drawer('block')),
     new PointType(new Point(2), "Двойная", just_color_point_drawer(color_from_type(2), color_from_type(3))),
     new PointType(new Point(3), "Тройная", just_color_point_drawer(color_from_type(3), color_from_type(4))),
-    new PointType(new Point(0), "Закрепленная", just_color_point_drawer('red', 'rgb(255, 80, 80)'))
+    new PointType(new Point(0), "Закрепленная", bmp_drawer('base'))
 ];
 
 function color_from_type(type) {
@@ -48,7 +48,7 @@ function color_from_type(type) {
 }
 
 function just_color_point_drawer(color_normal, color_over) {
-    return function (g, over) {
+    return function (kioapi, g, over) {
         let color = over ? color_over : color_normal;
         g
             .beginStroke('black')
@@ -56,4 +56,16 @@ function just_color_point_drawer(color_normal, color_over) {
             .beginFill(color)
             .drawCircle(0, 0, Constants.POINT_RADIUS);
     };
+}
+
+function bmp_drawer(res_name) {
+    return function (kioapi, g, over) {
+        let res = over ? res_name + '_hover' : res_name;
+        let resource = kioapi.getResource(res);
+
+        let matrix = new createjs.Matrix2D(1, 0, 0, 1, -resource.width / 2, -resource.height / 2);
+        g
+            .beginBitmapFill(resource, 'no-repeat', matrix)
+            .rect(-resource.width / 2, -resource.height / 2, resource.width, resource.height);
+    }
 }

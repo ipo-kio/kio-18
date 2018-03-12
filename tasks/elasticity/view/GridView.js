@@ -57,9 +57,14 @@ export default class GridView {
     _point_type_to_create = POINT_TYPE_NORMAL;
     _mouse_actions_mode = MODE_CREATE_VERTEX;
 
-    _previous_click_cords = {x: 0, y: 0}; //this will be hopefully rewritten before the first read access
+    _previous_click_cords = {x: 0, y: 0};
+    _kioapi;
 
-    constructor() {
+    //this will be hopefully rewritten before the first read access
+
+    constructor(kioapi) {
+        this._kioapi = kioapi;
+
         this.init_display_object();
 
         this._edges_set_view = new SetView(this, spring => this.init_edge(spring));
@@ -100,7 +105,7 @@ export default class GridView {
     }
 
     init_point_with_position(pwp) {
-        let pv = new PointView(pwp);
+        let pv = new PointView(this._kioapi, pwp);
 
         pv.display_object.addEventListener("dblclick", e => {
             if (this.actual_mouse_actions_mode() === MODE_DO_NOTHING)
@@ -126,7 +131,7 @@ export default class GridView {
                             natural_pos.y,
                             this._point_type_to_create
                         );
-                        this._virtual_point_view = new PointView(this._virtual_point, false);
+                        this._virtual_point_view = new PointView(this._kioapi, this._virtual_point, false);
 
                         this._virtual_edge = new Spring(pv._point_with_position, this._virtual_point);
                         this._virtual_edge_view = new SpringView(this._virtual_edge);
@@ -278,7 +283,7 @@ export default class GridView {
         let g = this._grid.graphics;
         this.draw_empty_grid(g);
 
-        g.setStrokeStyle(0.1).beginStroke('#666');
+        g.setStrokeStyle(1).beginStroke('rgba(184, 188, 184, 0.3)');
 
         let i_min = -Math.floor(X0 / GRID_STEP);
         let i_max = Math.floor((WIDTH - X0) / GRID_STEP);
@@ -302,7 +307,10 @@ export default class GridView {
         let g = this._grid.graphics;
         g.clear();
 
-        g.beginFill('white').drawRect(-X0, -Y0, WIDTH, HEIGHT).endFill();
+        let matrix = new createjs.Matrix2D(1, 0, 0, 1, -X0, -Y0);
+        g
+            .beginBitmapFill(this._kioapi.getResource('bg'), 'no-repeat', matrix)
+            .drawRect(-X0, -Y0, WIDTH, HEIGHT);
     }
 
     get display_object() {

@@ -162,7 +162,7 @@ export class Hexagons {
 
         //init a 'clear field' button
         let field_clear_button = document.createElement('button');
-        field_clear_button.class = 'hex-field-clear-button';
+        field_clear_button.className = 'hex-field-clear-button';
         field_clear_button.innerHTML = "Очистить поле (двойной щелчок)";
         $(field_clear_button).dblclick(() => {
             this._initial_board.values = this._standard_initial_board_values;
