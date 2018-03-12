@@ -44,7 +44,7 @@ export class Lamps {
         createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
         createjs.Ticker.addEventListener("tick", this._stage);
 
-        this.init_time_controls(domNode);
+        this.init_time_controls(domNode, preferred_width);
 
         this.loadSolution(JSON.parse(INITIAL_SOLUTION));
     }
@@ -101,6 +101,7 @@ export class Lamps {
         this._initial_layout.serializer = solution;
 
         this.new_history();
+        this._slider.value = 0;
     }
 
     initInterface(domNode, preferred_width) {
@@ -167,17 +168,22 @@ export class Lamps {
 
     _set_interval_id = null;
 
-    init_time_controls(domNode) {
-        this._slider = new Slider(domNode, 0, STEPS, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
+    init_time_controls(domNode, preferred_width) {
+        let time_controls_container = document.createElement('div');
+        time_controls_container.className = 'time-controls-container';
+        domNode.appendChild(time_controls_container);
+
+        this._slider = new Slider(time_controls_container, 0, STEPS, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
         this._slider.domNode.className = 'lamps-slider';
-        domNode.appendChild(this._slider.domNode);
+        this._slider.resize(preferred_width - 16);
+        time_controls_container.appendChild(this._slider.domNode);
 
         function add_button(title, id, action) {
             let button = document.createElement('button');
             button.id = id;
             button.innerHTML = title;
             $(button).click(action);
-            domNode.appendChild(button);
+            time_controls_container.appendChild(button);
         }
 
         this._start_play = () => {
@@ -209,7 +215,7 @@ export class Lamps {
 
         this._time_shower = document.createElement('span');
         this._time_shower.className = 'slider-time-shower';
-        domNode.appendChild(this._time_shower);
+        time_controls_container.appendChild(this._time_shower);
 
         this._slider.onvaluechange = () => this.move_time_to(this.board_time());
     }

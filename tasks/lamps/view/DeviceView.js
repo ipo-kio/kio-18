@@ -157,7 +157,7 @@ export class DeviceView {
                 circle.graphics
                     .beginRadialGradientFill([device.color(big), device.color(0)], [0, 1], 0, 0, 0, 0, 0, TERMINAL_DISTANCE)
                     .drawCircle(0, 0, TERMINAL_DISTANCE);
-                circle.compositeOperation = 'luminosity';
+                circle.compositeOperation = 'hard-light'; //'luminosity';
             }
 
             d.addChild(img);
