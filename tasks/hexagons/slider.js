@@ -40,7 +40,7 @@ export class Slider {
         };
 
         this.window_up = e => {
-            if (e.button == 0)
+            if (e.button === 0)
                 this.setup_waiting_mouse_up(false);
         };
 
@@ -61,7 +61,7 @@ export class Slider {
             value = this.min_value;
         if (value > this.max_value)
             value = this.max_value;
-        if (this._value == value)
+        if (this._value === value)
             return;
         this._value = value;
         this.redraw();
@@ -95,7 +95,7 @@ export class Slider {
         ctx.beginPath();
         ctx.moveTo(0, this.canvas.height / 2);
         ctx.lineTo(this.canvas.width, this.canvas.height / 2);
-        ctx.strokeStyle = '#46aede';
+        ctx.strokeStyle = '#f7f700';
         ctx.stroke();
 
         let xx = this.value_2_pos(this._visible_max_value) + this.img.width / 2;

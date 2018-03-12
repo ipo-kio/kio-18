@@ -23,6 +23,8 @@ export class Hexagons {
     _slider;
     _time_shower;
 
+    _set_interval_id = null;
+
     constructor(settings) {
         this.settings = settings;
         set_types_count(2 + settings.level);
@@ -151,7 +153,6 @@ export class Hexagons {
         this.init_rules_list();
         this._rules_list.fixed = this.settings.level <= 1;
 
-
         let canvas_container = document.createElement('div');
         canvas_container.className = 'main-board-container';
 
@@ -159,7 +160,17 @@ export class Hexagons {
         domNode.appendChild(canvas_container);
         domNode.appendChild(this._rules_list.html_element);
 
-        this.init_time_controls(domNode);
+        //init a 'clear field' button
+        let field_clear_button = document.createElement('button');
+        field_clear_button.class = 'hex-field-clear-button';
+        field_clear_button.innerHTML = "Очистить поле (двойной щелчок)";
+        $(field_clear_button).dblclick(() => {
+            this._initial_board.values = this._standard_initial_board_values;
+            this.reset_solution();
+        });
+        domNode.appendChild(field_clear_button);
+
+        this.init_time_controls(domNode, preferred_width);
 
         this._rules_list.add_listener('change', () => {
             // this.reset_solution();
@@ -175,17 +186,22 @@ export class Hexagons {
         this._eval_parameters();
     }
 
-    init_time_controls(domNode) {
-        this._slider = new Slider(domNode, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
+    init_time_controls(domNode, preferred_width) {
+        let time_controls_container = document.createElement('div');
+        time_controls_container.className = 'time-controls-container';
+        domNode.appendChild(time_controls_container);
+
+        this._slider = new Slider(time_controls_container, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
         this._slider.domNode.className = 'hexagons-slider';
-        domNode.appendChild(this._slider.domNode);
+        this._slider.resize(preferred_width - 16);
+        time_controls_container.appendChild(this._slider.domNode);
 
         function add_button(title, id, action) {
             let button = document.createElement('button');
             button.id = id;
             button.innerHTML = title;
             $(button).click(action);
-            domNode.appendChild(button);
+            time_controls_container.appendChild(button);
         }
 
         this._start_play = () => {
@@ -217,12 +233,7 @@ export class Hexagons {
 
         this._time_shower = document.createElement('span');
         this._time_shower.className = 'hexagons-time-shower';
-        domNode.appendChild(this._time_shower);
-
-        add_button('Очистить поле', () => {
-            this._initial_board.values = this._standard_initial_board_values;
-            this.reset_solution();
-        });
+        time_controls_container.appendChild(this._time_shower);
 
         this._slider.onvaluechange = () => this.move_time_to(this.board_time());
     }
