@@ -37,7 +37,7 @@ export class BoardHistory {
         return this._boards[index];
     }
 
-    period() { //returns null of {from, to}
+    period() { //returns null or {from, to}
         let hashes = new Array(STEPS + 1);
         let this_boards = this._boards;
 

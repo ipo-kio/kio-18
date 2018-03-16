@@ -323,8 +323,10 @@ export class Hexagons {
         }
 
         let period = this._board_history.period();
-        if (period === null)
-            this.kioapi.submitResult(this.__null_result);
+        if (period === null) {
+            this.kioapi.submitResult({...this.__null_result, ini_size});
+            return;
+        }
 
         let {from, to} = period;
         let max_parts = 0;
