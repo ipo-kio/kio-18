@@ -4,7 +4,7 @@ export class Constants {
     static _E = 400;
     static _FRICTION = 1;
 
-    static _WIND_FORCE = 0; //0.001;
+    static _WIND_FORCE = 0.001;
 
     //points
     static _MAX_DISTANCE = 2.5;
