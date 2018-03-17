@@ -4,6 +4,8 @@ export class Constants {
     static _E = 400;
     static _FRICTION = 1;
 
+    static _WIND_FORCE = 0; //0.001;
+
     //points
     static _MAX_DISTANCE = 2.5;
 
@@ -77,6 +79,14 @@ export class Constants {
 
     static set HAS_EARTH(value) {
         this._HAS_EARTH = value;
+    }
+
+    static get WIND_FORCE() {
+        return this._WIND_FORCE;
+    }
+
+    static set WIND_FORCE(value) {
+        this._WIND_FORCE = value;
     }
 }
 

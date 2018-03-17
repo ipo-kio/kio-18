@@ -142,6 +142,8 @@ export default class GridView {
                         this._virtual_point.set_location(natural_pos);
                         this._virtual_edge.relength();
                     }
+
+                    this.fire_change();
                     break;
                 case MODE_CREATE_VERTEX:
                     if (pv.point_with_position.point_type_ind === POINT_TYPE_FIXED)
@@ -154,10 +156,10 @@ export default class GridView {
                         if (edge.first_point_with_position === pwp || edge.second_point_with_position === pwp)
                             edge.relength();
 
+                    this.fire_change();
                     break;
             }
 
-            this.fire_change();
         });
         pv.display_object.addEventListener("pressup", e => {
             switch (this.actual_mouse_actions_mode()) {

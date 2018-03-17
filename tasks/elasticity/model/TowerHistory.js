@@ -64,6 +64,17 @@ export default class TowerHistory {
                 result[vy(i)] += fy;
             }
 
+            //wind
+            for (let i = 0; i < n; i++) {
+                let {point} = point_set.get(i);
+                let w = point.weight;
+
+                if (w !== 0) {
+                    // console.log('here', Constants.WIND_FORCE);
+                    result[vx(i)] += Constants.WIND_FORCE;
+                }
+            }
+
             //now convert forces to accelerations
             for (let i = 0; i < n; i++) {
                 let {point} = point_set.get(i);
