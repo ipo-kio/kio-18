@@ -10,7 +10,7 @@ import {Terminal} from "../model/Terminal";
 import {DeviceWithPosition} from "../model/DeviceWithPosition";
 import {DeviceFactory} from "../model/devices/device_factory";
 
-const WIRE_COLOR = "#70747a";
+const WIRE_COLOR = "#505b99";
 
 export class DeviceView {
 
@@ -69,14 +69,23 @@ export class DeviceView {
     _create_display_object(device, device_info) {
         let d;
         if (device instanceof BatteryDevice) {
-            d = new createjs.Shape();
-            let g = d.graphics;
-            g.beginStroke('#000080').setStrokeStyle(1).beginFill('blue');
-            g.rect(8.5, -3.5, (TERMINAL_DISTANCE - 16) / 2, 8);
-            g.beginFill('red');
-            g.rect(8.5 + (TERMINAL_DISTANCE - 16) / 2, -3.5, (TERMINAL_DISTANCE - 16) / 2, 8);
-            g.moveTo(0, 0).lineTo(8, 0);
-            g.moveTo(TERMINAL_DISTANCE - 8, 0).lineTo(TERMINAL_DISTANCE, 0);
+            d = new createjs.Container();
+
+            let wire = new createjs.Shape();
+            let g_wire = wire.graphics;
+            g_wire.setStrokeStyle(2).beginStroke(WIRE_COLOR);
+            g_wire.moveTo(0, 0);
+            g_wire.lineTo(TERMINAL_DISTANCE, 0);
+            d.addChild(wire);
+
+            let res = this._get_resource("battery");
+            let img = new createjs.Bitmap(res);
+            img.regX = res.width / 2;
+            img.regY = res.height / 2;
+            img.x = TERMINAL_DISTANCE / 2;
+            img.y = 0;
+
+            d.addChild(img);
         } else if (device instanceof ControllerDevice) {
             if (!device_info)
                 device_info = {currencies: [0]};
@@ -99,18 +108,18 @@ export class DeviceView {
             for (let i = 0; i < device.c_wait + device.c_on; i++) {
                 let color = i > device.state || !is_powered && device.state === 0 ? '#dd073f' : '#ccc';
                 let is_empty = i < device.c_wait;
-                let xx = i % 3;
-                let yy = (i - xx) / 3;
+                let xx = i % 2;
+                let yy = (i - xx) / 2;
                 if (yy === 2)
-                    xx = 1;
-                let xxx = 10 + xx * 7;
+                    xx = 0.5;
+                let xxx = 10 + xx * 10;
                 let yyy = 4 + yy * 11;
                 if (is_empty)
                     g.beginStroke(color).beginFill(null);
                 else
                     g.beginFill(color).beginStroke(null);
                 let d_pixel = is_empty ? 0.5 : 0;
-                g.rect(xxx + d_pixel, yyy + d_pixel, 4 + (0.5 - d_pixel) * 2, 8 + (0.5 - d_pixel) * 2);
+                g.rect(xxx + d_pixel, yyy + d_pixel, 7 + (0.5 - d_pixel) * 2, 8 + (0.5 - d_pixel) * 2);
             }
 
 
@@ -213,7 +222,7 @@ export class DeviceView {
 
         let td = TERMINAL_DISTANCE / 2;
 
-        g.beginFill("rgba(227, 172, 20, 0.3)");
+        g.beginFill("rgba(102, 214, 238, 0.6)");
         g.moveTo(0, 0);
         for (let i = 0; i < w; i++) {
             g.lineTo(td * (2 * i + 1), -td);
