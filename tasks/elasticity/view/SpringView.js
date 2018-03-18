@@ -67,7 +67,7 @@ export class SpringView {
         }
 
         let g_hit_area = this._hit_area.graphics;
-        g_hit_area.clear().setStrokeStyle(10).beginStroke('rgba(255,255,0,0.4)').moveTo(p1.x, p1.y).lineTo(p2.x, p2.y);
+        g_hit_area.clear().setStrokeStyle(10).beginStroke('rgba(102,198,238,0.6)').moveTo(p1.x, p1.y).lineTo(p2.x, p2.y);
 
         this._hit_area.visible = this._highlighted;
     }
