@@ -13,14 +13,16 @@ export class HexBoardView extends EventDispatcherInterface {
     _display_object;
     _canvas;
     _stage;
+    _padding;
 
     _changeable = false;
 
-    constructor(board, sizing) {
+    constructor(board, sizing, padding=0) {
         super();
 
         this._board = board;
         this._sizing = sizing;
+        this._padding = padding;
 
         this.init_display_object();
 
@@ -44,14 +46,20 @@ export class HexBoardView extends EventDispatcherInterface {
         this._display_object = new createjs.Container();
 
         let {left} = this._board.coordinate_diapason(this._sizing);
-        let cell_x = -left + this._sizing.H;
-        let cell_y = this._sizing.R;
+        let cell_x = -left + this._sizing.H + this._padding;
+        let cell_y = this._sizing.R + this._padding;
 
         let is_rule = this._board instanceof Rule;
 
         let rule_cell = null;
         if (this.board instanceof Rule)
             rule_cell = this.board.result_cell;
+        else {
+            let bg = new createjs.Shape();
+            this._display_object.addChild(bg);
+            let {width, height} = this.preferred_size;
+            bg.graphics.beginFill('#0659B9').rect(0, 0, width, height);
+        }
 
         this._cell_views = [];
         for (let cell of this._board.cells()) {
@@ -84,8 +92,8 @@ export class HexBoardView extends EventDispatcherInterface {
         let additional_width = this._board instanceof Rule ? RULE_RESULT_SHIFT : 0;
 
         return {
-            width: Math.ceil(right - left + 2 * this._sizing.H) + additional_width,
-            height: (this._board.lines - 1) * this._sizing.R * 3 / 2 + 2 * this._sizing.R
+            width: Math.ceil(right - left + 2 * this._sizing.H) + additional_width + 2 * this._padding,
+            height: (this._board.lines - 1) * this._sizing.R * 3 / 2 + 2 * this._sizing.R + 2 * this._padding
         };
     }
 

@@ -1,8 +1,9 @@
 .rules-list-container {
   overflow-y: scroll;
-  height: 400px;
+  height: 428px;
   padding: 0.2em;
-  border: 1px solid #9e9e9e;
+  border-bottom: 1px solid #9e9e9e;
+  box-sizing: border-box;
 }
 
 .rules-list-container a.rule-regime {
@@ -71,4 +72,17 @@
   clear: both;
   display: block;
   margin: 0.2em 0;
+}
+
+.kio-base-box {
+  background-color: #686868;
+
+  button {
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #EEEEEE;
+    color: #444444;
+    box-shadow: 0 0 4px #EEEEEE;
+    font-weight: bold;
+  }
 }

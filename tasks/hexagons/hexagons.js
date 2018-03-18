@@ -279,7 +279,7 @@ export class Hexagons {
         this._standard_initial_board_values = board.values;
 
         let sizing = new Sizing(16);
-        this._grid_view = new HexBoardView(board, sizing);
+        this._grid_view = new HexBoardView(board, sizing, 6);
         this._grid_view.changeable = true;
         this._grid_view.add_listener('change', () => this.reset_solution());
         this._grid_view.add_listener_to_all_cell_views('rollover', e => {

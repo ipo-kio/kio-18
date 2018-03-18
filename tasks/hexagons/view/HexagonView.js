@@ -34,9 +34,10 @@ export class HexagonView extends EventDispatcherInterface {
     redraw() {
         let g = this._display_object.graphics;
 
-        let dx1 = this.sizing.R * sin60;
-        let dy1 = this.sizing.R * sin30;
-        let dy2 = this.sizing.R;
+        let r = this.sizing.R - 1;
+        let dx1 = r * sin60;
+        let dy1 = r * sin30;
+        let dy2 = r;
         let {x, y} = this._hex_cell.coordinates(this.sizing);
         let val = this._board_view.board.value(this._hex_cell);
 
@@ -51,12 +52,10 @@ export class HexagonView extends EventDispatcherInterface {
         };
 
         let very_highlighted = CELL_STATE_HIGHLIGHTED && this._board_view.changeable;
-        let fill_color = very_highlighted ? 'rgba(255,255,128,0.7)' : 'rgba(255,255,0,0.7)';
+        let fill_color = 'rgba(131,204,236,0.7)';
 
         g
             .clear()
-            .setStrokeStyle(1)
-            .beginStroke("black")
             .beginFill(types[val].bg_color);
         go_around();
         if (this._state === CELL_STATE_HIGHLIGHTED) {
@@ -156,7 +155,9 @@ class TypeDrawer {
     }
 }
 
-let S = 6;
+let S = 8;
+let sq3 = Math.sqrt(3) / 2;
+let sq2 = Math.sqrt(2);
 
 let types = [
     new TypeDrawer("#FFFFFF", (g, x0, y0) => {
@@ -166,17 +167,27 @@ let types = [
     new TypeDrawer("#FFFFFF", (g, x0, y0) => {
         //draw nothing
     }),
-    new TypeDrawer("#e3e41e", (g, x0, y0) => {
-        g.beginFill('black').drawCircle(x0, y0, S);
+    new TypeDrawer("#FFF017", (g, x0, y0) => {
+        g.beginFill('black').drawCircle(x0, y0, 6);
     }),
-    new TypeDrawer("#734CFF", (g, x0, y0) => {
-        g.beginFill('black').rect(x0 - S, y0 - S, 2 * S, 2 * S);
+    new TypeDrawer("#F17F0D", (g, x0, y0) => {
+        // g.beginFill('black').rect(x0 - S, y0 - S, 2 * S, 2 * S);
+        // y0 += 2;
+        g.beginStroke('black').setStrokeStyle(4, "round")
+            .moveTo(x0, y0)
+            .lineTo(x0, y0 - S)
+            .moveTo(x0, y0)
+            .lineTo(x0 - S / sq2, y0 + S / sq2)
+            .moveTo(x0, y0)
+            .lineTo(x0 + S / sq2, y0 + S / sq2);
     }),
-    new TypeDrawer("#09cb2c", (g, x0, y0) => {
-        g.setStrokeStyle(2).beginStroke('black')
-            .moveTo(x0 - S, y0 - S)
-            .lineTo(x0 + S, y0 + S)
-            .moveTo(x0 - S, y0 + S)
-            .lineTo(x0 + S, y0 - S);
+    new TypeDrawer("#E34790", (g, x0, y0) => {
+        g.setStrokeStyle(4, "round").beginStroke('black')
+            .moveTo(x0, y0 - S)
+            .lineTo(x0, y0 + S)
+            .moveTo(x0 + 6, y0 - S / 2)
+            .lineTo(x0 + 6, y0 + S / 2)
+            .moveTo(x0 - 6, y0 - S / 2)
+            .lineTo(x0 - 6, y0 + S / 2);
     })
 ];
