@@ -56,7 +56,7 @@ export class Lamps {
             {id: "c_on", src: "lamps-resources/c_on.png"},
             {id: "c_off", src: "lamps-resources/c_off.png"},
             {id: "battery", src: "lamps-resources/battery.png"},
-            {id: "puck", src: "lamps-resources/puck.png"},
+            // {id: "puck", src: "lamps-resources/puck.png"},
             {id: "lamp_off", src: "lamps-resources/lamp_off.png"},
             {id: "lamp_on", src: "lamps-resources/lamp_on.png"},
             {id: "lamp_off_2", src: "lamps-resources/lamp_off_2.png"},
