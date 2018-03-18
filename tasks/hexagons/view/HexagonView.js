@@ -161,8 +161,15 @@ let sq2 = Math.sqrt(2);
 
 let types = [
     new TypeDrawer("#FFFFFF", (g, x0, y0) => {
-        //draw nothing
-        g.beginStroke("black").drawCircle(x0, y0, 5);
+        //draw a question mark
+        g.beginStroke('black').setStrokeStyle(2)
+            .moveTo(x0 - 2, y0 - 8)
+            .quadraticCurveTo(x0 + 2, y0 - 12, x0 + 4, y0 - 8)
+            .quadraticCurveTo(x0 + 6, y0 - 6, x0, y0)
+            .lineTo(x0, y0 + 3)
+            .beginStroke(null)
+            .beginFill('black')
+            .drawCircle(x0, y0 + 8, 1.5);
     }),
     new TypeDrawer("#FFFFFF", (g, x0, y0) => {
         //draw nothing
