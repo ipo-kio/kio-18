@@ -55,5 +55,5 @@ $mode-img-size: 96px;
 }
 
 .kio-base-box {
-  background: #a6ccd6 url('elasticity-resources/fon-lev-povtor.png') repeat 0 0 /*url('elasticity-resources/tatlin-tower.png') repeat 700px 0*/;
+  background: #a6ccd6 url('elasticity-resources/fon-lev-povtor.png') 0 0 repeat//, url("elasticity-resources/tatlin-tower.png") 700px 0 repeat;
 }
