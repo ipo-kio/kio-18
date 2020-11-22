@@ -1,6 +1,0 @@
-^node_modules/
-^.idea/
-\.iml$
-^kio_test_box/
-^dist/
-^temporary-images/
