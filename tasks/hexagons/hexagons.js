@@ -8,8 +8,11 @@ import {
 import {RulesList} from "./model/RulesList";
 import {Slider} from "./slider";
 import {BoardHistory, STEPS} from "./model/BoardHistory";
+import {LOCALIZATION} from "./localization";
 
 export class Hexagons {
+
+    static LOCALIZATION = LOCALIZATION;
 
     _points_animation_tick;
     _board_history = null;
@@ -69,7 +72,7 @@ export class Hexagons {
         return [
             {
                 name: 'ini_size',
-                title: 'Начальный размер',
+                title: this.message('Начальный размер'),
                 ordering: 'maximize',
                 normalize(v) {
                     if (v > 20 || v < 0)
@@ -77,34 +80,34 @@ export class Hexagons {
                     else
                         return 0;
                 },
-                view(v) {
+                view: v => {
                     if (v > 20)
-                        return v + ' (много)';
+                        return v + this.message(' (много)');
                     else
-                        return v + ' (норма)';
+                        return v + this.message(' (норма)');
                 }
             },
             {
                 name: 'period',
-                title: 'Период',
+                title: this.message('Период'),
                 ordering: 'maximize',
                 view
             },
             {
                 name: 'connect',
-                title: 'Частей',
+                title: this.message('Частей'),
                 ordering: "minimize",
                 view
             },
             {
                 name: 'size',
-                title: 'Размер',
+                title: this.message('Размер'),
                 ordering: 'maximize',
                 view
             },
             {
                 name: 'rules',
-                title: 'Правил',
+                title: this.message('Правил'),
                 ordering: 'minimize',
                 view
             }
@@ -144,7 +147,7 @@ export class Hexagons {
     // private methods
 
     initInterface(domNode, preferred_width) {
-        this._rules_list = new RulesList();
+        this._rules_list = new RulesList(this);
         this.init_rules_list();
         this._rules_list.fixed = this.settings.level <= 1;
 
@@ -158,7 +161,7 @@ export class Hexagons {
         //init a 'clear field' button
         let field_clear_button = document.createElement('button');
         field_clear_button.className = 'hex-field-clear-button';
-        field_clear_button.innerHTML = "Очистить поле (двойной щелчок)";
+        field_clear_button.innerHTML = this.message("Очистить поле (двойной щелчок)");
         $(field_clear_button).dblclick(() => {
             this._initial_board.values = this._standard_initial_board_values;
             this.reset_solution();
@@ -206,20 +209,20 @@ export class Hexagons {
                 else
                     this._slider.value++;
             }, 600);
-            $('#slider-control-play').text('Остановить');
+            $('#slider-control-play').text(this.message('Остановить'));
         };
 
         this._stop_play = () => {
             clearInterval(this._set_interval_id);
             this._set_interval_id = null;
-            $('#slider-control-play').text('Запустить');
+            $('#slider-control-play').text(this.message('Запустить'));
         };
 
-        add_button('В начало', 'slider-control-0', () => this._slider.value = 0);
+        add_button(this.message('В начало'), 'slider-control-0', () => this._slider.value = 0);
         add_button('-1', 'slider-control-p1', () => this._slider.value--);
         add_button('+1', 'slider-control-m1', () => this._slider.value++);
-        add_button('В конец', 'slider-control-max', () => this._slider.value = STEPS);
-        add_button('Запустить', 'slider-control-play', () => {
+        add_button(this.message('В конец'), 'slider-control-max', () => this._slider.value = STEPS);
+        add_button(this.message('Запустить'), 'slider-control-play', () => {
             if (this._set_interval_id === null)
                 this._start_play();
             else
@@ -249,7 +252,7 @@ export class Hexagons {
         this._grid_view.changeable = time === 0;
 
         this._grid_view.board = time === 0 ? this._initial_board : this._board_history.get(time);
-        this._time_shower.innerHTML = 'Шаг: <b>' + this.board_time() + '</b>';
+        this._time_shower.innerHTML = this.message('Шаг') + ': <b>' + this.board_time() + '</b>';
     }
 
     init_canvas(domNode) {

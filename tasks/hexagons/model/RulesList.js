@@ -13,8 +13,9 @@ export class RulesList extends EventDispatcherInterface {
     _$remove_rules_button;
     _fixed = false;
 
-    constructor() {
+    constructor(problem) {
         super();
+        this.problem = problem;
         this.init_html_element();
         this.init_interaction();
     }
@@ -28,12 +29,12 @@ export class RulesList extends EventDispatcherInterface {
         $container.append(this._rules_list);
 
         let $add_rule_button = $('<button>');
-        $add_rule_button.text('Добавить');
+        $add_rule_button.text(this.problem.message('Добавить'));
         this._$add_rule_button = $add_rule_button;
         $container.append(this._$add_rule_button);
 
         let $remove_rules_button = $('<button>');
-        $remove_rules_button.text('Очистить (двойной щелчок)');
+        $remove_rules_button.text(this.problem.message('Очистить (двойной щелчок)'));
         this._$remove_rules_button = $remove_rules_button;
         $container.append(this._$remove_rules_button);
 
