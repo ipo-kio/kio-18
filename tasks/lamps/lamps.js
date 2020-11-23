@@ -110,7 +110,7 @@ export class Lamps {
     }
 
     initInterface(domNode, preferred_width) {
-        let layout = new Layout(19, 13);
+        let layout = new Layout(17, 11);
 
         this._initial_layout = layout;
 
@@ -154,21 +154,25 @@ export class Lamps {
             for (let c_on = 1; c_wait + c_on <= 5; c_on++)
                 add_device_selector(DeviceFactory.create_controller(c_wait, c_on), c_wait - 1, c_on - 1);
 
-        add_device_selector(DeviceFactory.create_wire(4), 1, 5);
-        add_device_selector(DeviceFactory.create_wire(3), 2, 4);
-        add_device_selector(DeviceFactory.create_wire(2), 3, 3);
+        let dd = 0.6;
 
-        add_device_selector(DeviceFactory.create_red_lamp(0), 0, 6.2);
-        add_device_selector(DeviceFactory.create_yellow_lamp(0), 1, 6.2);
-        add_device_selector(DeviceFactory.create_green_lamp(0), 2, 6.2);
-        add_device_selector(DeviceFactory.create_blue_lamp(0), 3, 6.2);
+        add_device_selector(DeviceFactory.create_wire(4), 1, 4.6 - dd);
+        add_device_selector(DeviceFactory.create_wire(3), 2, 3.8 - dd);
+        add_device_selector(DeviceFactory.create_wire(2), 3, 3 - dd);
 
-        add_device_selector(DeviceFactory.create_red_lamp(1), 0, 7.2);
-        add_device_selector(DeviceFactory.create_yellow_lamp(1), 1, 7.2);
-        add_device_selector(DeviceFactory.create_green_lamp(1), 2, 7.2);
-        add_device_selector(DeviceFactory.create_blue_lamp(1), 3, 7.2);
+        dd = 1.2;
 
-        add_device_selector(DeviceFactory.create_battery(), 1.4, 8.3);
+        add_device_selector(DeviceFactory.create_red_lamp(0), 0, 6.2 - dd);
+        add_device_selector(DeviceFactory.create_yellow_lamp(0), 1, 6.2 - dd);
+        add_device_selector(DeviceFactory.create_green_lamp(0), 2, 6.2 - dd);
+        add_device_selector(DeviceFactory.create_blue_lamp(0), 3, 6.2 - dd);
+
+        add_device_selector(DeviceFactory.create_red_lamp(1), 0, 7.2 - dd);
+        add_device_selector(DeviceFactory.create_yellow_lamp(1), 1, 7.2 - dd);
+        add_device_selector(DeviceFactory.create_green_lamp(1), 2, 7.2 - dd);
+        add_device_selector(DeviceFactory.create_blue_lamp(1), 3, 7.2 - dd);
+
+        add_device_selector(DeviceFactory.create_battery(), 1.4, 6.8);
     }
 
     _set_interval_id = null;
@@ -307,7 +311,7 @@ export class Lamps {
             }),
             wires: this._initial_layout.eval_size(d => {
                 if (d instanceof WireDevice)
-                    return d._size;
+                    return (d._size - 1);
                 else
                     return 0;
             })
