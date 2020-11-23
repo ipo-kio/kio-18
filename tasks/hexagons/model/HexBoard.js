@@ -200,6 +200,8 @@ export class Rule extends HexBoard {
     _regime;
 
     constructor(values=false, regime=RULE_REGIME_EXACT) {
+        regime = RULE_REGIME_AT_LEAST_ANY_POSITION;
+
         let shape = rule_shape(RULE_SIZE);
         super(shape, values);
 

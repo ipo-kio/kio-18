@@ -49,12 +49,7 @@ export class Hexagons {
     static preloadManifest() {
         return [
             {id: "fly1", src: "hexagons-resources/fly1.png"},
-            {id: "fly1-hover", src: "hexagons-resources/fly1_hover.png"},
-            {id: "fly2", src: "hexagons-resources/fly2.png"},
-            {id: "ground", src: "hexagons-resources/ground.png"},
-            {id: "roof", src: "hexagons-resources/roof.png"},
-            {id: "bg", src: "hexagons-resources/bg.png"},
-            {id: "target", src: "hexagons-resources/target.png"}
+            {id: "fly1-hover", src: "hexagons-resources/fly1_hover.png"}
         ];
     }
 
@@ -191,7 +186,7 @@ export class Hexagons {
         time_controls_container.className = 'time-controls-container';
         domNode.appendChild(time_controls_container);
 
-        this._slider = new Slider(time_controls_container, 0, 100, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
+        this._slider = new Slider(time_controls_container, 0, STEPS, 35/*fly1 height*/, this.kioapi.getResource('fly1'), this.kioapi.getResource('fly1-hover'));
         this._slider.domNode.className = 'hexagons-slider';
         this._slider.resize(preferred_width - 16);
         time_controls_container.appendChild(this._slider.domNode);
