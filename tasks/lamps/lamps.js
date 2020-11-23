@@ -68,6 +68,9 @@ export class Lamps {
     }
 
     parameters() {
+        if (!this.message)
+            this.message = s => s;
+
         return [{
             name: 'count',
             title: this.message('Разных лампочек по порядку'),
