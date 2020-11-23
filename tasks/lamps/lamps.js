@@ -14,6 +14,7 @@ import {RotatedDevice} from "./model/devices/RotatedDevice";
 import {WireDevice} from "./model/devices/WireDevice1";
 import {ControllerDevice} from "./model/devices/ControllerDevice";
 import {BatteryDevice} from "./model/devices/BatteryDevice";
+import {LOCALIZATION} from "./localization";
 
 const INITIAL_SOLUTION = "{\"d\":[[\"_rw2\",4,4],[\"b\",4,5],[\"_rw2\",5,4],[\"c21\",11,4],[\"b\",11,6],[\"_rw2\",11,5],[\"_rw2\",12,5],[\"_rgl0\",12,3],[\"_uw2\",11,3],[\"gl0\",4,4],[\"_rb\",11,3]]}";
 
@@ -25,6 +26,8 @@ export class Lamps {
     _stage;
 
     _layout_history = null;
+
+    static LOCALIZATION = LOCALIZATION;
 
     constructor(settings) {
         this.settings = settings;
@@ -67,23 +70,23 @@ export class Lamps {
     parameters() {
         return [{
             name: 'count',
-            title: 'Разных лампочек по порядку',
+            title: this.message('Разных лампочек по порядку'),
             ordering: 'maximize'
         }, {
             name: 'time',
-            title: 'Время',
+            title: this.message('Время'),
             ordering: 'minimize'
         }, {
             name: 'mk',
-            title: 'Микросхем',
+            title: this.message('Микросхем'),
             ordering: 'minimize'
         }, {
             name: 'batteries',
-            title: 'Батарей',
+            title: this.message('Батарей'),
             ordering: 'minimize'
         }, {
             name: 'wires',
-            title: 'Длина проводов',
+            title: this.message('Длина проводов'),
             ordering: 'minimize'
         }];
     }
@@ -195,20 +198,20 @@ export class Lamps {
                 else
                     this._slider.value++;
             }, 600);
-            $('#slider-control-play').text('Остановить');
+            $('#slider-control-play').text(this.message('Остановить'));
         };
 
         this._stop_play = () => {
             clearInterval(this._set_interval_id);
             this._set_interval_id = null;
-            $('#slider-control-play').text('Запустить');
+            $('#slider-control-play').text(this.message('Запустить'));
         };
 
-        add_button('В начало', 'slider-control-0', () => this._slider.value = 0);
+        add_button(this.message('В начало'), 'slider-control-0', () => this._slider.value = 0);
         add_button('-1', 'slider-control-p1', () => this._slider.value--);
         add_button('+1', 'slider-control-m1', () => this._slider.value++);
-        add_button('В конец', 'slider-control-max', () => this._slider.value = STEPS);
-        add_button('Запустить', 'slider-control-play', () => {
+        add_button(this.message('В конец'), 'slider-control-max', () => this._slider.value = STEPS);
+        add_button(this.message('Запустить'), 'slider-control-play', () => {
             if (this._set_interval_id === null)
                 this._start_play();
             else
@@ -230,7 +233,7 @@ export class Lamps {
             this.new_history();
 
         this._layout_view.layout = time === 0 ? this._initial_layout : this._layout_history.get(time);
-        this._time_shower.innerHTML = 'Шаг: <b>' + this.board_time() + '</b>';
+        this._time_shower.innerHTML = this.message('Шаг') + ': <b>' + this.board_time() + '</b>';
     }
 
     board_time() {
