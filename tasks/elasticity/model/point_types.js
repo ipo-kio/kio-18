@@ -35,10 +35,10 @@ export class PointType {
 }
 
 export let point_types = [
-    new PointType(new Point(1), "Обычная", bmp_drawer('block')),
-    new PointType(new Point(2), "Двойная", just_color_point_drawer(color_from_type(2), color_from_type(3))),
-    new PointType(new Point(3), "Тройная", just_color_point_drawer(color_from_type(3), color_from_type(4))),
-    new PointType(new Point(0), "Закрепленная", bmp_drawer('base'))
+    new PointType(new Point(1), "Обычная (normal)", bmp_drawer('block')),
+    new PointType(new Point(2), "Двойная (double)", just_color_point_drawer(color_from_type(2), color_from_type(3))),
+    new PointType(new Point(3), "Тройная (triple)", just_color_point_drawer(color_from_type(3), color_from_type(4))),
+    new PointType(new Point(0), "Закрепленная (fixed)", bmp_drawer('base'))
 ];
 
 function color_from_type(type) {
