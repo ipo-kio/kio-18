@@ -12,8 +12,8 @@ export default class ModeSelector {
     _current_mode = MODE_CREATE_EDGE;
 
     constructor(task) { //array of {type: Point, title: String}
-        this.init_html_object();
         this.task = task;
+        this.init_html_object();
     }
 
     get current_mode() {
@@ -34,7 +34,7 @@ export default class ModeSelector {
         let $container = $('<div class="elasticity-mode-selector">');
 
         let modes = [MODE_CREATE_VERTEX, MODE_CREATE_EDGE];
-        let mode_titles = [task.message('Двигать крепление'), task.message('Устанавливать стержень')];
+        let mode_titles = [this.task.message('Двигать крепление'), this.task.message('Устанавливать стержень')];
         // $container.append($('<div class="title">При нажатии на крепление:</div>'));
         for (let i = 0; i < modes.length; i++) {
             let mode = modes[i];
