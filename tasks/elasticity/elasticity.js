@@ -11,11 +11,14 @@ import {Spring} from "./model/Spring";
 import ModeSelector, {MODE_DO_NOTHING} from "./view/ModeSelector";
 import {Evaluator, HeightValue} from "./model/value";
 import {Constants} from "./model/constants";
+import {LOCALIZATION} from "./localization"
 
 const POINTS_CHANGEABLE = 0;
 const POINTS_FIXED = 1;
 
 export class Elasticity {
+
+    static LOCALIZATION = LOCALIZATION;
 
     _$go_button;
     _points_animation_tick;
@@ -86,10 +89,14 @@ export class Elasticity {
     }
 
     parameters() {
+        if (!this.message)
+            this.message = s => s;
+        let message = this.message;
+
         return [
             {
                 name: 'points',
-                title: 'Узлов',
+                title: message('Узлов'),
                 ordering: 'maximize',
                 normalize(v) {
                     if (v > 30 || v < 0)
@@ -99,20 +106,20 @@ export class Elasticity {
                 },
                 view(v) {
                     if (v > 30)
-                        return v + ' (много)';
+                        return v + message(' (много)');
                     else
-                        return v + ' (норма)';
+                        return v + message(' (норма)');
                 }
             },
             {
                 name: 'height',
-                title: 'Высота',
+                title: message('Высота'),
                 ordering: 'maximize',
                 view(v) {
                     if (v === -1)
-                        return "Башня нестабильна";
+                        return message("Башня нестабильна");
                     else if (v === -2)
-                        return "Башня упала";
+                        return message("Башня упала");
                     else if (v === -3)
                         return "-";
                     else
@@ -121,7 +128,7 @@ export class Elasticity {
             },
             {
                 name: 'length',
-                title: 'Материал',
+                title: message('Материал'),
                 ordering: 'minimize',
                 view(v) {
                     if (v <= 0)
@@ -131,7 +138,7 @@ export class Elasticity {
             },
             {
                 name: 'shrinkage',
-                title: 'Усадка',
+                title: message('Усадка'),
                 ordering: 'minimize',
                 view(v) {
                     if (v <= 0)
@@ -190,7 +197,7 @@ export class Elasticity {
     _mouse_mode_selector;
 
     initInterface(domNode, preferred_width) {
-        this._mouse_mode_selector = new ModeSelector();
+        this._mouse_mode_selector = new ModeSelector(this);
         this._mouse_mode_selector.ed.add_listener('change',
             () => this._grid_view.mouse_actions_mode = this._mouse_mode_selector.current_mode
         );
@@ -264,7 +271,7 @@ export class Elasticity {
     set_global_regime_fixed() {
         this._grid_view.mouse_actions_mode = MODE_DO_NOTHING;
         this.copy_points_and_springs_set();
-        this._$go_button.html("Расположить узлы");
+        this._$go_button.html(this.message("Расположить узлы"));
 
         this._tower_history = new TowerHistory(this._grid_view.point_set, this._grid_view.springs_set);
 
@@ -280,7 +287,7 @@ export class Elasticity {
         this._grid_view.mouse_actions_mode = this._mouse_mode_selector.current_mode;
         this._grid_view.point_set = this._point_set;
         this._grid_view.springs_set = this._springs_set;
-        this._$go_button.html("Смотреть движение");
+        this._$go_button.html(this.message("Смотреть движение"));
         this._stage.removeEventListener('tick', this._points_animation_tick);
 
         this._tower_history = null; //TODO either store it until any change, or don't store it at all
