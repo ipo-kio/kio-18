@@ -90,5 +90,5 @@ export class Constants {
     }
 }
 
-if (window)
+if (typeof window !== 'undefined')
     window.Constants = Constants;
